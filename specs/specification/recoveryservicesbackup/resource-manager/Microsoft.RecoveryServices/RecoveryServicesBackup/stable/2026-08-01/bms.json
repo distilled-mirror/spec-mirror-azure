@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Recovery Services Backup Client",
-    "version": "2026-07-01",
+    "version": "2026-08-01",
     "description": "Open API 2.0 Specs for Azure RecoveryServices Backup service",
     "x-typespec-generated": [
       {
@@ -2139,6 +2139,89 @@
         "x-ms-examples": {
           "Get Azure Vm Recovery Point Details": {
             "$ref": "./examples/AzureIaasVm/RecoveryPoints_Get.json"
+          }
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupFabrics/{fabricName}/protectionContainers/{containerName}/protectedItems/{protectedItemName}/recoveryPoints/{recoveryPointId}/listInstantItemRecoveryOperationResult": {
+      "post": {
+        "operationId": "ItemLevelRecoveryConnections_ListInstantItemRecoveryOperationResult",
+        "tags": [
+          "ItemLevelRecoveryConnections"
+        ],
+        "description": "Fetches the mount scripts (iSCSI connection details) for an active Instant Item Recovery (ILR) session on the recovery point. Required from API version 2026-08-01 onwards; replaces the scripts previously returned inline in the operationsStatus (ILR provision) response.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "vaultName",
+            "in": "path",
+            "description": "The name of the VaultResource",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fabricName",
+            "in": "path",
+            "description": "The name of the BackupFabricResource",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "containerName",
+            "in": "path",
+            "description": "Name of the container whose details need to be fetched.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "protectedItemName",
+            "in": "path",
+            "description": "Backed up item name whose details are to be fetched.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "recoveryPointId",
+            "in": "path",
+            "description": "RecoveryPointID represents the backed up data to be fetched.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The content of the action request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InstantItemRecoveryOperationResultRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/InstantItemRecoveryTarget"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List the Instant Item Recovery operation result (mount scripts) for an active ILR session": {
+            "$ref": "./examples/AzureIaasVm/ListInstantItemRecoveryOperationResult.json"
           }
         }
       }
@@ -8715,7 +8798,9 @@
       "properties": {
         "scriptContent": {
           "type": "string",
-          "description": "File content of the client script for file / folder restore."
+          "format": "password",
+          "description": "File content of the client script for file / folder restore.",
+          "x-ms-secret": true
         },
         "scriptExtension": {
           "type": "string",
@@ -10732,6 +10817,19 @@
           "readOnly": true
         }
       }
+    },
+    "InstantItemRecoveryOperationResultRequest": {
+      "type": "object",
+      "description": "Parameters for the listInstantItemRecoveryOperationResult action.",
+      "properties": {
+        "provisionInstantItemRecoveryOperationId": {
+          "type": "string",
+          "description": "Operation ID returned by the prior provisionInstantItemRecovery action whose iSCSI mount scripts are to be retrieved."
+        }
+      },
+      "required": [
+        "provisionInstantItemRecoveryOperationId"
+      ]
     },
     "InstantItemRecoveryTarget": {
       "type": "object",
