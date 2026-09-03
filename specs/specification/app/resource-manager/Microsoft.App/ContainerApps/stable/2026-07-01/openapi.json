@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "ContainerApps API Client",
-    "version": "2026-01-01",
+    "version": "2026-07-01",
     "description": "Functions is an extension resource to revisions and the api listed is used to proxy the call from Web RP to the function app's host process, this api is not exposed to users and only Web RP is allowed to invoke functions extension resource.",
     "x-typespec-generated": [
       {
@@ -49,16 +49,34 @@
       "name": "ContainerAppsSessionPools"
     },
     {
+      "name": "SandboxGroups"
+    },
+    {
+      "name": "VnetConnections"
+    },
+    {
       "name": "ContainerAppsSourceControls"
     },
     {
       "name": "ContainerApps"
     },
     {
+      "name": "AzureFunctionsOnContainerApps"
+    },
+    {
       "name": "ContainerAppsRevisions"
     },
     {
+      "name": "FunctionsExtension"
+    },
+    {
+      "name": "ContainerAppsLabelHistory"
+    },
+    {
       "name": "ContainerAppsRevisionReplicas"
+    },
+    {
+      "name": "DotNetComponents"
     },
     {
       "name": "JavaComponents"
@@ -94,6 +112,9 @@
       "name": "PrivateEndpointConnections"
     },
     {
+      "name": "DaprComponentResiliencyPolicies"
+    },
+    {
       "name": "HttpRouteConfig"
     },
     {
@@ -110,6 +131,9 @@
     },
     {
       "name": "AvailableWorkloadProfiles"
+    },
+    {
+      "name": "AvailableEnvironmentModes"
     },
     {
       "name": "BillingMeters"
@@ -311,6 +335,49 @@
         }
       }
     },
+    "/subscriptions/{subscriptionId}/providers/Microsoft.App/locations/{location}/availableManagedEnvironmentsModes": {
+      "get": {
+        "operationId": "AvailableEnvironmentModes_List",
+        "tags": [
+          "AvailableEnvironmentModes"
+        ],
+        "summary": "Get available environment modes by location.",
+        "description": "Gets the environment modes available to a subscription in a location.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/LocationParameter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded.",
+            "schema": {
+              "$ref": "#/definitions/AvailableEnvironmentModesCollection"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "AvailableEnvironmentModes_List": {
+            "$ref": "./examples/AvailableEnvironmentModes_List.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
     "/subscriptions/{subscriptionId}/providers/Microsoft.App/locations/{location}/availableManagedEnvironmentsWorkloadProfileTypes": {
       "get": {
         "operationId": "AvailableWorkloadProfiles_Get",
@@ -474,6 +541,45 @@
         "x-ms-examples": {
           "List environments by subscription": {
             "$ref": "./examples/ManagedEnvironments_ListBySubscription.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/providers/Microsoft.App/sandboxGroups": {
+      "get": {
+        "operationId": "SandboxGroups_ListBySubscription",
+        "tags": [
+          "SandboxGroups"
+        ],
+        "description": "Get all SandboxGroups for a subscription.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/SandboxGroupListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List SandboxGroups by subscription": {
+            "$ref": "./examples/SandboxGroups_ListBySubscription.json"
           }
         },
         "x-ms-pageable": {
@@ -1920,6 +2026,9 @@
           "Create or Update Container App": {
             "$ref": "./examples/ContainerApps_CreateOrUpdate.json"
           },
+          "Create or Update Container App with per-app outbound VNet subnet": {
+            "$ref": "./examples/ContainerApps_CreateOrUpdate_Networking.json"
+          },
           "Create or Update FunctionApp Kind": {
             "$ref": "./examples/ContainerApps_Kind_FunctionApp_CreateOrUpdate.json"
           },
@@ -2570,6 +2679,113 @@
         }
       }
     },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/functions": {
+      "get": {
+        "operationId": "ContainerAppsFunctions_List",
+        "tags": [
+          "AzureFunctionsOnContainerApps"
+        ],
+        "summary": "List the functions for a given Container App from the latest Revision.",
+        "description": "Lists the functions available in the latest revision of a Container App.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/ContainerAppsFunctionCollection"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List Container App's functions": {
+            "$ref": "./examples/ContainerAppsFunctions_List.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/functions/{functionName}": {
+      "get": {
+        "operationId": "ContainerAppsFunctions_Get",
+        "tags": [
+          "AzureFunctionsOnContainerApps"
+        ],
+        "summary": "Get a specific function of a Container App from the latest Revision.",
+        "description": "Gets the details of a specific function from the latest Container App revision.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "functionName",
+            "in": "path",
+            "description": "Name of the Function.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/ContainerAppsFunction"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get Container App's function": {
+            "$ref": "./examples/ContainerAppsFunctions_Get.json"
+          }
+        }
+      }
+    },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/getAuthtoken": {
       "post": {
         "operationId": "ContainerApps_GetAuthToken",
@@ -2617,6 +2833,174 @@
         "x-ms-examples": {
           "Get Container App Auth Token": {
             "$ref": "./examples/ContainerApps_GetAuthToken.json"
+          }
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/labelHistories": {
+      "get": {
+        "operationId": "ContainerAppsLabelHistory_ListLabelHistory",
+        "tags": [
+          "ContainerAppsLabelHistory"
+        ],
+        "summary": "Get the Label History for a given Container App.",
+        "description": "Lists the label revision histories for a Container App.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "$filter",
+            "in": "query",
+            "description": "The filter to apply on the operation.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/LabelHistoryCollection"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List Container App's all label history": {
+            "$ref": "./examples/LabelHistory_List.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/labelHistories/{labelName}": {
+      "get": {
+        "operationId": "ContainerAppsLabelHistory_GetLabelHistory",
+        "tags": [
+          "ContainerAppsLabelHistory"
+        ],
+        "summary": "Get the history of a label.",
+        "description": "Gets the revision history associated with a Container App label.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "labelName",
+            "in": "path",
+            "description": "Name of the label.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/LabelHistory"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get Container App's single label history": {
+            "$ref": "./examples/LabelHistory_Get.json"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "ContainerAppsLabelHistory_DeleteLabelHistory",
+        "tags": [
+          "ContainerAppsLabelHistory"
+        ],
+        "summary": "Delete the history of a label.",
+        "description": "Deletes the revision history associated with a Container App label.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "labelName",
+            "in": "path",
+            "description": "Name of the label.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource deleted successfully."
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Delete Container App's label history for a given label": {
+            "$ref": "./examples/LabelHistory_Delete.json"
           }
         }
       }
@@ -2718,6 +3102,379 @@
         "x-ms-examples": {
           "List Container Apps Secrets": {
             "$ref": "./examples/ContainerApps_ListSecrets.json"
+          }
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/privateEndpointConnections": {
+      "get": {
+        "operationId": "ContainerAppPrivateEndpointConnections_List",
+        "tags": [
+          "ContainerApps",
+          "PrivateEndpointConnections"
+        ],
+        "summary": "List private endpoint connections for a given Container App.",
+        "description": "Lists all private endpoint connections associated with a Container App.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/PrivateEndpointConnectionListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List Private Endpoint Connections by Container App": {
+            "$ref": "./examples/ContainerAppPrivateEndpointConnections_List.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/privateEndpointConnections/{privateEndpointConnectionName}": {
+      "get": {
+        "operationId": "ContainerAppPrivateEndpointConnections_Get",
+        "tags": [
+          "ContainerApps",
+          "PrivateEndpointConnections"
+        ],
+        "summary": "Get a private endpoint connection for a given Container App.",
+        "description": "Gets the details of a private endpoint connection associated with a Container App.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "privateEndpointConnectionName",
+            "in": "path",
+            "description": "Name of the Private Endpoint Connection.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/PrivateEndpointConnection"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get a Private Endpoint Connection by Container App": {
+            "$ref": "./examples/ContainerAppPrivateEndpointConnections_Get.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "ContainerAppPrivateEndpointConnections_CreateOrUpdate",
+        "tags": [
+          "ContainerApps",
+          "PrivateEndpointConnections"
+        ],
+        "summary": "Update the state of a private endpoint connection for a given Container App.",
+        "description": "Creates a private endpoint connection or updates its connection state for a Container App.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "privateEndpointConnectionName",
+            "in": "path",
+            "description": "Name of the Private Endpoint Connection.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "privateEndpointConnectionEnvelope",
+            "in": "body",
+            "description": "The resource of private endpoint and its properties",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PrivateEndpointConnection"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'PrivateEndpointConnection' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/PrivateEndpointConnection"
+            }
+          },
+          "201": {
+            "description": "Resource 'PrivateEndpointConnection' create operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/PrivateEndpointConnection"
+            },
+            "headers": {
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Update a Private Endpoint Connection by Container App": {
+            "$ref": "./examples/ContainerAppPrivateEndpointConnections_CreateOrUpdate.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location",
+          "final-state-schema": "#/definitions/PrivateEndpointConnection"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "delete": {
+        "operationId": "ContainerAppPrivateEndpointConnections_Delete",
+        "tags": [
+          "ContainerApps",
+          "PrivateEndpointConnections"
+        ],
+        "summary": "Delete a private endpoint connection for a given Container App.",
+        "description": "Deletes the specified private endpoint connection associated with a Container App.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "privateEndpointConnectionName",
+            "in": "path",
+            "description": "Name of the Private Endpoint Connection.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource deletion accepted.",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Delete a Private Endpoint Connection by Container App": {
+            "$ref": "./examples/ContainerAppPrivateEndpointConnections_Delete.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/privateLinkResources": {
+      "get": {
+        "operationId": "ContainerAppPrivateLinkResources_List",
+        "tags": [
+          "ContainerApps",
+          "PrivateLinkResources"
+        ],
+        "summary": "List private link resources for a given Container App.",
+        "description": "Lists the private link resources supported by a Container App.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkResourceListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List Private Link Resources by Container App": {
+            "$ref": "./examples/ContainerAppPrivateLinkResources_List.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/privateLinkResources/{privateLinkResourceName}": {
+      "get": {
+        "operationId": "ContainerAppPrivateLinkResources_Get",
+        "tags": [
+          "ContainerApps",
+          "PrivateLinkResources"
+        ],
+        "summary": "Get a private link resource for a given Container App.",
+        "description": "Gets the details of a private link resource supported by a Container App.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "privateLinkResourceName",
+            "in": "path",
+            "description": "The name of the private link associated with the Azure resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[a-z][a-zA-Z0-9]*$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkResource"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get a Private Link Resource by Container App": {
+            "$ref": "./examples/ContainerAppPrivateLinkResources_Get.json"
           }
         }
       }
@@ -3289,6 +4046,197 @@
         "x-ms-examples": {
           "Deactivate Container App's revision": {
             "$ref": "./examples/Revisions_Deactivate.json"
+          }
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/revisions/{revisionName}/functions": {
+      "get": {
+        "operationId": "ContainerAppsRevisionFunctions_List",
+        "tags": [
+          "AzureFunctionsOnContainerApps"
+        ],
+        "summary": "List the functions for a given Container App Revision.",
+        "description": "Lists the functions available in a specific Container App revision.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "revisionName",
+            "in": "path",
+            "description": "Name of the Container App Revision.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/ContainerAppsFunctionCollection"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List Container App Revision's functions": {
+            "$ref": "./examples/ContainerAppsRevisionFunctions_List.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/revisions/{revisionName}/functions/{functionName}": {
+      "get": {
+        "operationId": "ContainerAppsRevisionFunctions_Get",
+        "tags": [
+          "AzureFunctionsOnContainerApps"
+        ],
+        "summary": "Get a specific function of a Container App Revision.",
+        "description": "Gets the details of a specific function in a Container App revision.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "revisionName",
+            "in": "path",
+            "description": "Name of the Container App Revision.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "functionName",
+            "in": "path",
+            "description": "Name of the Function.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/ContainerAppsFunction"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get Container App Revision's function": {
+            "$ref": "./examples/ContainerAppsRevisionFunctions_Get.json"
+          }
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/revisions/{revisionName}/providers/Microsoft.App/functions/{functionAppName}/invoke": {
+      "post": {
+        "operationId": "FunctionsExtension_InvokeFunctionsHost",
+        "tags": [
+          "FunctionsExtension"
+        ],
+        "summary": "Proxies a Functions host call to the function app backed by the container app.",
+        "description": "Proxies a Functions host call to the function app backed by the container app.",
+        "produces": [
+          "text/plain",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "containerAppName",
+            "in": "path",
+            "description": "Name of the Container App.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "revisionName",
+            "in": "path",
+            "description": "Name of the Container App Revision.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "functionAppName",
+            "in": "path",
+            "description": "Name of the Function.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Invoke Functions host using Functions Extension API": {
+            "$ref": "./examples/FunctionsExtension_Post.json"
           }
         }
       }
@@ -4561,6 +5509,77 @@
         }
       }
     },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/jobs/{jobName}/resume": {
+      "post": {
+        "operationId": "Jobs_Resume",
+        "tags": [
+          "Jobs"
+        ],
+        "summary": "Resumes a suspended job",
+        "description": "Resumes execution for a suspended Container Apps job.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "jobName",
+            "in": "path",
+            "description": "Job Name",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/Job"
+            }
+          },
+          "202": {
+            "description": "Resource operation accepted.",
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "description": "A link to the status monitor"
+              },
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Resume Job": {
+            "$ref": "./examples/Jobs_Resume.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "azure-async-operation",
+          "final-state-schema": "#/definitions/Job"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/jobs/{jobName}/start": {
       "post": {
         "operationId": "Jobs_Start",
@@ -4700,6 +5719,77 @@
         "x-ms-long-running-operation-options": {
           "final-state-via": "location",
           "final-state-schema": "#/definitions/ContainerAppJobExecutions"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/jobs/{jobName}/suspend": {
+      "post": {
+        "operationId": "Jobs_Suspend",
+        "tags": [
+          "Jobs"
+        ],
+        "summary": "Suspends a job",
+        "description": "Suspends execution for a running Container Apps job.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "jobName",
+            "in": "path",
+            "description": "Job Name",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/Job"
+            }
+          },
+          "202": {
+            "description": "Resource operation accepted.",
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "description": "A link to the status monitor"
+              },
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Suspend Job": {
+            "$ref": "./examples/Jobs_Suspend.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "azure-async-operation",
+          "final-state-schema": "#/definitions/Job"
         },
         "x-ms-long-running-operation": true
       }
@@ -5299,6 +6389,66 @@
         }
       }
     },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/checkMigrationEligibility": {
+      "post": {
+        "operationId": "ManagedEnvironments_CheckMigrationEligibility",
+        "tags": [
+          "ManagedEnvironments"
+        ],
+        "summary": "Checks whether a Managed Environment can be migrated to a target mode.",
+        "description": "Checks whether a Managed Environment can be migrated to a target mode.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "environmentName",
+            "in": "path",
+            "description": "Name of the Environment.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The migration eligibility check request.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CheckMigrationEligibilityRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/CheckMigrationEligibilityResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Check migration eligibility for an eligible managed environment": {
+            "$ref": "./examples/ManagedEnvironments_CheckMigrationEligibility.json"
+          },
+          "Check migration eligibility for an ineligible managed environment": {
+            "$ref": "./examples/ManagedEnvironments_CheckMigrationEligibility_Ineligible.json"
+          }
+        }
+      }
+    },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/checkNameAvailability": {
       "post": {
         "operationId": "Namespaces_CheckNameAvailability",
@@ -5636,6 +6786,271 @@
         }
       }
     },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/daprComponents/{componentName}/resiliencyPolicies": {
+      "get": {
+        "operationId": "DaprComponentResiliencyPolicies_List",
+        "tags": [
+          "DaprComponentResiliencyPolicies"
+        ],
+        "summary": "Get the resiliency policies for a Dapr component.",
+        "description": "Lists the resiliency policies configured for a Dapr component.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "environmentName",
+            "in": "path",
+            "description": "Name of the managed environment.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "componentName",
+            "in": "path",
+            "description": "Name of the Dapr Component.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/DaprComponentResiliencyPoliciesCollection"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List Dapr component resiliency policies": {
+            "$ref": "./examples/DaprComponentResiliencyPolicies_List.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/daprComponents/{componentName}/resiliencyPolicies/{name}": {
+      "get": {
+        "operationId": "DaprComponentResiliencyPolicies_Get",
+        "tags": [
+          "DaprComponentResiliencyPolicies"
+        ],
+        "summary": "Get a Dapr component resiliency policy.",
+        "description": "Gets the details of a resiliency policy for a Dapr component.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "environmentName",
+            "in": "path",
+            "description": "Name of the managed environment.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "componentName",
+            "in": "path",
+            "description": "Name of the Dapr Component.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of the Dapr Component Resiliency Policy.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/DaprComponentResiliencyPolicy"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get Dapr component resiliency policy": {
+            "$ref": "./examples/DaprComponentResiliencyPolicies_Get.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "DaprComponentResiliencyPolicies_CreateOrUpdate",
+        "tags": [
+          "DaprComponentResiliencyPolicies"
+        ],
+        "summary": "Creates or updates a Dapr component resiliency policy.",
+        "description": "Creates or updates a resiliency policy for a Dapr component.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "environmentName",
+            "in": "path",
+            "description": "Name of the managed environment.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "componentName",
+            "in": "path",
+            "description": "Name of the Dapr Component.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of the Dapr Component Resiliency Policy.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "daprComponentResiliencyPolicyEnvelope",
+            "in": "body",
+            "description": "Configuration details of the Dapr Component Resiliency Policy.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DaprComponentResiliencyPolicy"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'DaprComponentResiliencyPolicy' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/DaprComponentResiliencyPolicy"
+            }
+          },
+          "201": {
+            "description": "The request has succeeded and a new resource has been created as a result.",
+            "schema": {
+              "$ref": "#/definitions/DaprComponentResiliencyPolicy"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Create or update dapr component resiliency policy with all options": {
+            "$ref": "./examples/DaprComponentResiliencyPolicy_CreateOrUpdate_AllOptions.json"
+          },
+          "Create or update dapr component resiliency policy with outbound policy only": {
+            "$ref": "./examples/DaprComponentResiliencyPolicy_CreateOrUpdate_OutboundOnly.json"
+          },
+          "Create or update dapr component resiliency policy with sparse options": {
+            "$ref": "./examples/DaprComponentResiliencyPolicy_CreateOrUpdate_SparseOptions.json"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DaprComponentResiliencyPolicies_Delete",
+        "tags": [
+          "DaprComponentResiliencyPolicies"
+        ],
+        "summary": "Delete a Dapr component resiliency policy.",
+        "description": "Delete a resiliency policy for a Dapr component.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "environmentName",
+            "in": "path",
+            "description": "Name of the managed environment.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "componentName",
+            "in": "path",
+            "description": "Name of the Dapr Component.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of the Dapr Component Resiliency Policy.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource deleted successfully."
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/DefaultErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Delete dapr component resiliency policy": {
+            "$ref": "./examples/DaprComponentResiliencyPolicies_Delete.json"
+          }
+        }
+      }
+    },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/detectorProperties/rootApi/": {
       "get": {
         "operationId": "ManagedEnvironmentsDiagnostics_GetRoot",
@@ -5785,6 +7200,369 @@
             "$ref": "./examples/ManagedEnvironmentDiagnostics_Get.json"
           }
         }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/dotNetComponents": {
+      "get": {
+        "operationId": "DotNetComponents_List",
+        "tags": [
+          "DotNetComponents"
+        ],
+        "summary": "Get the .NET Components for a managed environment.",
+        "description": "Lists the .NET components in a managed environment.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "environmentName",
+            "in": "path",
+            "description": "Name of the managed environment.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/DotNetComponentsCollection"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List .NET Components": {
+            "$ref": "./examples/DotNetComponents_List.json"
+          },
+          "List .NET Components with ServiceBinds": {
+            "$ref": "./examples/DotNetComponents_List_ServiceBind.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/dotNetComponents/{name}": {
+      "get": {
+        "operationId": "DotNetComponents_Get",
+        "tags": [
+          "DotNetComponents"
+        ],
+        "summary": "Get a .NET Component.",
+        "description": "Gets the details of a .NET component in a managed environment.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "environmentName",
+            "in": "path",
+            "description": "Name of the managed environment.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of the .NET Component.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/DotNetComponent"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get .NET Component": {
+            "$ref": "./examples/DotNetComponents_Get.json"
+          },
+          "Get .NET Component with ServiceBinds": {
+            "$ref": "./examples/DotNetComponents_Get_ServiceBind.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "DotNetComponents_CreateOrUpdate",
+        "tags": [
+          "DotNetComponents"
+        ],
+        "summary": "Creates or updates a .NET Component.",
+        "description": "Creates or updates a .NET Component in a Managed Environment.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "environmentName",
+            "in": "path",
+            "description": "Name of the managed environment.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of the .NET Component.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "dotNetComponentEnvelope",
+            "in": "body",
+            "description": "Configuration details of the .NET Component.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DotNetComponent"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'DotNetComponent' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/DotNetComponent"
+            }
+          },
+          "201": {
+            "description": "Resource 'DotNetComponent' create operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/DotNetComponent"
+            },
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "description": "A link to the status monitor"
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Create or Update .NET Component": {
+            "$ref": "./examples/DotNetComponents_CreateOrUpdate.json"
+          },
+          "Create or Update .NET Component with ServiceBinds": {
+            "$ref": "./examples/DotNetComponents_CreateOrUpdate_ServiceBind.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "azure-async-operation",
+          "final-state-schema": "#/definitions/DotNetComponent"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "patch": {
+        "operationId": "DotNetComponents_Update",
+        "tags": [
+          "DotNetComponents"
+        ],
+        "summary": "Update properties of a .NET Component",
+        "description": "Patches a .NET Component using JSON Merge Patch",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "environmentName",
+            "in": "path",
+            "description": "Name of the managed environment.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of the .NET Component.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "dotNetComponentEnvelope",
+            "in": "body",
+            "description": "Configuration details of the .NET Component.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DotNetComponent"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/DotNetComponent"
+            }
+          },
+          "202": {
+            "description": "Resource update request accepted.",
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "description": "A link to the status monitor."
+              },
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Patch .NET Component": {
+            "$ref": "./examples/DotNetComponents_Patch.json"
+          },
+          "Patch .NET Component with ServiceBinds": {
+            "$ref": "./examples/DotNetComponents_Patch_ServiceBind.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location",
+          "final-state-schema": "#/definitions/DotNetComponent"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "delete": {
+        "operationId": "DotNetComponents_Delete",
+        "tags": [
+          "DotNetComponents"
+        ],
+        "summary": "Delete a .NET Component.",
+        "description": "Deletes a .NET component from a managed environment.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "environmentName",
+            "in": "path",
+            "description": "Name of the managed environment.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of the .NET Component.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource deletion accepted.",
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "description": "A link to the status monitor."
+              },
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Delete .NET Component": {
+            "$ref": "./examples/DotNetComponents_Delete.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
       }
     },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/getAuthtoken": {
@@ -7365,6 +9143,65 @@
         }
       }
     },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/privateLinkResources/{privateLinkResourceName}": {
+      "get": {
+        "operationId": "ManagedEnvironmentPrivateLinkResources_Get",
+        "tags": [
+          "ManagedEnvironments",
+          "PrivateLinkResources"
+        ],
+        "summary": "Get a private link resource for a given managed environment.",
+        "description": "Gets the details of a private link resource supported by a managed environment.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "environmentName",
+            "in": "path",
+            "description": "Name of the managed environment.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[-\\w\\._\\(\\)]+$"
+          },
+          {
+            "name": "privateLinkResourceName",
+            "in": "path",
+            "description": "The name of the private link associated with the Azure resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[a-z][a-zA-Z0-9]*$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkResource"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get a Private Link Resource by Managed Environment": {
+            "$ref": "./examples/ManagedEnvironmentPrivateLinkResources_Get.json"
+          }
+        }
+      }
+    },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages": {
       "get": {
         "operationId": "ManagedEnvironmentsStorages_List",
@@ -7694,6 +9531,544 @@
         "x-ms-pageable": {
           "nextLinkName": "nextLink"
         }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/sandboxGroups": {
+      "get": {
+        "operationId": "SandboxGroups_ListByResourceGroup",
+        "tags": [
+          "SandboxGroups"
+        ],
+        "description": "Get all SandboxGroups in a resource group.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/SandboxGroupListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List SandboxGroups by resource group": {
+            "$ref": "./examples/SandboxGroups_ListByResourceGroup.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/sandboxGroups/{sandboxGroupName}": {
+      "get": {
+        "operationId": "SandboxGroups_Get",
+        "tags": [
+          "SandboxGroups"
+        ],
+        "description": "Get the properties of a SandboxGroup.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "sandboxGroupName",
+            "in": "path",
+            "description": "The name of the SandboxGroup",
+            "required": true,
+            "type": "string",
+            "pattern": "^(?![.-])[A-Za-z0-9-]{1,32}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/SandboxGroup"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get a SandboxGroup": {
+            "$ref": "./examples/SandboxGroups_Get.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "SandboxGroups_CreateOrUpdate",
+        "tags": [
+          "SandboxGroups"
+        ],
+        "description": "Create or update a SandboxGroup.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "sandboxGroupName",
+            "in": "path",
+            "description": "The name of the SandboxGroup",
+            "required": true,
+            "type": "string",
+            "pattern": "^(?![.-])[A-Za-z0-9-]{1,32}$"
+          },
+          {
+            "name": "resource",
+            "in": "body",
+            "description": "Resource create parameters.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SandboxGroup"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'SandboxGroup' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/SandboxGroup"
+            }
+          },
+          "201": {
+            "description": "Resource 'SandboxGroup' create operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/SandboxGroup"
+            },
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "description": "A link to the status monitor"
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Create or update a SandboxGroup": {
+            "$ref": "./examples/SandboxGroups_CreateOrUpdate.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "azure-async-operation",
+          "final-state-schema": "#/definitions/SandboxGroup"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "patch": {
+        "operationId": "SandboxGroups_Update",
+        "tags": [
+          "SandboxGroups"
+        ],
+        "description": "Patches a SandboxGroup.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "sandboxGroupName",
+            "in": "path",
+            "description": "The name of the SandboxGroup",
+            "required": true,
+            "type": "string",
+            "pattern": "^(?![.-])[A-Za-z0-9-]{1,32}$"
+          },
+          {
+            "name": "properties",
+            "in": "body",
+            "description": "The resource properties to be updated.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SandboxGroupPatch"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/SandboxGroup"
+            }
+          },
+          "202": {
+            "description": "Resource update request accepted.",
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "format": "uri",
+                "description": "A link to the status monitor"
+              },
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Update a SandboxGroup": {
+            "$ref": "./examples/SandboxGroups_Update.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "delete": {
+        "operationId": "SandboxGroups_Delete",
+        "tags": [
+          "SandboxGroups"
+        ],
+        "description": "Delete a SandboxGroup.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "sandboxGroupName",
+            "in": "path",
+            "description": "The name of the SandboxGroup",
+            "required": true,
+            "type": "string",
+            "pattern": "^(?![.-])[A-Za-z0-9-]{1,32}$"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource deletion accepted.",
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "format": "uri",
+                "description": "A link to the status monitor"
+              },
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              }
+            }
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Delete a SandboxGroup": {
+            "$ref": "./examples/SandboxGroups_Delete.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/sandboxGroups/{sandboxGroupName}/vnetConnections": {
+      "get": {
+        "operationId": "VnetConnections_ListBySandboxGroup",
+        "tags": [
+          "VnetConnections"
+        ],
+        "description": "List all VnetConnections in the specified SandboxGroup.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "sandboxGroupName",
+            "in": "path",
+            "description": "The name of the SandboxGroup",
+            "required": true,
+            "type": "string",
+            "pattern": "^(?![.-])[A-Za-z0-9-]{1,32}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/VnetConnectionListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List VnetConnections by SandboxGroup": {
+            "$ref": "./examples/VnetConnections_ListBySandboxGroup.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/sandboxGroups/{sandboxGroupName}/vnetConnections/{vnetConnectionName}": {
+      "get": {
+        "operationId": "VnetConnections_Get",
+        "tags": [
+          "VnetConnections"
+        ],
+        "description": "Get the properties of a VnetConnection.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "sandboxGroupName",
+            "in": "path",
+            "description": "The name of the SandboxGroup",
+            "required": true,
+            "type": "string",
+            "pattern": "^(?![.-])[A-Za-z0-9-]{1,32}$"
+          },
+          {
+            "name": "vnetConnectionName",
+            "in": "path",
+            "description": "The name of the VnetConnection",
+            "required": true,
+            "type": "string",
+            "pattern": "^(?![.-])[A-Za-z0-9-]{1,32}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/VnetConnection"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get a VnetConnection": {
+            "$ref": "./examples/VnetConnections_Get.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "VnetConnections_CreateOrUpdate",
+        "tags": [
+          "VnetConnections"
+        ],
+        "description": "Create or update a VnetConnection.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "sandboxGroupName",
+            "in": "path",
+            "description": "The name of the SandboxGroup",
+            "required": true,
+            "type": "string",
+            "pattern": "^(?![.-])[A-Za-z0-9-]{1,32}$"
+          },
+          {
+            "name": "vnetConnectionName",
+            "in": "path",
+            "description": "The name of the VnetConnection",
+            "required": true,
+            "type": "string",
+            "pattern": "^(?![.-])[A-Za-z0-9-]{1,32}$"
+          },
+          {
+            "name": "resource",
+            "in": "body",
+            "description": "Resource create parameters.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VnetConnection"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'VnetConnection' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/VnetConnection"
+            }
+          },
+          "201": {
+            "description": "Resource 'VnetConnection' create operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/VnetConnection"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Create or update a VnetConnection": {
+            "$ref": "./examples/VnetConnections_CreateOrUpdate.json"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "VnetConnections_Delete",
+        "tags": [
+          "VnetConnections"
+        ],
+        "description": "Delete a VnetConnection.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "sandboxGroupName",
+            "in": "path",
+            "description": "The name of the SandboxGroup",
+            "required": true,
+            "type": "string",
+            "pattern": "^(?![.-])[A-Za-z0-9-]{1,32}$"
+          },
+          {
+            "name": "vnetConnectionName",
+            "in": "path",
+            "description": "The name of the VnetConnection",
+            "required": true,
+            "type": "string",
+            "pattern": "^(?![.-])[A-Za-z0-9-]{1,32}$"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource deletion accepted.",
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "format": "uri",
+                "description": "A link to the status monitor"
+              },
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              }
+            }
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Delete a VnetConnection": {
+            "$ref": "./examples/VnetConnections_Delete.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
       }
     },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/sessionPools": {
@@ -8126,6 +10501,18 @@
         }
       }
     },
+    "AppInsightsConfiguration": {
+      "type": "object",
+      "description": "Configuration of Application Insights",
+      "properties": {
+        "connectionString": {
+          "type": "string",
+          "format": "password",
+          "description": "Application Insights connection string",
+          "x-ms-secret": true
+        }
+      }
+    },
     "AppLogsConfiguration": {
       "type": "object",
       "description": "Configuration of application logs",
@@ -8290,6 +10677,66 @@
           "description": "The RuntimeVersion of the Authentication / Authorization feature in use for the current app.\nThe setting in this value can control the behavior of certain features in the Authentication / Authorization module."
         }
       }
+    },
+    "AvailableEnvironmentMode": {
+      "type": "object",
+      "description": "An environment mode available to the subscription.",
+      "properties": {
+        "location": {
+          "type": "string",
+          "description": "The Azure region in which the environment mode is available.",
+          "x-ms-mutability": [
+            "read",
+            "create"
+          ]
+        },
+        "properties": {
+          "$ref": "#/definitions/AvailableEnvironmentModeProperties",
+          "description": "The environment mode details."
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+        }
+      ]
+    },
+    "AvailableEnvironmentModeProperties": {
+      "type": "object",
+      "description": "Details that describe an available environment mode.",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "The display name of the environment mode.",
+          "readOnly": true
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the environment mode.",
+          "readOnly": true
+        }
+      }
+    },
+    "AvailableEnvironmentModesCollection": {
+      "type": "object",
+      "description": "Collection of environment modes available in the location.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The AvailableEnvironmentMode items on this page",
+          "items": {
+            "$ref": "#/definitions/AvailableEnvironmentMode"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
     },
     "AvailableOperations": {
       "type": "object",
@@ -8724,11 +11171,20 @@
         "sasUrlSettingName": {
           "type": "string",
           "description": "The name of the app secrets containing the SAS URL of the blob storage containing the tokens."
+        },
+        "blobContainerUri": {
+          "type": "string",
+          "description": "The URI of the blob storage containing the tokens. Should not be used along with sasUrlSettingName."
+        },
+        "clientId": {
+          "type": "string",
+          "description": "The Client ID of a User-Assigned Managed Identity. Should not be used along with managedIdentityResourceId."
+        },
+        "managedIdentityResourceId": {
+          "type": "string",
+          "description": "The Resource ID of a User-Assigned Managed Identity. Should not be used along with clientId."
         }
-      },
-      "required": [
-        "sasUrlSettingName"
-      ]
+      }
     },
     "Certificate": {
       "type": "object",
@@ -8924,6 +11380,58 @@
           }
         ]
       }
+    },
+    "CheckMigrationEligibilityRequest": {
+      "type": "object",
+      "description": "Request body for checking whether a managed environment can migrate to a target mode.",
+      "properties": {
+        "targetMode": {
+          "type": "string",
+          "description": "The target environment mode to check migration eligibility against."
+        }
+      },
+      "required": [
+        "targetMode"
+      ]
+    },
+    "CheckMigrationEligibilityResponse": {
+      "type": "object",
+      "description": "Result of a read-only managed environment migration eligibility check.",
+      "properties": {
+        "isEligible": {
+          "type": "boolean",
+          "description": "Whether the managed environment can migrate to the requested target mode."
+        },
+        "environmentName": {
+          "type": "string",
+          "description": "The name of the managed environment that was checked."
+        },
+        "currentMode": {
+          "type": "string",
+          "description": "The current mode of the managed environment."
+        },
+        "targetMode": {
+          "type": "string",
+          "description": "The requested target mode."
+        },
+        "failureReasons": {
+          "type": "array",
+          "description": "The blocking reasons preventing migration. Empty when the managed environment is eligible.",
+          "items": {
+            "$ref": "#/definitions/MigrationEligibilityFailureReason"
+          },
+          "x-ms-identifiers": [
+            "code"
+          ]
+        }
+      },
+      "required": [
+        "isEligible",
+        "environmentName",
+        "currentMode",
+        "targetMode",
+        "failureReasons"
+      ]
     },
     "ClientRegistration": {
       "type": "object",
@@ -9428,6 +11936,20 @@
         "value"
       ]
     },
+    "ContainerAppNetworkingConfiguration": {
+      "type": "object",
+      "description": "Networking configuration for a Container App. Only supported for Container Apps deployed into an Express managed environment.",
+      "properties": {
+        "outboundVnetSubnetId": {
+          "type": "string",
+          "description": "Resource ID of a subnet used for outbound (egress) traffic from this Container App. Only supported for Container Apps in an Express managed environment. Mutually exclusive with the environment-level VNet configuration and immutable after the Container App is created.",
+          "x-ms-mutability": [
+            "read",
+            "create"
+          ]
+        }
+      }
+    },
     "ContainerAppProbe": {
       "type": "object",
       "description": "Probe describes a health check to be performed against a container to determine whether it is alive or ready to receive traffic.",
@@ -9577,6 +12099,10 @@
             "read",
             "create"
           ]
+        },
+        "networking": {
+          "$ref": "#/definitions/ContainerAppNetworkingConfiguration",
+          "description": "Networking configuration for the Container App."
         },
         "workloadProfileName": {
           "type": "string",
@@ -9764,6 +12290,122 @@
           "type": "string",
           "description": "Azure Key Vault URL pointing to the secret referenced by the container app.",
           "readOnly": true
+        }
+      }
+    },
+    "ContainerAppsFunction": {
+      "type": "object",
+      "description": "Container App Function.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/ContainerAppsFunctionProperties",
+          "description": "Function resource specific properties",
+          "x-ms-client-flatten": true
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+        }
+      ]
+    },
+    "ContainerAppsFunctionCollection": {
+      "type": "object",
+      "description": "Container App Functions collection ARM resource.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The ContainerAppsFunction items on this page",
+          "items": {
+            "$ref": "#/definitions/ContainerAppsFunction"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "ContainerAppsFunctionProperties": {
+      "type": "object",
+      "description": "Function resource specific properties",
+      "properties": {
+        "invokeUrlTemplate": {
+          "type": "string",
+          "format": "uri",
+          "description": "Invoke URL for the function.",
+          "readOnly": true
+        },
+        "triggerType": {
+          "type": "string",
+          "description": "Trigger type of the function.",
+          "readOnly": true
+        },
+        "language": {
+          "type": "string",
+          "description": "Programming language of the function.",
+          "readOnly": true
+        },
+        "isDisabled": {
+          "type": "boolean",
+          "description": "Indicates whether the function is disabled. This property is deprecated; use `state` instead.",
+          "readOnly": true
+        },
+        "state": {
+          "$ref": "#/definitions/ContainerAppsFunctionState",
+          "description": "The state of the function.",
+          "readOnly": true
+        }
+      }
+    },
+    "ContainerAppsFunctionState": {
+      "type": "string",
+      "description": "The state of a Container App function.",
+      "enum": [
+        "Enabled",
+        "Disabled"
+      ],
+      "x-ms-enum": {
+        "name": "ContainerAppsFunctionState",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Enabled",
+            "value": "Enabled",
+            "description": "The function is enabled."
+          },
+          {
+            "name": "Disabled",
+            "value": "Disabled",
+            "description": "The function is disabled."
+          }
+        ]
+      }
+    },
+    "ContainerExecutionStatus": {
+      "type": "object",
+      "description": "Container Apps Job execution container status. Contains status code and reason",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Container Name."
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Exit code"
+        },
+        "additionalInformation": {
+          "type": "string",
+          "description": "Additional information for the container status"
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the container"
         }
       }
     },
@@ -10398,6 +13040,138 @@
         ]
       }
     },
+    "DaprComponentResiliencyPoliciesCollection": {
+      "type": "object",
+      "description": "Dapr Component Resiliency Policies ARM resource.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The DaprComponentResiliencyPolicy items on this page",
+          "items": {
+            "$ref": "#/definitions/DaprComponentResiliencyPolicy"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "DaprComponentResiliencyPolicy": {
+      "type": "object",
+      "description": "Dapr Component Resiliency Policy.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/DaprComponentResiliencyPolicyProperties",
+          "description": "Dapr Component Resiliency Policy resource specific properties",
+          "x-ms-client-flatten": true
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+        }
+      ]
+    },
+    "DaprComponentResiliencyPolicyCircuitBreakerPolicyConfiguration": {
+      "type": "object",
+      "description": "Dapr Component Resiliency Policy Circuit Breaker Policy Configuration.",
+      "properties": {
+        "consecutiveErrors": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The number of consecutive errors before the circuit is opened."
+        },
+        "timeoutInSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The interval in seconds until a retry attempt is made after the circuit is opened."
+        },
+        "intervalInSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The optional interval in seconds after which the error count resets to 0. An interval of 0 will never reset. If not specified, the timeoutInSeconds value will be used."
+        }
+      }
+    },
+    "DaprComponentResiliencyPolicyConfiguration": {
+      "type": "object",
+      "description": "Dapr Component Resiliency Policy Configuration.",
+      "properties": {
+        "httpRetryPolicy": {
+          "$ref": "#/definitions/DaprComponentResiliencyPolicyHttpRetryPolicyConfiguration",
+          "description": "The optional HTTP retry policy configuration"
+        },
+        "timeoutPolicy": {
+          "$ref": "#/definitions/DaprComponentResiliencyPolicyTimeoutPolicyConfiguration",
+          "description": "The optional timeout policy configuration"
+        },
+        "circuitBreakerPolicy": {
+          "$ref": "#/definitions/DaprComponentResiliencyPolicyCircuitBreakerPolicyConfiguration",
+          "description": "The optional circuit breaker policy configuration"
+        }
+      }
+    },
+    "DaprComponentResiliencyPolicyHttpRetryBackOffConfiguration": {
+      "type": "object",
+      "description": "Dapr Component Resiliency Policy HTTP Retry Backoff Configuration.",
+      "properties": {
+        "initialDelayInMilliseconds": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The optional initial delay in milliseconds before an operation is retried"
+        },
+        "maxIntervalInMilliseconds": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The optional maximum time interval in milliseconds between retry attempts"
+        }
+      }
+    },
+    "DaprComponentResiliencyPolicyHttpRetryPolicyConfiguration": {
+      "type": "object",
+      "description": "Dapr Component Resiliency Policy HTTP Retry Policy Configuration.",
+      "properties": {
+        "maxRetries": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The optional maximum number of retries"
+        },
+        "retryBackOff": {
+          "$ref": "#/definitions/DaprComponentResiliencyPolicyHttpRetryBackOffConfiguration",
+          "description": "The optional retry backoff configuration"
+        }
+      }
+    },
+    "DaprComponentResiliencyPolicyProperties": {
+      "type": "object",
+      "description": "Dapr Component Resiliency Policy resource specific properties",
+      "properties": {
+        "inboundPolicy": {
+          "$ref": "#/definitions/DaprComponentResiliencyPolicyConfiguration",
+          "description": "The optional inbound component resiliency policy configuration"
+        },
+        "outboundPolicy": {
+          "$ref": "#/definitions/DaprComponentResiliencyPolicyConfiguration",
+          "description": "The optional outbound component resiliency policy configuration"
+        }
+      }
+    },
+    "DaprComponentResiliencyPolicyTimeoutPolicyConfiguration": {
+      "type": "object",
+      "description": "Dapr Component Resiliency Policy Timeout Policy Configuration.",
+      "properties": {
+        "responseTimeoutInSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The optional response timeout in seconds"
+        }
+      }
+    },
     "DaprComponentsCollection": {
       "type": "object",
       "description": "Dapr Components ARM resource.",
@@ -10485,6 +13259,22 @@
         "value"
       ]
     },
+    "DataDogConfiguration": {
+      "type": "object",
+      "description": "Configuration of datadog",
+      "properties": {
+        "site": {
+          "type": "string",
+          "description": "The data dog site"
+        },
+        "key": {
+          "type": "string",
+          "format": "password",
+          "description": "The data dog api key",
+          "x-ms-secret": true
+        }
+      }
+    },
     "DefaultAuthorizationPolicy": {
       "type": "object",
       "description": "The configuration settings of the Azure Active Directory default authorization policy.",
@@ -10567,6 +13357,26 @@
           "type": "string",
           "description": "Detailed error description and debugging information.",
           "readOnly": true
+        }
+      }
+    },
+    "DestinationsConfiguration": {
+      "type": "object",
+      "description": "Configuration of Open Telemetry destinations",
+      "properties": {
+        "dataDogConfiguration": {
+          "$ref": "#/definitions/DataDogConfiguration",
+          "description": "Open telemetry datadog destination configuration"
+        },
+        "otlpConfigurations": {
+          "type": "array",
+          "description": "Open telemetry otlp configurations",
+          "items": {
+            "$ref": "#/definitions/OtlpConfiguration"
+          },
+          "x-ms-identifiers": [
+            "name"
+          ]
         }
       }
     },
@@ -10863,6 +13673,167 @@
         ]
       }
     },
+    "DotNetComponent": {
+      "type": "object",
+      "description": ".NET Component.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/DotNetComponentProperties",
+          "description": ".NET Component resource specific properties",
+          "x-ms-client-flatten": true
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+        }
+      ]
+    },
+    "DotNetComponentConfigurationProperty": {
+      "type": "object",
+      "description": "Configuration properties for a .NET Component",
+      "properties": {
+        "propertyName": {
+          "type": "string",
+          "description": "The name of the property"
+        },
+        "value": {
+          "type": "string",
+          "description": "The value of the property"
+        }
+      }
+    },
+    "DotNetComponentProperties": {
+      "type": "object",
+      "description": ".NET Component resource specific properties",
+      "properties": {
+        "componentType": {
+          "$ref": "#/definitions/DotNetComponentType",
+          "description": "Type of the .NET Component."
+        },
+        "provisioningState": {
+          "$ref": "#/definitions/DotNetComponentProvisioningState",
+          "description": "Provisioning state of the .NET Component.",
+          "readOnly": true
+        },
+        "configurations": {
+          "type": "array",
+          "description": "List of .NET Components configuration properties",
+          "items": {
+            "$ref": "#/definitions/DotNetComponentConfigurationProperty"
+          },
+          "x-ms-identifiers": [
+            "propertyName"
+          ]
+        },
+        "serviceBinds": {
+          "type": "array",
+          "description": "List of .NET Components that are bound to the .NET component",
+          "items": {
+            "$ref": "#/definitions/DotNetComponentServiceBind"
+          },
+          "x-ms-identifiers": [
+            "name"
+          ]
+        }
+      }
+    },
+    "DotNetComponentProvisioningState": {
+      "type": "string",
+      "description": "Provisioning state of the .NET Component.",
+      "enum": [
+        "Succeeded",
+        "Failed",
+        "Canceled",
+        "Deleting",
+        "InProgress"
+      ],
+      "x-ms-enum": {
+        "name": "DotNetComponentProvisioningState",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Succeeded",
+            "value": "Succeeded",
+            "description": "The .NET component was provisioned successfully."
+          },
+          {
+            "name": "Failed",
+            "value": "Failed",
+            "description": "The .NET component failed to provision."
+          },
+          {
+            "name": "Canceled",
+            "value": "Canceled",
+            "description": "Provisioning of the .NET component was canceled."
+          },
+          {
+            "name": "Deleting",
+            "value": "Deleting",
+            "description": "The .NET component is being deleted."
+          },
+          {
+            "name": "InProgress",
+            "value": "InProgress",
+            "description": "The .NET component is being provisioned."
+          }
+        ]
+      }
+    },
+    "DotNetComponentServiceBind": {
+      "type": "object",
+      "description": "Configuration to bind a .NET Component to another .NET Component",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the service bind"
+        },
+        "serviceId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "Resource id of the target service"
+        }
+      }
+    },
+    "DotNetComponentType": {
+      "type": "string",
+      "description": "Type of the .NET Component.",
+      "enum": [
+        "AspireDashboard"
+      ],
+      "x-ms-enum": {
+        "name": "DotNetComponentType",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "AspireDashboard",
+            "value": "AspireDashboard",
+            "description": "An Aspire dashboard component."
+          }
+        ]
+      }
+    },
+    "DotNetComponentsCollection": {
+      "type": "object",
+      "description": ".NET Components ARM resource.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The DotNetComponent items on this page",
+          "items": {
+            "$ref": "#/definitions/DotNetComponent"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
     "DynamicPoolConfiguration": {
       "type": "object",
       "description": "Dynamic pool configuration.",
@@ -11058,6 +14029,22 @@
         "message": {
           "type": "string",
           "description": "Any details of the error."
+        }
+      }
+    },
+    "ExecutionStatus": {
+      "type": "object",
+      "description": "Container Apps Job execution status.",
+      "properties": {
+        "replicas": {
+          "type": "array",
+          "description": "Replicas in the execution.",
+          "items": {
+            "$ref": "#/definitions/ReplicaExecutionStatus"
+          },
+          "x-ms-identifiers": [
+            "name"
+          ]
         }
       }
     },
@@ -11269,6 +14256,20 @@
         "validation": {
           "$ref": "#/definitions/AllowedAudiencesValidation",
           "description": "The configuration settings of the Azure Active Directory token validation flow."
+        }
+      }
+    },
+    "Header": {
+      "type": "object",
+      "description": "Header of otlp configuration",
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "The key of otlp configuration header"
+        },
+        "value": {
+          "type": "string",
+          "description": "The value of otlp configuration header"
         }
       }
     },
@@ -12384,6 +15385,20 @@
         "template": {
           "$ref": "#/definitions/JobExecutionTemplate",
           "description": "Job's execution container."
+        },
+        "detailedStatus": {
+          "$ref": "#/definitions/ExecutionStatus",
+          "description": "Detailed status of the job execution."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for the current condition of job execution.",
+          "readOnly": true
+        },
+        "message": {
+          "type": "string",
+          "description": "Human readable message indicating details about the current condition of the job execution.",
+          "readOnly": true
         }
       }
     },
@@ -12534,6 +15549,11 @@
           "description": "Provisioning state of the Container Apps Job.",
           "readOnly": true
         },
+        "runningState": {
+          "$ref": "#/definitions/JobRunningState",
+          "description": "Current running state of the job",
+          "readOnly": true
+        },
         "environmentId": {
           "type": "string",
           "description": "Resource ID of environment.",
@@ -12607,6 +15627,36 @@
             "name": "Deleting",
             "value": "Deleting",
             "description": "Deleting"
+          }
+        ]
+      }
+    },
+    "JobRunningState": {
+      "type": "string",
+      "description": "Current running state of the job",
+      "enum": [
+        "Ready",
+        "Progressing",
+        "Suspended"
+      ],
+      "x-ms-enum": {
+        "name": "JobRunningState",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Ready",
+            "value": "Ready",
+            "description": "The job is ready to run."
+          },
+          {
+            "name": "Progressing",
+            "value": "Progressing",
+            "description": "The job is transitioning to its target state."
+          },
+          {
+            "name": "Suspended",
+            "value": "Suspended",
+            "description": "The job is suspended."
           }
         ]
       }
@@ -12800,6 +15850,85 @@
         ]
       }
     },
+    "LabelHistory": {
+      "type": "object",
+      "description": "Container App Label History.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/LabelHistoryProperties",
+          "description": "Container App Label History resource specific properties"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+        }
+      ]
+    },
+    "LabelHistoryCollection": {
+      "type": "object",
+      "description": "Container App Label History collection ARM resource.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The LabelHistory items on this page",
+          "items": {
+            "$ref": "#/definitions/LabelHistory"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "LabelHistoryProperties": {
+      "type": "object",
+      "description": "Container App Label History resource specific properties",
+      "properties": {
+        "records": {
+          "type": "array",
+          "description": "List of label history records.",
+          "items": {
+            "$ref": "#/definitions/LabelHistoryRecordItem"
+          },
+          "readOnly": true,
+          "x-ms-identifiers": []
+        }
+      }
+    },
+    "LabelHistoryRecordItem": {
+      "type": "object",
+      "description": "Container App Label History Item resource specific properties",
+      "properties": {
+        "revision": {
+          "type": "string",
+          "description": "Container App revision name that label was applied to.",
+          "readOnly": true
+        },
+        "start": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp describing when the label was applied to the revision.",
+          "readOnly": true
+        },
+        "stop": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp describing when the label was removed from the revision. Only meaningful when the label is currently applied to the revision.",
+          "readOnly": true
+        },
+        "status": {
+          "$ref": "#/definitions/Status",
+          "description": "Status of the label history record.",
+          "readOnly": true
+        }
+      }
+    },
     "LifecycleConfiguration": {
       "type": "object",
       "description": "The lifecycle configuration properties of a session in the dynamic session pool",
@@ -12989,6 +16118,19 @@
         }
       }
     },
+    "LogsConfiguration": {
+      "type": "object",
+      "description": "Configuration of Open Telemetry logs",
+      "properties": {
+        "destinations": {
+          "type": "array",
+          "description": "Open telemetry logs destinations",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "MaintenanceConfigurationCollection": {
       "type": "object",
       "description": "The response of list maintenance configuration resources.",
@@ -13158,6 +16300,42 @@
         }
       ]
     },
+    "ManagedEnvironmentMode": {
+      "type": "string",
+      "description": "Mode of the managed environment.",
+      "enum": [
+        "ConsumptionOnly",
+        "WorkloadProfiles",
+        "Express",
+        "Archived"
+      ],
+      "x-ms-enum": {
+        "name": "ManagedEnvironmentMode",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "ConsumptionOnly",
+            "value": "ConsumptionOnly",
+            "description": "The environment supports consumption-only workloads."
+          },
+          {
+            "name": "WorkloadProfiles",
+            "value": "WorkloadProfiles",
+            "description": "The environment supports workload profiles."
+          },
+          {
+            "name": "Express",
+            "value": "Express",
+            "description": "The environment uses the Express mode."
+          },
+          {
+            "name": "Archived",
+            "value": "Archived",
+            "description": "The environment is archived."
+          }
+        ]
+      }
+    },
     "ManagedEnvironmentProperties": {
       "type": "object",
       "description": "Managed environment resource specific properties",
@@ -13201,6 +16379,14 @@
         "appLogsConfiguration": {
           "$ref": "#/definitions/AppLogsConfiguration",
           "description": "Cluster configuration which enables the log daemon to export app logs to configured destination"
+        },
+        "appInsightsConfiguration": {
+          "$ref": "#/definitions/AppInsightsConfiguration",
+          "description": "Environment level Application Insights configuration"
+        },
+        "openTelemetryConfiguration": {
+          "$ref": "#/definitions/OpenTelemetryConfiguration",
+          "description": "Environment Open Telemetry configuration"
         },
         "zoneRedundant": {
           "type": "boolean",
@@ -13256,6 +16442,10 @@
         "ingressConfiguration": {
           "$ref": "#/definitions/IngressConfiguration",
           "description": "Ingress configuration for the Managed Environment."
+        },
+        "environmentMode": {
+          "$ref": "#/definitions/ManagedEnvironmentMode",
+          "description": "Mode of the environment. Allowed Values: 'ConsumptionOnly', 'WorkloadProfiles', 'Express', 'Archived'."
         },
         "privateEndpointConnections": {
           "type": "array",
@@ -13405,6 +16595,41 @@
         "identity"
       ]
     },
+    "MetricsConfiguration": {
+      "type": "object",
+      "description": "Configuration of Open Telemetry metrics",
+      "properties": {
+        "includeKeda": {
+          "type": "boolean",
+          "description": "Boolean indicating if including keda metrics"
+        },
+        "destinations": {
+          "type": "array",
+          "description": "Open telemetry metrics destinations",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "MigrationEligibilityFailureReason": {
+      "type": "object",
+      "description": "A blocking reason that prevents a managed environment migration.",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "The error code identifying the blocker."
+        },
+        "message": {
+          "type": "string",
+          "description": "A human-readable description of the blocker."
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ]
+    },
     "Mtls": {
       "type": "object",
       "description": "Configuration properties for mutual TLS authentication",
@@ -13528,6 +16753,28 @@
         }
       }
     },
+    "OpenTelemetryConfiguration": {
+      "type": "object",
+      "description": "Configuration of Open Telemetry",
+      "properties": {
+        "destinationsConfiguration": {
+          "$ref": "#/definitions/DestinationsConfiguration",
+          "description": "Open telemetry destinations configuration"
+        },
+        "tracesConfiguration": {
+          "$ref": "#/definitions/TracesConfiguration",
+          "description": "Open telemetry trace configuration"
+        },
+        "logsConfiguration": {
+          "$ref": "#/definitions/LogsConfiguration",
+          "description": "Open telemetry logs configuration"
+        },
+        "metricsConfiguration": {
+          "$ref": "#/definitions/MetricsConfiguration",
+          "description": "Open telemetry metrics configuration"
+        }
+      }
+    },
     "OperationDetail": {
       "type": "object",
       "description": "Operation detail payload",
@@ -13569,6 +16816,34 @@
         "description": {
           "type": "string",
           "description": "Localized friendly description for the operation"
+        }
+      }
+    },
+    "OtlpConfiguration": {
+      "type": "object",
+      "description": "Configuration of otlp",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of otlp configuration"
+        },
+        "endpoint": {
+          "type": "string",
+          "description": "The endpoint of otlp configuration"
+        },
+        "insecure": {
+          "type": "boolean",
+          "description": "Boolean indicating if otlp configuration is insecure"
+        },
+        "headers": {
+          "type": "array",
+          "description": "Headers of otlp configurations",
+          "items": {
+            "$ref": "#/definitions/Header"
+          },
+          "x-ms-identifiers": [
+            "key"
+          ]
         }
       }
     },
@@ -14024,6 +17299,31 @@
           "type": "string",
           "description": "Container exec endpoint",
           "readOnly": true
+        },
+        "debugEndpoint": {
+          "type": "string",
+          "description": "Container debug endpoint",
+          "readOnly": true
+        }
+      }
+    },
+    "ReplicaExecutionStatus": {
+      "type": "object",
+      "description": "Container Apps Job execution replica status.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Replica Name."
+        },
+        "containers": {
+          "type": "array",
+          "description": "Containers in the execution replica",
+          "items": {
+            "$ref": "#/definitions/ContainerExecutionStatus"
+          },
+          "x-ms-identifiers": [
+            "name"
+          ]
         }
       }
     },
@@ -14329,6 +17629,152 @@
         }
       }
     },
+    "SandboxGroup": {
+      "type": "object",
+      "description": "A SandboxGroup resource, representing a group of sandboxes that share configuration defaults and quotas.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/SandboxGroupProperties",
+          "description": "The resource-specific properties for this resource."
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+        }
+      ]
+    },
+    "SandboxGroupListResult": {
+      "type": "object",
+      "description": "The response of a SandboxGroup list operation.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The SandboxGroup items on this page",
+          "items": {
+            "$ref": "#/definitions/SandboxGroup"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "SandboxGroupPatch": {
+      "type": "object",
+      "description": "A SandboxGroup resource for use in patch requests.",
+      "properties": {
+        "tags": {
+          "type": "object",
+          "description": "Resource tags.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "$ref": "#/definitions/SandboxGroupPatchProperties",
+          "description": "SandboxGroup properties that can be updated."
+        }
+      }
+    },
+    "SandboxGroupPatchProperties": {
+      "type": "object",
+      "description": "SandboxGroup resource specific properties for patch requests.",
+      "properties": {
+        "environmentId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The resource ID of the Azure Container Apps environment to link to the sandbox group. A sandbox group can be linked after creation, but the link cannot then be changed or removed. For subsequent create-or-update (PUT) requests, specify the same environment ID; omitting or changing it returns 409 Conflict. Omitting it from an update (PATCH) request leaves the existing link unchanged.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.App/managedEnvironments"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "SandboxGroupProperties": {
+      "type": "object",
+      "description": "SandboxGroup resource specific properties.",
+      "properties": {
+        "environmentId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The resource ID of the Azure Container Apps environment to link to the sandbox group. A sandbox group can be linked after creation, but the link cannot then be changed or removed. For subsequent create-or-update (PUT) requests, specify the same environment ID; omitting or changing it returns 409 Conflict. Omitting it from an update (PATCH) request leaves the existing link unchanged.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.App/managedEnvironments"
+              }
+            ]
+          }
+        },
+        "defaultDomain": {
+          "type": "string",
+          "description": "The default domain of the linked Azure Container Apps environment. Sandbox endpoints use subdomains of this domain. This read-only property is populated by the service and is omitted when no environment is linked.",
+          "readOnly": true
+        },
+        "provisioningState": {
+          "$ref": "#/definitions/SandboxGroupProvisioningState",
+          "readOnly": true
+        }
+      }
+    },
+    "SandboxGroupProvisioningState": {
+      "type": "string",
+      "description": "Provisioning state of the SandboxGroup.",
+      "enum": [
+        "Succeeded",
+        "Failed",
+        "Canceled",
+        "InProgress",
+        "Updating",
+        "Deleting"
+      ],
+      "x-ms-enum": {
+        "name": "SandboxGroupProvisioningState",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Succeeded",
+            "value": "Succeeded",
+            "description": "Resource has been created."
+          },
+          {
+            "name": "Failed",
+            "value": "Failed",
+            "description": "Resource creation failed."
+          },
+          {
+            "name": "Canceled",
+            "value": "Canceled",
+            "description": "Resource creation was canceled."
+          },
+          {
+            "name": "InProgress",
+            "value": "InProgress",
+            "description": "The resource is being provisioned."
+          },
+          {
+            "name": "Updating",
+            "value": "Updating",
+            "description": "The resource is being updated."
+          },
+          {
+            "name": "Deleting",
+            "value": "Deleting",
+            "description": "The resource is being deleted."
+          }
+        ]
+      }
+    },
     "Scale": {
       "type": "object",
       "description": "Container App scaling configurations.",
@@ -14353,6 +17799,10 @@
           "type": "integer",
           "format": "int32",
           "description": "Optional. KEDA Polling Interval in seconds. Defaults to 30 seconds if not set."
+        },
+        "allowScalingRuleOverride": {
+          "type": "boolean",
+          "description": "Optional. Whether custom scale rules can override the automatic scale rules. This property is only applicable to Function Apps."
         },
         "rules": {
           "type": "array",
@@ -14630,6 +18080,16 @@
         "resources": {
           "$ref": "#/definitions/SessionContainerResources",
           "description": "Container resource requirements."
+        },
+        "probes": {
+          "type": "array",
+          "description": "List of probes for the container.",
+          "items": {
+            "$ref": "#/definitions/SessionProbe"
+          },
+          "x-ms-identifiers": [
+            "type"
+          ]
         }
       }
     },
@@ -14938,6 +18398,150 @@
         }
       }
     },
+    "SessionProbe": {
+      "type": "object",
+      "description": "Session probe configuration.",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/SessionProbeType",
+          "description": "Denotes the type of probe. Can be Liveness or Startup, Readiness probe is not supported in sessions. Type must be unique for each probe within the context of a list of probes (SessionProbes)."
+        },
+        "httpGet": {
+          "$ref": "#/definitions/SessionProbeHttpGet",
+          "description": "HTTPGet specifies the http request to perform."
+        },
+        "tcpSocket": {
+          "$ref": "#/definitions/SessionProbeTcpSocket",
+          "description": "TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported."
+        },
+        "failureThreshold": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Minimum consecutive failures for the probe to be considered failed after having succeeded. Defaults to 3. Minimum value is 1. Maximum value is 10."
+        },
+        "initialDelaySeconds": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Number of seconds after the container has started before liveness probes are initiated. Minimum value is 1. Maximum value is 60."
+        },
+        "periodSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "description": "How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1. Maximum value is 240."
+        },
+        "successThreshold": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Minimum consecutive successes for the probe to be considered successful after having failed. Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1. Maximum value is 10."
+        },
+        "terminationGracePeriodSeconds": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is an alpha field and requires enabling ProbeTerminationGracePeriod feature gate. Maximum value is 3600 seconds (1 hour)"
+        },
+        "timeoutSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Number of seconds after which the probe times out. Defaults to 1 second. Minimum value is 1. Maximum value is 240."
+        }
+      }
+    },
+    "SessionProbeHttpGet": {
+      "type": "object",
+      "description": "HTTPGet specifies the http request to perform.",
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "Host name to connect to, defaults to the pod IP. You probably want to set \"Host\" in httpHeaders instead."
+        },
+        "httpHeaders": {
+          "type": "array",
+          "description": "Custom headers to set in the request. HTTP allows repeated headers.",
+          "items": {
+            "$ref": "#/definitions/SessionProbeHttpGetHttpHeadersItem"
+          },
+          "x-ms-identifiers": [
+            "name"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "description": "Path to access on the HTTP server."
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME."
+        },
+        "scheme": {
+          "$ref": "#/definitions/Scheme",
+          "description": "Scheme to use for connecting to the host. Defaults to HTTP."
+        }
+      },
+      "required": [
+        "port"
+      ]
+    },
+    "SessionProbeHttpGetHttpHeadersItem": {
+      "type": "object",
+      "description": "HTTPHeader describes a custom header to be used in HTTP probes",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The header field name"
+        },
+        "value": {
+          "type": "string",
+          "description": "The header field value"
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ]
+    },
+    "SessionProbeTcpSocket": {
+      "type": "object",
+      "description": "TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported.",
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "Optional: Host name to connect to, defaults to the pod IP."
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Number or name of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME."
+        }
+      },
+      "required": [
+        "port"
+      ]
+    },
+    "SessionProbeType": {
+      "type": "string",
+      "description": "Denotes the type of probe. Can be Liveness or Startup, Readiness probe is not supported in sessions. Type must be unique for each probe within the context of a list of probes (SessionProbes).",
+      "enum": [
+        "Liveness",
+        "Startup"
+      ],
+      "x-ms-enum": {
+        "name": "SessionProbeType",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Liveness",
+            "value": "Liveness",
+            "description": "Checks whether the session is still running and healthy."
+          },
+          {
+            "name": "Startup",
+            "value": "Startup",
+            "description": "Checks whether the session has started successfully."
+          }
+        ]
+      }
+    },
     "SessionRegistryCredentials": {
       "type": "object",
       "description": "Session pool private registry credentials.",
@@ -15098,6 +18702,36 @@
       ],
       "x-ms-discriminator-value": "SpringCloudEureka"
     },
+    "Status": {
+      "type": "string",
+      "description": "Status of the label history record.",
+      "enum": [
+        "Succeeded",
+        "Failed",
+        "Starting"
+      ],
+      "x-ms-enum": {
+        "name": "Status",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Succeeded",
+            "value": "Succeeded",
+            "description": "The label operation completed successfully."
+          },
+          {
+            "name": "Failed",
+            "value": "Failed",
+            "description": "The label operation failed."
+          },
+          {
+            "name": "Starting",
+            "value": "Starting",
+            "description": "The label operation is starting."
+          }
+        ]
+      }
+    },
     "StorageType": {
       "type": "string",
       "description": "Storage type for the volume. If not provided, use EmptyDir.",
@@ -15236,6 +18870,23 @@
         "azureBlobStorage": {
           "$ref": "#/definitions/BlobStorageTokenStore",
           "description": "The configuration settings of the storage of the tokens if blob storage is used."
+        }
+      }
+    },
+    "TracesConfiguration": {
+      "type": "object",
+      "description": "Configuration of Open Telemetry traces",
+      "properties": {
+        "includeDapr": {
+          "type": "boolean",
+          "description": "Boolean indicating if including dapr traces"
+        },
+        "destinations": {
+          "type": "array",
+          "description": "Open telemetry traces destinations",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -15451,6 +19102,112 @@
             "create"
           ]
         }
+      }
+    },
+    "VnetConnection": {
+      "type": "object",
+      "description": "A virtual network connection associated with a SandboxGroup.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/VnetConnectionProperties",
+          "description": "The resource-specific properties for this resource."
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+        }
+      ]
+    },
+    "VnetConnectionListResult": {
+      "type": "object",
+      "description": "The response of a VnetConnection list operation.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The VnetConnection items on this page",
+          "items": {
+            "$ref": "#/definitions/VnetConnection"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "VnetConnectionProperties": {
+      "type": "object",
+      "description": "VnetConnection resource specific properties.",
+      "properties": {
+        "provisioningState": {
+          "$ref": "#/definitions/VnetConnectionProvisioningState",
+          "readOnly": true
+        },
+        "subnetId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "Resource ID of the subnet that sandboxes in the parent SandboxGroup will be connected to.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.Network/virtualNetworks/subnets"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "VnetConnectionProvisioningState": {
+      "type": "string",
+      "description": "Provisioning state of the VnetConnection.",
+      "enum": [
+        "Succeeded",
+        "Failed",
+        "Canceled",
+        "InProgress",
+        "Updating",
+        "Deleting"
+      ],
+      "x-ms-enum": {
+        "name": "VnetConnectionProvisioningState",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Succeeded",
+            "value": "Succeeded",
+            "description": "Resource has been created."
+          },
+          {
+            "name": "Failed",
+            "value": "Failed",
+            "description": "Resource creation failed."
+          },
+          {
+            "name": "Canceled",
+            "value": "Canceled",
+            "description": "Resource creation was canceled."
+          },
+          {
+            "name": "InProgress",
+            "value": "InProgress",
+            "description": "The resource is being provisioned."
+          },
+          {
+            "name": "Updating",
+            "value": "Updating",
+            "description": "The resource is being updated."
+          },
+          {
+            "name": "Deleting",
+            "value": "Deleting",
+            "description": "The resource is being deleted."
+          }
+        ]
       }
     },
     "Volume": {
