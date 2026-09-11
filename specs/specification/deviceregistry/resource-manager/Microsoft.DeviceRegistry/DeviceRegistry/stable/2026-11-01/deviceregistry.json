@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Microsoft.DeviceRegistry management service",
-    "version": "2026-04-01",
+    "version": "2026-11-01",
     "description": "Microsoft.DeviceRegistry Resource Provider management API.",
     "x-typespec-generated": [
       {
@@ -46,6 +46,9 @@
       "name": "OperationStatus"
     },
     {
+      "name": "AsyncOperationStatus"
+    },
+    {
       "name": "Assets"
     },
     {
@@ -77,6 +80,15 @@
     },
     {
       "name": "SchemaVersions"
+    },
+    {
+      "name": "CertificateAuthorities"
+    },
+    {
+      "name": "CertificatePolicies"
+    },
+    {
+      "name": "RegistryDevices"
     }
   ],
   "paths": {
@@ -279,6 +291,48 @@
         }
       }
     },
+    "/subscriptions/{subscriptionId}/providers/Microsoft.DeviceRegistry/locations/{location}/asyncOperationStatuses/{operationId}": {
+      "get": {
+        "operationId": "AsyncOperationStatus_Get",
+        "tags": [
+          "AsyncOperationStatus"
+        ],
+        "description": "Returns the current status of an async operation.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/LocationParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/OperationIdParameter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/OperationStatusResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get_AsyncOperationStatus": {
+            "$ref": "./examples/Get_AsyncOperationStatus.json"
+          }
+        }
+      }
+    },
     "/subscriptions/{subscriptionId}/providers/Microsoft.DeviceRegistry/locations/{location}/operationStatuses/{operationId}": {
       "get": {
         "operationId": "OperationStatus_Get",
@@ -351,7 +405,7 @@
           }
         },
         "x-ms-examples": {
-          "List_Namespaces_BySubscription": {
+          "List the Namespaces in a Subscription": {
             "$ref": "./examples/List_Namespace_BySubscription.json"
           }
         },
@@ -1058,7 +1112,7 @@
           }
         },
         "x-ms-examples": {
-          "List_Namespaces_ByResourceGroup": {
+          "List the Namespaces in a Resource Group": {
             "$ref": "./examples/List_Namespace_ByResourceGroup.json"
           }
         },
@@ -1110,8 +1164,11 @@
           }
         },
         "x-ms-examples": {
-          "Get_Namespace": {
+          "Get a Namespace": {
             "$ref": "./examples/Get_Namespace.json"
+          },
+          "Get a Namespace with a Failed Linking Endpoint": {
+            "$ref": "./examples/Get_Namespace_With_FailedLinkingEndpoint.json"
           }
         }
       },
@@ -1183,11 +1240,11 @@
           }
         },
         "x-ms-examples": {
-          "CreateOrReplace_Namespace_With_Endpoints": {
-            "$ref": "./examples/CreateOrReplace_Namespace_With_Endpoints.json"
-          },
-          "CreateOrReplace_Namespace_With_ManagementEndpoints": {
+          "Create or Replace a Namespace with Management Endpoints": {
             "$ref": "./examples/CreateOrReplace_Namespace_With_ManagementEndpoints.json"
+          },
+          "Create or Replace a Namespace with linked Messaging and Provisioning Endpoints": {
+            "$ref": "./examples/CreateOrReplace_Namespace_With_MessagingAndProvisioningEndpoints.json"
           }
         },
         "x-ms-long-running-operation-options": {
@@ -1260,11 +1317,14 @@
           }
         },
         "x-ms-examples": {
-          "Update_Namespace_Endpoints": {
-            "$ref": "./examples/Update_Namespace_Endpoints.json"
-          },
-          "Update_Namespace_ManagementEndpoints": {
+          "Link a Namespace to a Management Endpoint": {
             "$ref": "./examples/Update_Namespace_ManagementEndpoints.json"
+          },
+          "Link a Namespace to a Messaging Endpoint": {
+            "$ref": "./examples/Update_Namespace_MessagingEndpoints.json"
+          },
+          "Link a Namespace to a Provisioning Endpoint": {
+            "$ref": "./examples/Update_Namespace_ProvisioningEndpoints.json"
           }
         },
         "x-ms-long-running-operation-options": {
@@ -1325,7 +1385,7 @@
           }
         },
         "x-ms-examples": {
-          "Delete_Namespace": {
+          "Delete a Namespace": {
             "$ref": "./examples/Delete_Namespace.json"
           }
         },
@@ -1337,7 +1397,7 @@
     },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/namespaces/{namespaceName}/assets": {
       "get": {
-        "operationId": "NamespaceAssets_ListByResourceGroup",
+        "operationId": "NamespaceAssets_ListByNamespace",
         "tags": [
           "NamespaceAssets"
         ],
@@ -1378,8 +1438,8 @@
           }
         },
         "x-ms-examples": {
-          "List_NamespaceAssets_ByResourceGroup": {
-            "$ref": "./examples/List_NamespaceAssets_ByResourceGroup.json"
+          "List_NamespaceAssets_ByNamespace": {
+            "$ref": "./examples/List_NamespaceAssets_ByNamespace.json"
           }
         },
         "x-ms-pageable": {
@@ -1779,9 +1839,936 @@
         "x-ms-long-running-operation": true
       }
     },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/namespaces/{namespaceName}/certificateAuthorities": {
+      "get": {
+        "operationId": "CertificateAuthorities_ListByNamespace",
+        "tags": [
+          "CertificateAuthorities"
+        ],
+        "description": "List CertificateAuthority resources by Namespace",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/CertificateAuthorityListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List_CertificateAuthorities_ByNamespace": {
+            "$ref": "./examples/List_CertificateAuthorities_ByNamespace.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/namespaces/{namespaceName}/certificateAuthorities/{certificateAuthorityName}": {
+      "get": {
+        "operationId": "CertificateAuthorities_Get",
+        "tags": [
+          "CertificateAuthorities"
+        ],
+        "description": "Get a CertificateAuthority",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "certificateAuthorityName",
+            "in": "path",
+            "description": "The name of the Certificate Authority resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/CertificateAuthority"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get a Root Certificate Authority": {
+            "$ref": "./examples/Get_CertificateAuthority_Root.json"
+          },
+          "Get an External Intermediate Certificate Authority": {
+            "$ref": "./examples/Get_CertificateAuthority_ICAExternalIssuer.json"
+          },
+          "Get an Internal Intermediate Certificate Authority ": {
+            "$ref": "./examples/Get_CertificateAuthority_ICAInternalIssuer.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "CertificateAuthorities_CreateOrReplace",
+        "tags": [
+          "CertificateAuthorities"
+        ],
+        "description": "Create a CertificateAuthority",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "certificateAuthorityName",
+            "in": "path",
+            "description": "The name of the Certificate Authority resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          },
+          {
+            "name": "resource",
+            "in": "body",
+            "description": "Resource create parameters.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CertificateAuthority"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'CertificateAuthority' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/CertificateAuthority"
+            }
+          },
+          "201": {
+            "description": "Resource 'CertificateAuthority' create operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/CertificateAuthority"
+            },
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "description": "A link to the status monitor"
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Create or Replace a Root Certificate Authority": {
+            "$ref": "./examples/CreateOrReplace_CertificateAuthority_Root.json"
+          },
+          "Create or Replace an External Intermediate Certificate Authority": {
+            "$ref": "./examples/CreateOrReplace_CertificateAuthority_ICAExternalIssuer.json"
+          },
+          "Create or Replace an Internal Intermediate Certificate Authority": {
+            "$ref": "./examples/CreateOrReplace_CertificateAuthority_ICAInternalIssuer.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "azure-async-operation"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "patch": {
+        "operationId": "CertificateAuthorities_Update",
+        "tags": [
+          "CertificateAuthorities"
+        ],
+        "description": "Update a CertificateAuthority",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "certificateAuthorityName",
+            "in": "path",
+            "description": "The name of the Certificate Authority resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          },
+          {
+            "name": "properties",
+            "in": "body",
+            "description": "The resource properties to be updated.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CertificateAuthorityUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/CertificateAuthority"
+            }
+          },
+          "202": {
+            "description": "Resource update request accepted.",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Update a Certificate Authority": {
+            "$ref": "./examples/Update_CertificateAuthority.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "delete": {
+        "operationId": "CertificateAuthorities_Delete",
+        "tags": [
+          "CertificateAuthorities"
+        ],
+        "description": "Delete a CertificateAuthority",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "certificateAuthorityName",
+            "in": "path",
+            "description": "The name of the Certificate Authority resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource deletion accepted.",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Delete a Certificate Authority": {
+            "$ref": "./examples/Delete_CertificateAuthority.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/namespaces/{namespaceName}/certificateAuthorities/{certificateAuthorityName}/activate": {
+      "post": {
+        "operationId": "CertificateAuthorities_Activate",
+        "tags": [
+          "CertificateAuthorities"
+        ],
+        "description": "Activates a Certificate Authority of type `ICA` and issuer type `External`. If the Certificate Authority is an invalid type, the API responds with HTTP 400.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "certificateAuthorityName",
+            "in": "path",
+            "description": "The name of the Certificate Authority resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The content of the action request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ActivateCertificateAuthorityRequest"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource operation accepted.",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "204": {
+            "description": "Action completed successfully."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Activate a Certificate Authority": {
+            "$ref": "./examples/Activate_CertificateAuthority.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/namespaces/{namespaceName}/certificateAuthorities/{certificateAuthorityName}/certificatePolicies": {
+      "get": {
+        "operationId": "CertificatePolicies_ListByCertificateAuthority",
+        "tags": [
+          "CertificatePolicies"
+        ],
+        "description": "List CertificatePolicy resources by CertificateAuthority",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "certificateAuthorityName",
+            "in": "path",
+            "description": "The name of the Certificate Authority resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/CertificatePolicyListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List Certificate Policies for a Certificate Authority": {
+            "$ref": "./examples/List_CertificatePolicies_ByCertificateAuthority.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/namespaces/{namespaceName}/certificateAuthorities/{certificateAuthorityName}/certificatePolicies/{certificatePolicyName}": {
+      "get": {
+        "operationId": "CertificatePolicies_Get",
+        "tags": [
+          "CertificatePolicies"
+        ],
+        "description": "Get a CertificatePolicy",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "certificateAuthorityName",
+            "in": "path",
+            "description": "The name of the Certificate Authority resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          },
+          {
+            "name": "certificatePolicyName",
+            "in": "path",
+            "description": "The name of the Certificate Policy resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/CertificatePolicy"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get a Certificate Policy": {
+            "$ref": "./examples/Get_CertificatePolicy.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "CertificatePolicies_CreateOrReplace",
+        "tags": [
+          "CertificatePolicies"
+        ],
+        "description": "Create a CertificatePolicy",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "certificateAuthorityName",
+            "in": "path",
+            "description": "The name of the Certificate Authority resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          },
+          {
+            "name": "certificatePolicyName",
+            "in": "path",
+            "description": "The name of the Certificate Policy resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          },
+          {
+            "name": "resource",
+            "in": "body",
+            "description": "Resource create parameters.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CertificatePolicy"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'CertificatePolicy' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/CertificatePolicy"
+            }
+          },
+          "201": {
+            "description": "Resource 'CertificatePolicy' create operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/CertificatePolicy"
+            },
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "description": "A link to the status monitor"
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Create or Replace a Certificate Policy": {
+            "$ref": "./examples/CreateOrReplace_CertificatePolicy.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "azure-async-operation"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "patch": {
+        "operationId": "CertificatePolicies_Update",
+        "tags": [
+          "CertificatePolicies"
+        ],
+        "description": "Update a CertificatePolicy",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "certificateAuthorityName",
+            "in": "path",
+            "description": "The name of the Certificate Authority resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          },
+          {
+            "name": "certificatePolicyName",
+            "in": "path",
+            "description": "The name of the Certificate Policy resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          },
+          {
+            "name": "properties",
+            "in": "body",
+            "description": "The resource properties to be updated.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CertificatePolicyUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/CertificatePolicy"
+            }
+          },
+          "202": {
+            "description": "Resource update request accepted.",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Update a Certificate Policy": {
+            "$ref": "./examples/Update_CertificatePolicy.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "delete": {
+        "operationId": "CertificatePolicies_Delete",
+        "tags": [
+          "CertificatePolicies"
+        ],
+        "description": "Delete a CertificatePolicy",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "certificateAuthorityName",
+            "in": "path",
+            "description": "The name of the Certificate Authority resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          },
+          {
+            "name": "certificatePolicyName",
+            "in": "path",
+            "description": "The name of the Certificate Policy resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource deletion accepted.",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Delete a Certificate Policy": {
+            "$ref": "./examples/Delete_CertificatePolicy.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/namespaces/{namespaceName}/certificateAuthorities/{certificateAuthorityName}/revokeAndRotate": {
+      "post": {
+        "operationId": "CertificateAuthorities_RevokeAndRotate",
+        "tags": [
+          "CertificateAuthorities"
+        ],
+        "description": "Revokes a Certificate Authority of type `ICA` and issuer type `Microsoft`. If the Certificate Authority is an invalid type, the API responds with HTTP 400.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "certificateAuthorityName",
+            "in": "path",
+            "description": "The name of the Certificate Authority resource.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource operation accepted.",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "204": {
+            "description": "Action completed successfully."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Revoke and rotate a Certificate Authority": {
+            "$ref": "./examples/RevokeAndRotate_CertificateAuthority.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/namespaces/{namespaceName}/devices": {
       "get": {
-        "operationId": "NamespaceDevices_ListByResourceGroup",
+        "operationId": "NamespaceDevices_ListByNamespace",
         "tags": [
           "NamespaceDevices"
         ],
@@ -1822,8 +2809,8 @@
           }
         },
         "x-ms-examples": {
-          "List_NamespaceDevices_ByResourceGroup": {
-            "$ref": "./examples/List_NamespaceDevices_ByResourceGroup.json"
+          "List_NamespaceDevices_ByNamespace": {
+            "$ref": "./examples/List_NamespaceDevices_ByNamespace.json"
           }
         },
         "x-ms-pageable": {
@@ -2147,7 +3134,7 @@
     },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/namespaces/{namespaceName}/discoveredAssets": {
       "get": {
-        "operationId": "NamespaceDiscoveredAssets_ListByResourceGroup",
+        "operationId": "NamespaceDiscoveredAssets_ListByNamespace",
         "tags": [
           "NamespaceDiscoveredAssets"
         ],
@@ -2188,8 +3175,8 @@
           }
         },
         "x-ms-examples": {
-          "List_NamespaceDiscoveredAssets_ByResourceGroup": {
-            "$ref": "./examples/List_NamespaceDiscoveredAssets_ByResourceGroup.json"
+          "List_NamespaceDiscoveredAssets_ByNamespace": {
+            "$ref": "./examples/List_NamespaceDiscoveredAssets_ByNamespace.json"
           }
         },
         "x-ms-pageable": {
@@ -2501,7 +3488,7 @@
     },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/namespaces/{namespaceName}/discoveredDevices": {
       "get": {
-        "operationId": "NamespaceDiscoveredDevices_ListByResourceGroup",
+        "operationId": "NamespaceDiscoveredDevices_ListByNamespace",
         "tags": [
           "NamespaceDiscoveredDevices"
         ],
@@ -2542,8 +3529,8 @@
           }
         },
         "x-ms-examples": {
-          "List_NamespaceDiscoveredDevices_ByResourceGroup": {
-            "$ref": "./examples/List_NamespaceDiscoveredDevices_ByResourceGroup.json"
+          "List_NamespaceDiscoveredDevices_ByNamespace": {
+            "$ref": "./examples/List_NamespaceDiscoveredDevices_ByNamespace.json"
           }
         },
         "x-ms-pageable": {
@@ -2933,6 +3920,360 @@
         "x-ms-long-running-operation": true
       }
     },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/namespaces/{namespaceName}/registryDevices": {
+      "get": {
+        "operationId": "RegistryDevices_ListByNamespace",
+        "tags": [
+          "RegistryDevices"
+        ],
+        "description": "List RegistryDevice resources by Namespace",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/RegistryDeviceListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List Devices for a Namespace": {
+            "$ref": "./examples/List_RegistryDevices_ByNamespace.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/namespaces/{namespaceName}/registryDevices/{registryDeviceName}": {
+      "get": {
+        "operationId": "RegistryDevices_Get",
+        "tags": [
+          "RegistryDevices"
+        ],
+        "description": "Get a RegistryDevice",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "registryDeviceName",
+            "in": "path",
+            "description": "The name of the new device.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/RegistryDevice"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get a Device": {
+            "$ref": "./examples/Get_RegistryDevice.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "RegistryDevices_CreateOrReplace",
+        "tags": [
+          "RegistryDevices"
+        ],
+        "description": "Create a RegistryDevice",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "registryDeviceName",
+            "in": "path",
+            "description": "The name of the new device.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          },
+          {
+            "name": "resource",
+            "in": "body",
+            "description": "Resource create parameters.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegistryDevice"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'RegistryDevice' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/RegistryDevice"
+            }
+          },
+          "201": {
+            "description": "Resource 'RegistryDevice' create operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/RegistryDevice"
+            },
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "description": "A link to the status monitor"
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Create or Replace a Device": {
+            "$ref": "./examples/CreateOrReplace_RegistryDevice.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "azure-async-operation"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "patch": {
+        "operationId": "RegistryDevices_Update",
+        "tags": [
+          "RegistryDevices"
+        ],
+        "description": "Update a RegistryDevice",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "registryDeviceName",
+            "in": "path",
+            "description": "The name of the new device.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          },
+          {
+            "name": "properties",
+            "in": "body",
+            "description": "The resource properties to be updated.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegistryDeviceUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/RegistryDevice"
+            }
+          },
+          "202": {
+            "description": "Resource update request accepted.",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Update a Device": {
+            "$ref": "./examples/Update_RegistryDevice.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "delete": {
+        "operationId": "RegistryDevices_Delete",
+        "tags": [
+          "RegistryDevices"
+        ],
+        "description": "Delete a RegistryDevice",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "namespaceName",
+            "in": "path",
+            "description": "The name of the namespace.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+          },
+          {
+            "name": "registryDeviceName",
+            "in": "path",
+            "description": "The name of the new device.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[0-9a-zA-Z][a-zA-Z0-9-]*$"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource deletion accepted.",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Delete a Device": {
+            "$ref": "./examples/Delete_RegistryDevice.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/schemaRegistries": {
       "get": {
         "operationId": "SchemaRegistries_ListByResourceGroup",
@@ -2999,7 +4340,7 @@
             "required": true,
             "type": "string",
             "minLength": 3,
-            "maxLength": 63,
+            "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
           }
         ],
@@ -3046,7 +4387,7 @@
             "required": true,
             "type": "string",
             "minLength": 3,
-            "maxLength": 63,
+            "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
           },
           {
@@ -3123,7 +4464,7 @@
             "required": true,
             "type": "string",
             "minLength": 3,
-            "maxLength": 63,
+            "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
           },
           {
@@ -3197,7 +4538,7 @@
             "required": true,
             "type": "string",
             "minLength": 3,
-            "maxLength": 63,
+            "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
           }
         ],
@@ -3261,7 +4602,7 @@
             "required": true,
             "type": "string",
             "minLength": 3,
-            "maxLength": 63,
+            "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
           }
         ],
@@ -3313,7 +4654,7 @@
             "required": true,
             "type": "string",
             "minLength": 3,
-            "maxLength": 63,
+            "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
           },
           {
@@ -3370,7 +4711,7 @@
             "required": true,
             "type": "string",
             "minLength": 3,
-            "maxLength": 63,
+            "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
           },
           {
@@ -3442,7 +4783,7 @@
             "required": true,
             "type": "string",
             "minLength": 3,
-            "maxLength": 63,
+            "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
           },
           {
@@ -3516,7 +4857,7 @@
             "required": true,
             "type": "string",
             "minLength": 3,
-            "maxLength": 63,
+            "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
           },
           {
@@ -3578,7 +4919,7 @@
             "required": true,
             "type": "string",
             "minLength": 3,
-            "maxLength": 63,
+            "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
           },
           {
@@ -3645,7 +4986,7 @@
             "required": true,
             "type": "string",
             "minLength": 3,
-            "maxLength": 63,
+            "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
           },
           {
@@ -3727,7 +5068,7 @@
             "required": true,
             "type": "string",
             "minLength": 3,
-            "maxLength": 63,
+            "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
           },
           {
@@ -3789,6 +5130,19 @@
     }
   },
   "definitions": {
+    "ActivateCertificateAuthorityRequest": {
+      "type": "object",
+      "description": "Request payload for activating a Certificate Authority with a signed certificate.",
+      "properties": {
+        "certificateChain": {
+          "type": "string",
+          "description": "Certificate chain in PEM format for activating an externally issued intermediate Certificate Authority, including the signed certificate. The first certificate must be the signed certificate matching the CSR generated by the service, followed by any intermediate CAs, and optionally the root CA. Certificates must be ordered from leaf to root and concatenated in PEM format."
+        }
+      },
+      "required": [
+        "certificateChain"
+      ]
+    },
     "Asset": {
       "type": "object",
       "description": "Asset definition.",
@@ -4526,6 +5880,328 @@
         "key"
       ]
     },
+    "CertificateAuthority": {
+      "type": "object",
+      "description": "A Certificate Authority resource.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/CertificateAuthorityProperties",
+          "description": "The resource-specific properties for this resource."
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+        }
+      ]
+    },
+    "CertificateAuthorityIssuer": {
+      "type": "object",
+      "description": "The issuer for an intermediate Certificate Authority.",
+      "properties": {
+        "issuerType": {
+          "$ref": "#/definitions/CertificateAuthorityIssuerType",
+          "description": "The Certificate Authority issuer type.",
+          "x-ms-mutability": [
+            "read",
+            "create"
+          ]
+        }
+      },
+      "discriminator": "issuerType",
+      "required": [
+        "issuerType"
+      ]
+    },
+    "CertificateAuthorityIssuerType": {
+      "type": "string",
+      "description": "The issuer type for an intermediate Certificate Authority.",
+      "enum": [
+        "Microsoft",
+        "External"
+      ],
+      "x-ms-enum": {
+        "name": "CertificateAuthorityIssuerType",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Microsoft",
+            "value": "Microsoft",
+            "description": "The intermediate Certificate Authority is issued by Microsoft."
+          },
+          {
+            "name": "External",
+            "value": "External",
+            "description": "The intermediate Certificate Authority is issued by an external Certificate Authority."
+          }
+        ]
+      }
+    },
+    "CertificateAuthorityKeyType": {
+      "type": "string",
+      "description": "Supported Certificate Authority key types.",
+      "enum": [
+        "ECC"
+      ],
+      "x-ms-enum": {
+        "name": "CertificateAuthorityKeyType",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "ECC",
+            "value": "ECC",
+            "description": "Indicate the ECC key type."
+          }
+        ]
+      }
+    },
+    "CertificateAuthorityListResult": {
+      "type": "object",
+      "description": "The response of a CertificateAuthority list operation.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The CertificateAuthority items on this page",
+          "items": {
+            "$ref": "#/definitions/CertificateAuthority"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "CertificateAuthorityProperties": {
+      "type": "object",
+      "description": "Details of the Certificate Authority resource.",
+      "properties": {
+        "provisioningState": {
+          "$ref": "#/definitions/ProvisioningState",
+          "description": "The status of the last operation.",
+          "readOnly": true
+        },
+        "uuid": {
+          "type": "string",
+          "description": "Globally unique, immutable, non-reusable identifier of the Certificate Authority resource.",
+          "readOnly": true
+        },
+        "certificateAuthorityType": {
+          "$ref": "#/definitions/CertificateAuthorityType",
+          "description": "The Certificate Authority type. Use Root for a self-signed, service-managed root CA, and ICA for an intermediate CA.",
+          "x-ms-mutability": [
+            "read",
+            "create"
+          ]
+        },
+        "keyType": {
+          "$ref": "#/definitions/CertificateAuthorityKeyType",
+          "description": "Crypto type: ECC.",
+          "x-ms-mutability": [
+            "read",
+            "create"
+          ]
+        },
+        "subject": {
+          "type": "string",
+          "description": "Certificate subject.",
+          "readOnly": true
+        },
+        "validityNotBefore": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Certificate is valid not before this date. Format ISO8601.",
+          "readOnly": true
+        },
+        "validityNotAfter": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Certificate is valid not after this date. Format ISO8601.",
+          "readOnly": true
+        }
+      },
+      "discriminator": "certificateAuthorityType",
+      "required": [
+        "certificateAuthorityType",
+        "keyType"
+      ]
+    },
+    "CertificateAuthorityStatus": {
+      "type": "string",
+      "description": "Status of the Certificate Authority certificate lifecycle.",
+      "enum": [
+        "PendingActivation",
+        "Active",
+        "ActiveButPendingRenewal"
+      ],
+      "x-ms-enum": {
+        "name": "CertificateAuthorityStatus",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "PendingActivation",
+            "value": "PendingActivation",
+            "description": "The CSR has been generated and is waiting for activation."
+          },
+          {
+            "name": "Active",
+            "value": "Active",
+            "description": "The Certificate Authority is active."
+          },
+          {
+            "name": "ActiveButPendingRenewal",
+            "value": "ActiveButPendingRenewal",
+            "description": "The Certificate Authority is active but requires renewal."
+          }
+        ]
+      }
+    },
+    "CertificateAuthorityType": {
+      "type": "string",
+      "description": "Supported Certificate Authority types.",
+      "enum": [
+        "Root",
+        "ICA"
+      ],
+      "x-ms-enum": {
+        "name": "CertificateAuthorityType",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Root",
+            "value": "Root",
+            "description": "Self-signed, service-managed root Certificate Authority."
+          },
+          {
+            "name": "ICA",
+            "value": "ICA",
+            "description": "Intermediate Certificate Authority signed by another Certificate Authority."
+          }
+        ]
+      }
+    },
+    "CertificateAuthorityUpdate": {
+      "type": "object",
+      "description": "Update model for Certificate Authority.",
+      "properties": {
+        "tags": {
+          "type": "object",
+          "description": "Resource tags.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CertificatePolicy": {
+      "type": "object",
+      "description": "A Certificate Policy resource.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/CertificatePolicyProperties",
+          "description": "The resource-specific properties for this resource."
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+        }
+      ]
+    },
+    "CertificatePolicyConfiguration": {
+      "type": "object",
+      "description": "The Certificate Policy certificate configuration.",
+      "properties": {
+        "validityPeriodInDays": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The validity period in days."
+        }
+      },
+      "required": [
+        "validityPeriodInDays"
+      ]
+    },
+    "CertificatePolicyListResult": {
+      "type": "object",
+      "description": "The response of a CertificatePolicy list operation.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The CertificatePolicy items on this page",
+          "items": {
+            "$ref": "#/definitions/CertificatePolicy"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "CertificatePolicyProperties": {
+      "type": "object",
+      "description": "Details of the Certificate Policy resource.",
+      "properties": {
+        "provisioningState": {
+          "$ref": "#/definitions/ProvisioningState",
+          "description": "The status of the last operation.",
+          "readOnly": true
+        },
+        "uuid": {
+          "type": "string",
+          "description": "Globally unique, immutable, non-reusable identifier of the Certificate Policy resource.",
+          "readOnly": true
+        },
+        "certificate": {
+          "$ref": "#/definitions/CertificatePolicyConfiguration",
+          "description": "The certificate configuration."
+        }
+      }
+    },
+    "CertificatePolicyUpdate": {
+      "type": "object",
+      "description": "The type used for update operations of the CertificatePolicy.",
+      "properties": {
+        "tags": {
+          "type": "object",
+          "description": "Resource tags.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "$ref": "#/definitions/CertificatePolicyUpdateProperties",
+          "description": "The resource-specific properties for this resource.",
+          "x-ms-client-flatten": true
+        }
+      }
+    },
+    "CertificatePolicyUpdateProperties": {
+      "type": "object",
+      "description": "The updatable properties of the CertificatePolicy.",
+      "properties": {
+        "certificate": {
+          "type": "object",
+          "description": "The certificate configuration.",
+          "properties": {
+            "validityPeriodInDays": {
+              "type": "integer",
+              "format": "int32",
+              "description": "The validity period in days."
+            }
+          }
+        }
+      }
+    },
     "DataPoint": {
       "type": "object",
       "description": "Defines the data point properties.",
@@ -5183,12 +6859,40 @@
         "name"
       ]
     },
+    "ExternalCertificateAuthorityIssuer": {
+      "type": "object",
+      "description": "An external issuer for an intermediate Certificate Authority.",
+      "properties": {
+        "certificateSigningRequest": {
+          "type": "string",
+          "description": "Certificate Signing Request (CSR) in PEM format, generated by the service.",
+          "readOnly": true
+        },
+        "thumbprint": {
+          "type": "string",
+          "description": "Thumbprint of the Certificate Authority certificate signed by the external issuer.",
+          "readOnly": true
+        },
+        "status": {
+          "$ref": "#/definitions/CertificateAuthorityStatus",
+          "description": "The status of the external issuer certificate lifecycle.",
+          "readOnly": true
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/CertificateAuthorityIssuer"
+        }
+      ],
+      "x-ms-discriminator-value": "External"
+    },
     "Format": {
       "type": "string",
       "description": "Defines the schema format.",
       "enum": [
         "JsonSchema/draft-07",
-        "Delta/1.0"
+        "Delta/1.0",
+        "JsonLD/1.1"
       ],
       "x-ms-enum": {
         "name": "Format",
@@ -5203,6 +6907,11 @@
             "name": "Delta_1_0",
             "value": "Delta/1.0",
             "description": "Delta format"
+          },
+          {
+            "name": "JsonLD_1_1",
+            "value": "JsonLD/1.1",
+            "description": "W3C Web of Things JSON-LD format"
           }
         ]
       }
@@ -5367,6 +7076,55 @@
         }
       }
     },
+    "InboundCallerIdentity": {
+      "type": "object",
+      "description": "The identity a linked resource uses for inbound calls to the ADR namespace.",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/InboundCallerIdentityType",
+          "description": "The identity type."
+        },
+        "userAssignedIdentity": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The resource ID of the user-assigned managed identity. Required when type is UserAssigned.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "InboundCallerIdentityType": {
+      "type": "string",
+      "description": "The type of identity used for inbound calls to the ADR namespace.",
+      "enum": [
+        "SystemAssigned",
+        "UserAssigned"
+      ],
+      "x-ms-enum": {
+        "name": "InboundCallerIdentityType",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "SystemAssigned",
+            "value": "SystemAssigned",
+            "description": "System-assigned managed identity."
+          },
+          {
+            "name": "UserAssigned",
+            "value": "UserAssigned",
+            "description": "User-assigned managed identity."
+          }
+        ]
+      }
+    },
     "InboundEndpoints": {
       "type": "object",
       "description": "An endpoint to connect to the device.",
@@ -5430,6 +7188,29 @@
           "description": "Stringified JSON that contains configuration to be used by the connector (e.g., OPC UA, ONVIF)."
         }
       }
+    },
+    "IntermediateCertificateAuthorityProperties": {
+      "type": "object",
+      "description": "Properties for an intermediate Certificate Authority signed by another same-namespace Certificate Authority.",
+      "properties": {
+        "issuer": {
+          "$ref": "#/definitions/CertificateAuthorityIssuer",
+          "description": "The issuer for the intermediate Certificate Authority.",
+          "x-ms-mutability": [
+            "read",
+            "create"
+          ]
+        }
+      },
+      "required": [
+        "issuer"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/definitions/CertificateAuthorityProperties"
+        }
+      ],
+      "x-ms-discriminator-value": "ICA"
     },
     "Management": {
       "type": "object",
@@ -5672,11 +7453,70 @@
         "resourceId": {
           "type": "string",
           "description": "The messaging endpoint Azure resource Id."
+        },
+        "deviceAddress": {
+          "type": "string",
+          "description": "The endpoint address used by devices.",
+          "readOnly": true
+        },
+        "inboundCallerIdentity": {
+          "$ref": "#/definitions/InboundCallerIdentity",
+          "description": "The identity the linked resource uses to call the ADR namespace."
+        },
+        "linkingState": {
+          "$ref": "#/definitions/NamespaceLinkingStateValue",
+          "description": "The linking state of this messaging endpoint.",
+          "readOnly": true
+        },
+        "linkingError": {
+          "$ref": "#/definitions/NamespaceLinkingError",
+          "description": "The error detail surfaced when this messaging endpoint is in the Failed linking state.",
+          "readOnly": true
+        },
+        "provisioning": {
+          "$ref": "#/definitions/MessagingEndpointProvisioning",
+          "description": "The provisioning configuration for this messaging endpoint."
         }
-      },
-      "required": [
-        "address"
-      ]
+      }
+    },
+    "MessagingEndpointAvailability": {
+      "type": "string",
+      "description": "The availability status of a messaging endpoint.",
+      "enum": [
+        "Available",
+        "Disabled"
+      ],
+      "x-ms-enum": {
+        "name": "MessagingEndpointAvailability",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Available",
+            "value": "Available",
+            "description": "The messaging endpoint is available."
+          },
+          {
+            "name": "Disabled",
+            "value": "Disabled",
+            "description": "The messaging endpoint is disabled."
+          }
+        ]
+      }
+    },
+    "MessagingEndpointProvisioning": {
+      "type": "object",
+      "description": "The provisioning configuration for a messaging endpoint.",
+      "properties": {
+        "availability": {
+          "$ref": "#/definitions/MessagingEndpointAvailability",
+          "description": "The availability status of the messaging endpoint."
+        },
+        "allocationWeight": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The allocation weight for this messaging endpoint."
+        }
+      }
     },
     "MessagingEndpoints": {
       "type": "object",
@@ -5711,6 +7551,37 @@
           "description": "Set of endpoints a device can connect to."
         }
       }
+    },
+    "MicrosoftCertificateAuthorityIssuer": {
+      "type": "object",
+      "description": "A Microsoft issuer for an intermediate Certificate Authority.",
+      "properties": {
+        "certificateAuthorityResourceId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The resource ID of the root issuer Certificate Authority in the same namespace.",
+          "x-ms-mutability": [
+            "read",
+            "create"
+          ],
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.DeviceRegistry/namespaces/certificateAuthorities"
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "certificateAuthorityResourceId"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/definitions/CertificateAuthorityIssuer"
+        }
+      ],
+      "x-ms-discriminator-value": "Microsoft"
     },
     "MigrateResult": {
       "type": "object",
@@ -5833,7 +7704,7 @@
           "x-ms-client-flatten": true
         },
         "identity": {
-          "$ref": "../../../../../../common-types/resource-management/v5/managedidentity.json#/definitions/SystemAssignedServiceIdentity",
+          "$ref": "../../../../../../common-types/resource-management/v5/managedidentity.json#/definitions/ManagedServiceIdentity",
           "description": "The managed service identities assigned to this resource."
         }
       },
@@ -7657,6 +9528,53 @@
         "name"
       ]
     },
+    "NamespaceLinkingError": {
+      "type": "object",
+      "description": "Error detail for an endpoint whose linking state is Failed. Present only while the linking state is Failed and removed when the endpoint recovers.",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Error code that classifies the linking failure.",
+          "readOnly": true
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable message describing the linking failure.",
+          "readOnly": true
+        }
+      }
+    },
+    "NamespaceLinkingStateValue": {
+      "type": "string",
+      "description": "The linking state values for namespace endpoint entries.",
+      "enum": [
+        "InProgress",
+        "Succeeded",
+        "Failed"
+      ],
+      "x-ms-enum": {
+        "name": "NamespaceLinkingStateValue",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "InProgress",
+            "value": "InProgress",
+            "description": "Linking is in progress."
+          },
+          {
+            "name": "Succeeded",
+            "value": "Succeeded",
+            "description": "Linking succeeded."
+          },
+          {
+            "name": "Failed",
+            "value": "Failed",
+            "description": "Linking failed."
+          }
+        ]
+      },
+      "readOnly": true
+    },
     "NamespaceListResult": {
       "type": "object",
       "description": "The response of a Namespace list operation.",
@@ -7754,10 +9672,31 @@
           "$ref": "#/definitions/Management",
           "description": "Assigned and unassigned management endpoints."
         },
+        "provisioning": {
+          "$ref": "#/definitions/NamespaceProvisioning",
+          "description": "The provisioning endpoints associated with this namespace."
+        },
+        "outboundIdentity": {
+          "$ref": "#/definitions/OutboundIdentity",
+          "description": "The identity used for outbound calls from the ADR namespace. If not specified and the namespace has a system-assigned identity enabled, the system-assigned identity is used by default."
+        },
         "provisioningState": {
           "$ref": "#/definitions/ProvisioningState",
           "description": "Provisioning state of the resource.",
           "readOnly": true
+        }
+      }
+    },
+    "NamespaceProvisioning": {
+      "type": "object",
+      "description": "The provisioning endpoints associated with this namespace.",
+      "properties": {
+        "endpoints": {
+          "type": "object",
+          "description": "Dictionary of provisioning endpoints.",
+          "additionalProperties": {
+            "$ref": "#/definitions/ProvisioningEndpoint"
+          }
         }
       }
     },
@@ -7795,7 +9734,7 @@
       "description": "The type used for update operations of the Namespace.",
       "properties": {
         "identity": {
-          "$ref": "../../../../../../common-types/resource-management/v5/managedidentity.json#/definitions/SystemAssignedServiceIdentity",
+          "$ref": "../../../../../../common-types/resource-management/v5/managedidentity.json#/definitions/ManagedServiceIdentity",
           "description": "The managed service identities assigned to this resource."
         },
         "tags": {
@@ -7823,6 +9762,14 @@
         "management": {
           "$ref": "#/definitions/Management",
           "description": "Assigned and unassigned management endpoints."
+        },
+        "provisioning": {
+          "$ref": "#/definitions/NamespaceProvisioning",
+          "description": "The provisioning endpoints associated with this namespace."
+        },
+        "outboundIdentity": {
+          "$ref": "#/definitions/OutboundIdentity",
+          "description": "The identity used for outbound calls from the ADR namespace. If not specified and the namespace has a system-assigned identity enabled, the system-assigned identity is used by default."
         }
       }
     },
@@ -7869,6 +9816,114 @@
         }
       }
     },
+    "OutboundIdentity": {
+      "type": "object",
+      "description": "The identity the ADR namespace uses for outbound calls. If this property is null and the namespace has a system-assigned identity enabled, the namespace defaults to using the system-assigned identity for outbound calls.",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/OutboundIdentityType",
+          "description": "The identity type."
+        },
+        "userAssignedIdentity": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The resource ID of the user-assigned managed identity. Required when type is UserAssigned.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "OutboundIdentityType": {
+      "type": "string",
+      "description": "The type of identity used for outbound calls from the ADR namespace.",
+      "enum": [
+        "SystemAssigned",
+        "UserAssigned"
+      ],
+      "x-ms-enum": {
+        "name": "OutboundIdentityType",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "SystemAssigned",
+            "value": "SystemAssigned",
+            "description": "System-assigned managed identity."
+          },
+          {
+            "name": "UserAssigned",
+            "value": "UserAssigned",
+            "description": "User-assigned managed identity."
+          }
+        ]
+      }
+    },
+    "ProvisioningEndpoint": {
+      "type": "object",
+      "description": "A provisioning service endpoint linked to this namespace.",
+      "properties": {
+        "endpointType": {
+          "$ref": "#/definitions/ProvisioningEndpointType",
+          "description": "Type of provisioning resource."
+        },
+        "resourceId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The provisioning endpoint Azure resource Id.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.Devices/provisioningServices"
+              }
+            ]
+          }
+        },
+        "inboundCallerIdentity": {
+          "$ref": "#/definitions/InboundCallerIdentity",
+          "description": "The identity the linked resource uses to call the ADR namespace."
+        },
+        "linkingState": {
+          "$ref": "#/definitions/NamespaceLinkingStateValue",
+          "description": "The linking state of this provisioning endpoint.",
+          "readOnly": true
+        },
+        "linkingError": {
+          "$ref": "#/definitions/NamespaceLinkingError",
+          "description": "The error detail surfaced when this provisioning endpoint is in the Failed linking state.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "endpointType",
+        "resourceId",
+        "inboundCallerIdentity"
+      ]
+    },
+    "ProvisioningEndpointType": {
+      "type": "string",
+      "description": "The type of provisioning resource that can be linked to a namespace.",
+      "enum": [
+        "Microsoft.Devices/provisioningServices"
+      ],
+      "x-ms-enum": {
+        "name": "ProvisioningEndpointType",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "DPS",
+            "value": "Microsoft.Devices/provisioningServices",
+            "description": "Azure Device Provisioning Service."
+          }
+        ]
+      }
+    },
     "ProvisioningState": {
       "type": "string",
       "description": "The provisioning status of the resource.",
@@ -7911,6 +9966,172 @@
         ]
       },
       "readOnly": true
+    },
+    "RegistryDevice": {
+      "type": "object",
+      "description": "A Registry Device resource is a tracked resource with a provisioning lifecycle. The different capabilities of the device are defined through child Device Capability resources.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/RegistryDeviceProperties",
+          "description": "The resource-specific properties for this resource."
+        },
+        "etag": {
+          "type": "string",
+          "description": "Resource etag.",
+          "readOnly": true
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+        }
+      ]
+    },
+    "RegistryDeviceEnablementState": {
+      "type": "string",
+      "description": "Represents the enablement state of a device.",
+      "enum": [
+        "Enabled",
+        "Disabled"
+      ],
+      "x-ms-enum": {
+        "name": "RegistryDeviceEnablementState",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Enabled",
+            "value": "Enabled",
+            "description": "The device is enabled."
+          },
+          {
+            "name": "Disabled",
+            "value": "Disabled",
+            "description": "The device is disabled. All PUT/PATCH/POST APIs on the child resources will be blocked."
+          }
+        ]
+      }
+    },
+    "RegistryDeviceListResult": {
+      "type": "object",
+      "description": "The response of a RegistryDevice list operation.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The RegistryDevice items on this page",
+          "items": {
+            "$ref": "#/definitions/RegistryDevice"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "RegistryDeviceProperties": {
+      "type": "object",
+      "description": "The properties of a registry device.",
+      "properties": {
+        "enablementState": {
+          "$ref": "#/definitions/RegistryDeviceEnablementState",
+          "description": "Whether the device is enabled or disabled. A disabled device cannot send messages, be updated, or reprovision."
+        },
+        "uuid": {
+          "type": "string",
+          "description": "Globally unique, immutable, non-reusable ID.",
+          "readOnly": true
+        },
+        "externalDeviceId": {
+          "type": "string",
+          "description": "A Device ID provided by the customer.",
+          "x-ms-mutability": [
+            "read",
+            "create"
+          ]
+        },
+        "manufacturer": {
+          "type": "string",
+          "description": "Device manufacturer."
+        },
+        "model": {
+          "type": "string",
+          "description": "Device model."
+        },
+        "hardwareRevision": {
+          "type": "string",
+          "description": "Device hardware revision."
+        },
+        "softwareRevision": {
+          "type": "string",
+          "description": "Device software revision."
+        },
+        "provisioningState": {
+          "$ref": "#/definitions/ProvisioningState",
+          "description": "Provisioning state of the resource.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "enablementState"
+      ]
+    },
+    "RegistryDeviceUpdate": {
+      "type": "object",
+      "description": "The type used for update operations of the RegistryDevice.",
+      "properties": {
+        "tags": {
+          "type": "object",
+          "description": "Resource tags.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "$ref": "#/definitions/RegistryDeviceUpdateProperties",
+          "description": "The resource-specific properties for this resource.",
+          "x-ms-client-flatten": true
+        }
+      }
+    },
+    "RegistryDeviceUpdateProperties": {
+      "type": "object",
+      "description": "The updatable properties of the RegistryDevice.",
+      "properties": {
+        "enablementState": {
+          "$ref": "#/definitions/RegistryDeviceEnablementState",
+          "description": "Whether the device is enabled or disabled. A disabled device cannot send messages, be updated, or reprovision."
+        },
+        "manufacturer": {
+          "type": "string",
+          "description": "Device manufacturer."
+        },
+        "model": {
+          "type": "string",
+          "description": "Device model."
+        },
+        "hardwareRevision": {
+          "type": "string",
+          "description": "Device hardware revision."
+        },
+        "softwareRevision": {
+          "type": "string",
+          "description": "Device software revision."
+        }
+      }
+    },
+    "RootCertificateAuthorityProperties": {
+      "type": "object",
+      "description": "Properties for a self-signed, service-managed root Certificate Authority.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/CertificateAuthorityProperties"
+        }
+      ],
+      "x-ms-discriminator-value": "Root"
     },
     "Schema": {
       "type": "object",
@@ -8010,7 +10231,7 @@
           "x-ms-client-flatten": true
         },
         "identity": {
-          "$ref": "../../../../../../common-types/resource-management/v5/managedidentity.json#/definitions/SystemAssignedServiceIdentity",
+          "$ref": "../../../../../../common-types/resource-management/v5/managedidentity.json#/definitions/ManagedServiceIdentity",
           "description": "The managed service identities assigned to this resource."
         }
       },
@@ -8070,11 +10291,16 @@
         },
         "storageAccountContainerUrl": {
           "type": "string",
+          "format": "uri",
           "description": "The Storage Account's Container URL where schemas will be stored.",
           "x-ms-mutability": [
             "read",
             "create"
           ]
+        },
+        "outboundIdentity": {
+          "$ref": "#/definitions/OutboundIdentity",
+          "description": "The identity used for outbound calls from the ADR schema registry. If not specified and the schema registry has a system-assigned identity enabled, the system-assigned identity is used by default."
         },
         "provisioningState": {
           "$ref": "#/definitions/ProvisioningState",
@@ -8092,7 +10318,7 @@
       "description": "The type used for update operations of the SchemaRegistry.",
       "properties": {
         "identity": {
-          "$ref": "../../../../../../common-types/resource-management/v5/managedidentity.json#/definitions/SystemAssignedServiceIdentity",
+          "$ref": "../../../../../../common-types/resource-management/v5/managedidentity.json#/definitions/ManagedServiceIdentity",
           "description": "The managed service identities assigned to this resource."
         },
         "tags": {
@@ -8120,6 +10346,10 @@
         "description": {
           "type": "string",
           "description": "Human-readable description of the schema registry."
+        },
+        "outboundIdentity": {
+          "$ref": "#/definitions/OutboundIdentity",
+          "description": "The identity used for outbound calls from the ADR schema registry. If not specified and the schema registry has a system-assigned identity enabled, the system-assigned identity is used by default."
         }
       }
     },
@@ -8127,7 +10357,9 @@
       "type": "string",
       "description": "Defines the schema type.",
       "enum": [
-        "MessageSchema"
+        "MessageSchema",
+        "ThingModel",
+        "ThingDescription"
       ],
       "x-ms-enum": {
         "name": "SchemaType",
@@ -8137,6 +10369,16 @@
             "name": "MessageSchema",
             "value": "MessageSchema",
             "description": "Message Schema schema type"
+          },
+          {
+            "name": "ThingModel",
+            "value": "ThingModel",
+            "description": "W3C Web of Things Thing Model document"
+          },
+          {
+            "name": "ThingDescription",
+            "value": "ThingDescription",
+            "description": "W3C Web of Things Thing Description document"
           }
         ]
       }
