@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Microsoft.Edge",
-    "version": "2025-08-01",
+    "version": "2026-06-01",
     "description": "Microsoft.Edge Resource Provider management API.",
     "x-typespec-generated": [
       {
@@ -1614,7 +1614,6 @@
       "description": "Dynamic Configuration Properties",
       "properties": {
         "values": {
-          "type": "string",
           "description": "Values of configuration version"
         },
         "schemaId": {
@@ -1660,7 +1659,6 @@
       "description": "Dynamic Configuration Properties",
       "properties": {
         "values": {
-          "type": "string",
           "description": "Values of configuration version"
         }
       }

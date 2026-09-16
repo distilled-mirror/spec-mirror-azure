@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "WebApplicationFirewallManagement",
-    "version": "2025-09-01",
+    "version": "2026-01-01",
     "description": "APIs to manage Microsoft Azure network resources.",
     "x-typespec-generated": [
       {
@@ -2507,6 +2507,12 @@
           },
           "Create Developer Bastion Host": {
             "$ref": "./examples/BastionHostDeveloperPut.json"
+          },
+          "Create or Update Bastion Host With System Assigned Identity for Session Recording Configuration": {
+            "$ref": "./examples/BastionHostPutWithSystemAssignedIdentityForSRConfig.json"
+          },
+          "Create or Update Bastion Host With User Assigned Identity for Session Recording Configuration": {
+            "$ref": "./examples/BastionHostPutWithUserAssignedIdentityForSRConfig.json"
           }
         },
         "x-ms-long-running-operation-options": {
@@ -2516,11 +2522,11 @@
         "x-ms-long-running-operation": true
       },
       "patch": {
-        "operationId": "BastionHosts_UpdateTags",
+        "operationId": "BastionHosts_Update",
         "tags": [
           "BastionHosts"
         ],
-        "description": "Updates Tags for BastionHost resource",
+        "description": "Updates Tags or identity for BastionHost resource",
         "parameters": [
           {
             "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
@@ -2541,10 +2547,10 @@
           {
             "name": "parameters",
             "in": "body",
-            "description": "Parameters supplied to update BastionHost tags.",
+            "description": "Parameters supplied to update BastionHost tags or identity.",
             "required": true,
             "schema": {
-              "$ref": "./common.json#/definitions/TagsObject"
+              "$ref": "#/definitions/BastionHostUpdate"
             }
           }
         ],
@@ -6012,6 +6018,9 @@
           }
         },
         "x-ms-examples": {
+          "Create/Update the Pool resource with allocation size bounds": {
+            "$ref": "./examples/IpamPools_CreateWithAllocationBounds.json"
+          },
           "IpamPools_Create": {
             "$ref": "./examples/IpamPools_Create.json"
           }
@@ -6087,8 +6096,14 @@
           }
         },
         "x-ms-examples": {
+          "Clear the allocation size bounds on a Pool resource": {
+            "$ref": "./examples/IpamPools_UpdateClearAllocationBounds.json"
+          },
           "IpamPools_Update": {
             "$ref": "./examples/IpamPools_Update.json"
+          },
+          "Update the allocation size bounds on a Pool resource": {
+            "$ref": "./examples/IpamPools_UpdateAllocationBounds.json"
           }
         }
       },
@@ -15179,6 +15194,10 @@
         "sku": {
           "$ref": "#/definitions/Sku",
           "description": "The sku of this Bastion Host."
+        },
+        "identity": {
+          "$ref": "./common.json#/definitions/ManagedServiceIdentity",
+          "description": "The identity assigned to the Bastion Host resource"
         }
       },
       "allOf": [
@@ -15337,6 +15356,10 @@
           "type": "boolean",
           "description": "Enable/Disable Private Only feature of the Bastion Host resource.",
           "default": false
+        },
+        "sessionRecordingConfiguration": {
+          "$ref": "#/definitions/BastionSessionRecordingConfiguration",
+          "description": "The storage account and identity to use for session recording"
         }
       }
     },
@@ -15348,6 +15371,23 @@
           "description": "Sets the IP ACL rules for Developer Bastion Host.",
           "items": {
             "$ref": "#/definitions/IPRule"
+          }
+        }
+      }
+    },
+    "BastionHostUpdate": {
+      "type": "object",
+      "description": "Parameters supplied to update the Bastion Host identity or tags.",
+      "properties": {
+        "identity": {
+          "$ref": "./common.json#/definitions/ManagedServiceIdentity",
+          "description": "The identity of the BastionHost, if configured."
+        },
+        "tags": {
+          "type": "object",
+          "description": "Resource tags.",
+          "additionalProperties": {
+            "type": "string"
           }
         }
       }
@@ -15371,6 +15411,25 @@
       },
       "required": [
         "value"
+      ]
+    },
+    "BastionSessionRecordingConfiguration": {
+      "type": "object",
+      "description": "Bastion Session Recording Configuration.",
+      "properties": {
+        "identity": {
+          "$ref": "#/definitions/SessionRecordingIdentity",
+          "description": "The identity to use for accessing the blob container where recordings will be stored"
+        },
+        "blobContainerUri": {
+          "type": "string",
+          "format": "uri",
+          "description": "The blob container to store the recordings. Ex: https://contosostorage.blob.core.windows.net/contosorecordings."
+        }
+      },
+      "required": [
+        "identity",
+        "blobContainerUri"
       ]
     },
     "BastionSessionState": {
@@ -17097,6 +17156,14 @@
           "$ref": "./common.json#/definitions/ProvisioningState",
           "description": "Provisioning states of a resource.",
           "readOnly": true
+        },
+        "minAllocationSize": {
+          "type": "string",
+          "description": "Minimum number of IP addresses required for allocations from this IpamPool to be compliant. Must be less than or equal to the maximum allocation size. If not specified or empty, no minimum is enforced."
+        },
+        "maxAllocationSize": {
+          "type": "string",
+          "description": "Maximum number of IP addresses allowed for allocations from this IpamPool to be compliant. Must be greater than or equal to the minimum allocation size. If not specified or empty, no maximum is enforced."
         }
       },
       "required": [
@@ -17130,6 +17197,14 @@
         "displayName": {
           "type": "string",
           "description": "String representing a friendly name for the resource."
+        },
+        "minAllocationSize": {
+          "type": "string",
+          "description": "Minimum number of IP addresses required for allocations from this IpamPool to be compliant. Must be less than or equal to the maximum allocation size. Omit to leave the current value unchanged; set to an empty string to clear it."
+        },
+        "maxAllocationSize": {
+          "type": "string",
+          "description": "Maximum number of IP addresses allowed for allocations from this IpamPool to be compliant. Must be greater than or equal to the minimum allocation size. Omit to leave the current value unchanged; set to an empty string to clear it."
         }
       }
     },
@@ -19113,6 +19188,10 @@
         "privateLinkServiceConnectionState": {
           "$ref": "#/definitions/PrivateLinkServiceConnectionState",
           "description": "A collection of read-only information about the state of the connection to the remote resource."
+        },
+        "approvalReference": {
+          "$ref": "./common.json#/definitions/ApprovalReference",
+          "description": "A reference to an existing approved private endpoint whose connection approval state should be inherited by this connection at creation time."
         }
       }
     },
@@ -20692,6 +20771,31 @@
           }
         }
       }
+    },
+    "SessionRecordingIdentity": {
+      "type": "object",
+      "description": "The identity to use for accessing the blob container where recordings will be stored",
+      "properties": {
+        "type": {
+          "$ref": "./common.json#/definitions/SessionRecordingIdentityType",
+          "description": "The type of identity to use"
+        },
+        "userAssignedIdentityId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "User assigned identity to use for accessing blob container Uri. Ex: /subscriptions/fa5fc227-a624-475e-b696-cdd604c735bc/resourceGroups/<resource group>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/myId. Mutually exclusive with identity type systemAssigned.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "type"
+      ]
     },
     "Sku": {
       "type": "object",

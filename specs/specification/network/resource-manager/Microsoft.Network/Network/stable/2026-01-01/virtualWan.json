@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "WebApplicationFirewallManagement",
-    "version": "2025-09-01",
+    "version": "2026-01-01",
     "description": "APIs to manage Microsoft Azure network resources.",
     "x-typespec-generated": [
       {
@@ -8540,8 +8540,8 @@
           "$ref": "#/definitions/RoutingConfiguration",
           "description": "The Routing Configuration indicating the associated and propagated route tables on this connection."
         },
-        "enableOnlyIpv6Peering": {
-          "$ref": "./common.json#/definitions/EnableOnlyIpv6PeeringState",
+        "enableOnlyIPv6Peering": {
+          "type": "boolean",
           "description": "Enable Only IPv6 Peering for this connection.",
           "x-ms-mutability": [
             "read",

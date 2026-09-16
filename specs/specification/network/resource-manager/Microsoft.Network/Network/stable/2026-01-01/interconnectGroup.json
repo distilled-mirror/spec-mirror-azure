@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "WebApplicationFirewallManagement",
-    "version": "2025-09-01",
+    "version": "2026-01-01",
     "description": "APIs to manage Microsoft Azure network resources.",
     "x-typespec-generated": [
       {
