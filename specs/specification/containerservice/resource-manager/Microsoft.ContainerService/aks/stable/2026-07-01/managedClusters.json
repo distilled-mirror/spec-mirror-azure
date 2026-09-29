@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "ContainerServiceClient",
-    "version": "2026-06-01",
+    "version": "2026-07-01",
     "description": "The Container Service Client.",
     "x-typespec-generated": [
       {
@@ -561,9 +561,6 @@
           "Create Managed Cluster with EncryptionAtHost enabled": {
             "$ref": "./examples/ManagedClustersCreate_EnableEncryptionAtHost.json"
           },
-          "Create Managed Cluster with FIPS enabled OS": {
-            "$ref": "./examples/ManagedClustersCreate_EnabledFIPS.json"
-          },
           "Create Managed Cluster with GPUMIG": {
             "$ref": "./examples/ManagedClustersCreate_GPUMIG.json"
           },
@@ -596,6 +593,9 @@
           },
           "Create Managed Cluster with Web App Routing Ingress Profile configured": {
             "$ref": "./examples/ManagedClustersCreate_IngressProfile_WebAppRouting.json"
+          },
+          "Create Managed Cluster with cluster-level FIPS enabled": {
+            "$ref": "./examples/ManagedClustersCreate_EnabledFIPS.json"
           },
           "Create Managed Cluster with user-assigned NAT gateway as outbound type": {
             "$ref": "./examples/ManagedClustersCreate_UserAssignedNATGateway.json"
@@ -5210,7 +5210,7 @@
         },
         "keyId": {
           "type": "string",
-          "description": "Identifier of Azure Key Vault key. See [key identifier format](https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#vault-name-and-object-name) for more details. When Azure Key Vault key management service is enabled, this field is required and must be a valid key identifier. When Azure Key Vault key management service is disabled, leave the field empty."
+          "description": "The identifier of the Azure Key Vault key. For more information, see [Azure Key Vault key identifiers](https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#vault-name-and-object-name). This property is required when Azure Key Vault key management service is enabled and must be omitted when the service is disabled. Starting with API versions 2026-07-01 and 2026-07-02-preview, a versioned key identifier uses the legacy KMS experience, while an unversioned key identifier uses the new KMS experience. For more information, see [KMS data encryption concepts](https://learn.microsoft.com/en-us/azure/aks/kms-data-encryption-concepts)."
         },
         "keyVaultNetworkAccess": {
           "type": "string",
@@ -6145,6 +6145,24 @@
       },
       "readOnly": true
     },
+    "InfrastructureEncryption": {
+      "type": "string",
+      "description": "Whether to enable encryption at rest of Kubernetes resource objects using service-managed keys. More information on this can be found under https://aka.ms/aks/kubernetesResourceObjectEncryption.",
+      "enum": [
+        "Enabled"
+      ],
+      "x-ms-enum": {
+        "name": "InfrastructureEncryption",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Enabled",
+            "value": "Enabled",
+            "description": "Encryption at rest of Kubernetes resource objects using service-managed keys is enabled. More information on this can be found under https://aka.ms/aks/kubernetesResourceObjectEncryption."
+          }
+        ]
+      }
+    },
     "IstioCertificateAuthority": {
       "type": "object",
       "description": "Istio Service Mesh Certificate Authority (CA) configuration. For now, we only support plugin certificates as described here https://aka.ms/asm-plugin-ca",
@@ -6400,6 +6418,16 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "KubernetesResourceObjectEncryptionProfile": {
+      "type": "object",
+      "description": "Encryption at rest of Kubernetes resource objects using service-managed keys. More information on this can be found under https://aka.ms/aks/kubernetesResourceObjectEncryption.",
+      "properties": {
+        "infrastructureEncryption": {
+          "$ref": "#/definitions/InfrastructureEncryption",
+          "description": "Whether to enable encryption at rest of Kubernetes resource objects using service-managed keys. More information on this can be found under https://aka.ms/aks/kubernetesResourceObjectEncryption."
         }
       }
     },
@@ -8677,6 +8705,10 @@
           "$ref": "#/definitions/KubernetesSupportPlan",
           "description": "The support plan for the Managed Cluster. If unspecified, the default is 'KubernetesOfficial'."
         },
+        "enableFIPS": {
+          "type": "boolean",
+          "description": "Whether to enable FIPS mode at the cluster level. When enabled, this setting enforces FIPS compliance for all AKS-managed components, such as the node operating system, addons, and [managed containerized components](https://aka.ms/aks/components/docs). See [Enable cluster-wide FIPS](https://aka.ms/aks/fips) for more details. When this property is enabled, all node pools in the cluster must also be FIPS-enabled. Although this property is available in a stable API version, cluster-wide FIPS remains a preview feature. Write requests whose resulting cluster state has this property set to true require the `Microsoft.ContainerService/EnableFIPSPreview` subscription feature registration."
+        },
         "networkProfile": {
           "$ref": "#/definitions/ContainerServiceNetworkProfile",
           "description": "The network configuration profile."
@@ -8982,6 +9014,10 @@
         "azureKeyVaultKms": {
           "$ref": "#/definitions/AzureKeyVaultKms",
           "description": "Azure Key Vault [key management service](https://kubernetes.io/docs/tasks/administer-cluster/kms-provider/) settings for the security profile."
+        },
+        "kubernetesResourceObjectEncryptionProfile": {
+          "$ref": "#/definitions/KubernetesResourceObjectEncryptionProfile",
+          "description": "Encryption at rest of Kubernetes resource objects. More information on this can be found under https://aka.ms/aks/kubernetesResourceObjectEncryption"
         },
         "workloadIdentity": {
           "$ref": "#/definitions/ManagedClusterSecurityProfileWorkloadIdentity",

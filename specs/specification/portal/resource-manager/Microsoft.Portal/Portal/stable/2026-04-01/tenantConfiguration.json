@@ -56,20 +56,20 @@
         "description": "Gets list of items that violate tenant's configuration.",
         "parameters": [
           {
-            "$ref": "../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
           }
         ],
         "responses": {
           "200": {
             "description": "Azure operation completed successfully.",
             "schema": {
-              "$ref": "#/definitions/ViolationsList"
+              "$ref": "./common.json#/definitions/ViolationsList"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
             }
           }
         },
@@ -92,20 +92,20 @@
         "description": "Gets list of the tenant configurations.",
         "parameters": [
           {
-            "$ref": "../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
           }
         ],
         "responses": {
           "200": {
             "description": "Azure operation completed successfully.",
             "schema": {
-              "$ref": "#/definitions/ConfigurationListResult"
+              "$ref": "./common.json#/definitions/ConfigurationListResult"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
             }
           }
         },
@@ -128,7 +128,7 @@
         "description": "Gets the tenant configuration.",
         "parameters": [
           {
-            "$ref": "../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
           },
           {
             "name": "configurationName",
@@ -143,13 +143,13 @@
           "200": {
             "description": "Azure operation completed successfully.",
             "schema": {
-              "$ref": "#/definitions/Configuration"
+              "$ref": "./common.json#/definitions/Configuration"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
             }
           }
         },
@@ -167,7 +167,7 @@
         "description": "Create the tenant configuration. If configuration already exists - update it. User has to be a Tenant Admin for this operation.",
         "parameters": [
           {
-            "$ref": "../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
           },
           {
             "name": "configurationName",
@@ -183,7 +183,7 @@
             "description": "The parameters required to create or update tenant configuration.",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/Configuration"
+              "$ref": "./common.json#/definitions/Configuration"
             },
             "x-ms-client-name": "resource"
           }
@@ -192,19 +192,19 @@
           "200": {
             "description": "Resource 'Configuration' update operation succeeded",
             "schema": {
-              "$ref": "#/definitions/Configuration"
+              "$ref": "./common.json#/definitions/Configuration"
             }
           },
           "201": {
             "description": "Resource 'Configuration' create operation succeeded",
             "schema": {
-              "$ref": "#/definitions/Configuration"
+              "$ref": "./common.json#/definitions/Configuration"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
             }
           }
         },
@@ -222,7 +222,7 @@
         "description": "Delete the tenant configuration. User has to be a Tenant Admin for this operation.",
         "parameters": [
           {
-            "$ref": "../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
           },
           {
             "name": "configurationName",
@@ -243,7 +243,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+              "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
             }
           }
         },
@@ -255,131 +255,6 @@
       }
     }
   },
-  "definitions": {
-    "Azure.ResourceManager.ResourceProvisioningState": {
-      "type": "string",
-      "description": "The provisioning state of a resource type.",
-      "enum": [
-        "Succeeded",
-        "Failed",
-        "Canceled"
-      ],
-      "x-ms-enum": {
-        "name": "ResourceProvisioningState",
-        "modelAsString": true,
-        "values": [
-          {
-            "name": "Succeeded",
-            "value": "Succeeded",
-            "description": "Resource has been created."
-          },
-          {
-            "name": "Failed",
-            "value": "Failed",
-            "description": "Resource creation failed."
-          },
-          {
-            "name": "Canceled",
-            "value": "Canceled",
-            "description": "Resource creation was canceled."
-          }
-        ]
-      },
-      "readOnly": true
-    },
-    "Configuration": {
-      "type": "object",
-      "description": "The tenant configuration resource definition.",
-      "properties": {
-        "properties": {
-          "$ref": "#/definitions/ConfigurationProperties",
-          "description": "The resource-specific properties for this resource."
-        }
-      },
-      "allOf": [
-        {
-          "$ref": "../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
-        }
-      ]
-    },
-    "ConfigurationListResult": {
-      "type": "object",
-      "description": "The response of a Configuration list operation.",
-      "properties": {
-        "value": {
-          "type": "array",
-          "description": "The Configuration items on this page",
-          "items": {
-            "$ref": "#/definitions/Configuration"
-          }
-        },
-        "nextLink": {
-          "type": "string",
-          "format": "uri",
-          "description": "The link to the next page of items"
-        }
-      },
-      "required": [
-        "value"
-      ]
-    },
-    "ConfigurationProperties": {
-      "type": "object",
-      "description": "Tenant Configuration Properties with Provisioning state",
-      "properties": {
-        "enforcePrivateMarkdownStorage": {
-          "type": "boolean",
-          "description": "When flag is set to true Markdown tile will require external storage configuration (URI). The inline content configuration will be prohibited."
-        },
-        "provisioningState": {
-          "$ref": "#/definitions/Azure.ResourceManager.ResourceProvisioningState",
-          "description": "The status of the last operation.",
-          "readOnly": true
-        }
-      }
-    },
-    "Violation": {
-      "type": "object",
-      "description": "Violation information.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Id of the item that violates tenant configuration.",
-          "readOnly": true
-        },
-        "userId": {
-          "type": "string",
-          "description": "Id of the user who owns violated item.",
-          "readOnly": true
-        },
-        "errorMessage": {
-          "type": "string",
-          "description": "Error message.",
-          "readOnly": true
-        }
-      }
-    },
-    "ViolationsList": {
-      "type": "object",
-      "description": "List of list of items that violate tenant's configuration.",
-      "properties": {
-        "value": {
-          "type": "array",
-          "description": "The Violation items on this page",
-          "items": {
-            "$ref": "#/definitions/Violation"
-          }
-        },
-        "nextLink": {
-          "type": "string",
-          "format": "uri",
-          "description": "The link to the next page of items"
-        }
-      },
-      "required": [
-        "value"
-      ]
-    }
-  },
+  "definitions": {},
   "parameters": {}
 }
