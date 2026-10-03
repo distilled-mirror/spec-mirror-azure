@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Microsoft.IoTOperations management service.",
-    "version": "2026-07-01",
+    "version": "2026-10-01",
     "description": "Microsoft.IoTOperations Resource Provider management API.",
     "x-typespec-generated": [
       {
@@ -6630,7 +6630,6 @@
         }
       },
       "required": [
-        "group",
         "kind",
         "name"
       ]
@@ -7184,8 +7183,7 @@
         },
         "host": {
           "type": "string",
-          "description": "Host of the Azure Data Explorer in the form of <cluster>.<region>.kusto.windows.net .",
-          "pattern": ".+\\..+\\.kusto\\.windows\\.net"
+          "description": "Host of the Azure Data Explorer in the form of <cluster>.<region>.kusto.windows.net (Azure Public) or <cluster>.<region>.kusto.usgovcloudapi.net (Azure US Government). This will be validated by the regex `.*\\.*\\.kusto\\.(windows\\.net|usgovcloudapi\\.net)`."
         },
         "batching": {
           "$ref": "#/definitions/BatchingConfiguration",
@@ -7229,8 +7227,7 @@
         },
         "host": {
           "type": "string",
-          "description": "Host of the Azure Data Lake in the form of <account>.blob.core.windows.net .",
-          "pattern": ".+\\.blob\\.core\\.windows\\.net"
+          "description": "Host of the Azure Data Lake in the form of <account>.blob.core.windows.net (Azure Public) or <account>.blob.core.usgovcloudapi.net (Azure US Government). This will be validated by the regex `.*\\.blob\\.core\\.(windows\\.net|usgovcloudapi\\.net)`."
         },
         "batching": {
           "$ref": "#/definitions/BatchingConfiguration",
@@ -7285,8 +7282,7 @@
         },
         "host": {
           "type": "string",
-          "description": "Host of the Microsoft Fabric in the form of https://<host>.fabric.microsoft.com.",
-          "pattern": ".+\\.fabric\\.microsoft\\.com"
+          "description": "Host of the Microsoft Fabric in the form of https://<host>.fabric.microsoft.com (Azure Public) or https://<host>.fabric.microsoft.us (Azure US Government). This will be validated by the regex `.*\\.fabric\\.microsoft\\.(com|us)`."
         },
         "batching": {
           "$ref": "#/definitions/BatchingConfiguration",
@@ -8278,6 +8274,10 @@
           "x-ms-identifiers": [
             "actionType"
           ]
+        },
+        "outputSchemaSettings": {
+          "$ref": "#/definitions/DataflowGraphDestinationSchemaSettings",
+          "description": "Output schema settings."
         }
       },
       "required": [
@@ -8303,6 +8303,47 @@
         }
       ],
       "x-ms-discriminator-value": "Remove"
+    },
+    "DataflowGraphDestinationSchemaSerializationFormat": {
+      "type": "string",
+      "description": "Serialization format for dataflow graph.",
+      "enum": [
+        "Parquet",
+        "Delta"
+      ],
+      "x-ms-enum": {
+        "name": "DataflowGraphDestinationSchemaSerializationFormat",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Parquet",
+            "value": "Parquet",
+            "description": "Parquet serialization format."
+          },
+          {
+            "name": "Delta",
+            "value": "Delta",
+            "description": "Delta serialization format."
+          }
+        ]
+      }
+    },
+    "DataflowGraphDestinationSchemaSettings": {
+      "type": "object",
+      "description": "DataflowGraph destination node output schema settings.",
+      "properties": {
+        "serializationFormat": {
+          "$ref": "#/definitions/DataflowGraphDestinationSchemaSerializationFormat",
+          "description": "The format of the output data."
+        },
+        "schemaRef": {
+          "type": "string",
+          "description": "Reference to the schema that describes the output of the transformation."
+        }
+      },
+      "required": [
+        "serializationFormat"
+      ]
     },
     "DataflowGraphGraphNode": {
       "type": "object",
@@ -9548,6 +9589,14 @@
         "identity": {
           "$ref": "../../../../../../common-types/resource-management/v5/managedidentity.json#/definitions/ManagedServiceIdentity",
           "description": "The managed service identities assigned to this resource."
+        },
+        "sku": {
+          "$ref": "#/definitions/InstanceSku",
+          "description": "The billing SKU for the AIO Instance. Defaults to Standard.",
+          "x-ms-mutability": [
+            "read",
+            "create"
+          ]
         }
       },
       "required": [
@@ -9579,6 +9628,43 @@
       "required": [
         "value"
       ]
+    },
+    "InstanceSku": {
+      "type": "object",
+      "description": "The billing SKU for an AIO Instance.",
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/InstanceSkuName",
+          "description": "The name of the SKU. Determines the billing meter applied to this instance."
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "InstanceSkuName": {
+      "type": "string",
+      "description": "The set of supported SKU names for an AIO Instance.",
+      "enum": [
+        "Essentials",
+        "Standard"
+      ],
+      "x-ms-enum": {
+        "name": "InstanceSkuName",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Essentials",
+            "value": "Essentials",
+            "description": "Essentials SKU. Reduced feature set targeted at constrained edge and entry-level workloads."
+          },
+          {
+            "name": "Standard",
+            "value": "Standard",
+            "description": "Standard SKU. Full feature set. Default when sku is not specified."
+          }
+        ]
+      }
     },
     "KafkaAuthMethod": {
       "type": "string",
