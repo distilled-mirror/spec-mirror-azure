@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "iotDpsClient",
-    "version": "2026-08-31",
+    "version": "2026-11-01",
     "description": "API for using the Azure IoT Hub Device Provisioning Service features.",
     "x-typespec-generated": [
       {
@@ -258,6 +258,9 @@
         "x-ms-examples": {
           "DPSGet": {
             "$ref": "./examples/DPSGet.json"
+          },
+          "DPSGetWithUserAssignedNamespaceIdentity": {
+            "$ref": "./examples/DPSGet_UserAssignedNamespaceIdentity.json"
           },
           "DPSGet_DisableLocalAuth": {
             "$ref": "./examples/DPSGet_DisableLocalAuth.json"
@@ -1753,6 +1756,10 @@
         }
       }
     },
+    "Azure.Core.azureLocation": {
+      "type": "string",
+      "description": "Represents an Azure geography region where supported resource providers live."
+    },
     "CertificateListDescription": {
       "type": "object",
       "description": "The JSON-serialized array of Certificate objects.",
@@ -1827,6 +1834,84 @@
         {
           "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
         }
+      ]
+    },
+    "DeviceRegistryNamespaceAuthenticationType": {
+      "type": "string",
+      "description": "Device Registry Namespace MI authentication type: UserAssigned, SystemAssigned.",
+      "enum": [
+        "UserAssigned",
+        "SystemAssigned"
+      ],
+      "x-ms-enum": {
+        "name": "DeviceRegistryNamespaceAuthenticationType",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "UserAssigned",
+            "value": "UserAssigned",
+            "description": "User assigned authentication type."
+          },
+          {
+            "name": "SystemAssigned",
+            "value": "SystemAssigned",
+            "description": "System assigned authentication type."
+          }
+        ]
+      }
+    },
+    "DeviceRegistryNamespaceDescription": {
+      "type": "object",
+      "description": "Description of the Device Registry namespace that is linked to the provisioning service.",
+      "properties": {
+        "resourceId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The ARM resource ID of the Device Registry namespace.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.DeviceRegistry/namespaces"
+              }
+            ]
+          }
+        },
+        "authenticationType": {
+          "$ref": "#/definitions/DeviceRegistryNamespaceAuthenticationType",
+          "description": "Device Registry Namespace MI authentication type: UserAssigned, SystemAssigned."
+        },
+        "selectedUserAssignedIdentityResourceId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The selected user-assigned identity resource Id associated with Device Registry namespace. This is required when authenticationType is UserAssigned.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+              }
+            ]
+          }
+        },
+        "namespaceUuid": {
+          "type": "string",
+          "description": "Unique identifier of the linked Device Registry namespace."
+        },
+        "dataAddress": {
+          "type": "string",
+          "description": "The data plane address of the linked Azure Device Registry namespace."
+        },
+        "location": {
+          "$ref": "#/definitions/Azure.Core.azureLocation",
+          "description": "Azure location of the linked Device Registry namespace."
+        },
+        "linkingState": {
+          "$ref": "#/definitions/LinkingState",
+          "description": "The linking state of this namespace."
+        }
+      },
+      "required": [
+        "resourceId",
+        "authenticationType"
       ]
     },
     "ErrorDetails": {
@@ -1952,6 +2037,18 @@
           "items": {
             "$ref": "#/definitions/IotHubDefinitionDescription"
           }
+        },
+        "deviceRegistryNamespaces": {
+          "type": "array",
+          "description": "The Device Registry namespaces linked to the provisioning service.",
+          "maxItems": 1,
+          "items": {
+            "$ref": "#/definitions/DeviceRegistryNamespaceDescription"
+          },
+          "readOnly": true,
+          "x-ms-identifiers": [
+            "namespaceUuid"
+          ]
         },
         "allocationPolicy": {
           "$ref": "#/definitions/AllocationPolicy",
@@ -2193,6 +2290,42 @@
       "x-ms-enum": {
         "name": "IpFilterTargetType",
         "modelAsString": false
+      }
+    },
+    "LinkingState": {
+      "type": "string",
+      "description": "The state of ADR linking for a provisioning service.",
+      "enum": [
+        "NotLinked",
+        "InProgress",
+        "Succeeded",
+        "Orphaned"
+      ],
+      "x-ms-enum": {
+        "name": "LinkingState",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "NotLinked",
+            "value": "NotLinked",
+            "description": "The provisioning service is not linked to a Device Registry namespace."
+          },
+          {
+            "name": "InProgress",
+            "value": "InProgress",
+            "description": "The linking process is in progress."
+          },
+          {
+            "name": "Succeeded",
+            "value": "Succeeded",
+            "description": "The linking process succeeded."
+          },
+          {
+            "name": "Orphaned",
+            "value": "Orphaned",
+            "description": "The linked Device Registry namespace no longer exists."
+          }
+        ]
       }
     },
     "NameAvailabilityInfo": {
