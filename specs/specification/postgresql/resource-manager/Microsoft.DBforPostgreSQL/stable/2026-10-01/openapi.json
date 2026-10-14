@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "PostgreSQLManagementClient",
-    "version": "2025-08-01",
+    "version": "2026-10-01",
     "description": "The Azure Database for PostgreSQL management API provides create, read, update, and delete functionality for Azure PostgreSQL resources including servers, databases, firewall rules, network configuration, security alert policies, log files and configurations with new business model.",
     "x-typespec-generated": [
       {
@@ -80,6 +80,12 @@
     },
     {
       "name": "VirtualEndpoints"
+    },
+    {
+      "name": "MaintenanceEvents"
+    },
+    {
+      "name": "MajorVersionUpgradePrecheck"
     }
   ],
   "paths": {
@@ -686,6 +692,9 @@
           }
         },
         "x-ms-examples": {
+          "Enable or disable FIPS mode on an existing server.": {
+            "$ref": "./examples/ServersUpdateFIPS.json"
+          },
           "Promote a read replica to a standalone server with forced data synchronization. Meaning that it doesn't wait for data in the read replica to be synchronized with its source server before it initiates the promotion to a standalone server.": {
             "$ref": "./examples/ServersPromoteReplicaAsForcedStandaloneServer.json"
           },
@@ -715,6 +724,9 @@
           },
           "Update an existing server.": {
             "$ref": "./examples/ServersUpdate.json"
+          },
+          "Update the storage performance of a server using Premium SSD v2.": {
+            "$ref": "./examples/ServersUpdateWithPremiumSsdV2.json"
           }
         },
         "x-ms-long-running-operation-options": {
@@ -2705,6 +2717,508 @@
         }
       }
     },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/maintenanceEvents": {
+      "get": {
+        "operationId": "MaintenanceEvents_List",
+        "tags": [
+          "MaintenanceEvents"
+        ],
+        "description": "Lists all maintenance events for a flexible server.",
+        "parameters": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "serverName",
+            "in": "path",
+            "description": "The name of the server.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*"
+          },
+          {
+            "name": "maintenanceStatus",
+            "in": "query",
+            "description": "Filter maintenance events by status.",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Upcoming",
+              "Past"
+            ],
+            "x-ms-enum": {
+              "name": "MaintenanceEventStatusFilter",
+              "modelAsString": true,
+              "values": [
+                {
+                  "name": "Upcoming",
+                  "value": "Upcoming",
+                  "description": "Return events that have a scheduled or in progress status."
+                },
+                {
+                  "name": "Past",
+                  "value": "Past",
+                  "description": "Return events that have a completed status."
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/MaintenanceEventResourceListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List maintenance events filtered by status for a server.": {
+            "$ref": "./examples/MaintenanceEventsListByServerWithFilter.json"
+          },
+          "List ongoing and scheduled maintenance events for a server.": {
+            "$ref": "./examples/MaintenanceEventsListByServer.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/maintenanceEvents/{maintenanceEventId}": {
+      "get": {
+        "operationId": "MaintenanceEvents_Get",
+        "tags": [
+          "MaintenanceEvents"
+        ],
+        "description": "Gets information about a maintenance event for a flexible server.",
+        "parameters": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "serverName",
+            "in": "path",
+            "description": "The name of the server.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*"
+          },
+          {
+            "name": "maintenanceEventId",
+            "in": "path",
+            "description": "The name of the MaintenanceEventResource",
+            "required": true,
+            "type": "string",
+            "pattern": "^[A-Z0-9]{4}-[A-Z0-9]{3}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/MaintenanceEventResource"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get information about a maintenance event for a server.": {
+            "$ref": "./examples/MaintenanceEventsGet.json"
+          }
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/maintenanceEvents/{maintenanceEventId}/applyNow": {
+      "post": {
+        "operationId": "MaintenanceEvents_ApplyNow",
+        "tags": [
+          "MaintenanceEvents"
+        ],
+        "description": "Applies the maintenance event immediately.",
+        "parameters": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "serverName",
+            "in": "path",
+            "description": "The name of the server.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*"
+          },
+          {
+            "name": "maintenanceEventId",
+            "in": "path",
+            "description": "The name of the MaintenanceEventResource",
+            "required": true,
+            "type": "string",
+            "pattern": "^[A-Z0-9]{4}-[A-Z0-9]{3}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/MaintenanceEventActionResponse"
+            }
+          },
+          "202": {
+            "description": "Resource operation accepted.",
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "format": "uri",
+                "description": "A link to the status monitor"
+              },
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Apply maintenance immediately for a server.": {
+            "$ref": "./examples/MaintenanceEventsApplyNow.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location",
+          "final-state-schema": "#/definitions/MaintenanceEventActionResponse"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/maintenanceEvents/{maintenanceEventId}/reschedule": {
+      "post": {
+        "operationId": "MaintenanceEvents_Reschedule",
+        "tags": [
+          "MaintenanceEvents"
+        ],
+        "description": "Reschedules a maintenance event to a new date and time.",
+        "parameters": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "serverName",
+            "in": "path",
+            "description": "The name of the server.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*"
+          },
+          {
+            "name": "maintenanceEventId",
+            "in": "path",
+            "description": "The name of the MaintenanceEventResource",
+            "required": true,
+            "type": "string",
+            "pattern": "^[A-Z0-9]{4}-[A-Z0-9]{3}$"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The content of the action request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MaintenanceEventRescheduleRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/MaintenanceEventActionResponse"
+            }
+          },
+          "202": {
+            "description": "Resource operation accepted.",
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "format": "uri",
+                "description": "A link to the status monitor"
+              },
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Reschedule a maintenance event to a new date and time.": {
+            "$ref": "./examples/MaintenanceEventsReschedule.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location",
+          "final-state-schema": "#/definitions/MaintenanceEventActionResponse"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/majorVersionUpgradePrecheck": {
+      "get": {
+        "operationId": "MajorVersionUpgradePrecheck_List",
+        "tags": [
+          "MajorVersionUpgradePrecheck"
+        ],
+        "description": "Lists major version upgrade prechecks for a flexible server.",
+        "parameters": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "serverName",
+            "in": "path",
+            "description": "The name of the server.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/MajorVersionUpgradePrecheckResourceListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List all major version upgrade precheck validations for a server.": {
+            "$ref": "./examples/MajorVersionUpgradePrecheckListByServer.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/majorVersionUpgradePrecheck/{precheckValidationId}": {
+      "get": {
+        "operationId": "MajorVersionUpgradePrecheck_Get",
+        "tags": [
+          "MajorVersionUpgradePrecheck"
+        ],
+        "description": "Gets information about a major version upgrade precheck for a flexible server.",
+        "parameters": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "serverName",
+            "in": "path",
+            "description": "The name of the server.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*"
+          },
+          {
+            "name": "precheckValidationId",
+            "in": "path",
+            "description": "The name of the MajorVersionUpgradePrecheckResource",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9-]{3,36}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/MajorVersionUpgradePrecheckResource"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get information about a major version upgrade precheck validation.": {
+            "$ref": "./examples/MajorVersionUpgradePrecheckGet.json"
+          }
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/migrateNetwork": {
+      "post": {
+        "operationId": "Servers_MigrateNetworkMode",
+        "tags": [
+          "Servers"
+        ],
+        "description": "Migrates an Azure Database for PostgreSQL server from VNet integration to a Private Link network model.",
+        "parameters": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "serverName",
+            "in": "path",
+            "description": "The name of the server.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded.",
+            "schema": {
+              "$ref": "#/definitions/MigrateNetworkStatus"
+            },
+            "headers": {
+              "x-ms-request-id": {
+                "type": "string",
+                "description": "A unique ID for the current operation, service generated. All the resource providers must return this value in the response headers to facilitate debugging."
+              }
+            }
+          },
+          "202": {
+            "description": "The request has been accepted for processing, but processing has not yet completed.",
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "format": "uri",
+                "description": "A link to the status monitor"
+              },
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              },
+              "x-ms-request-id": {
+                "type": "string",
+                "description": "A unique ID for the current operation, service generated. All the resource providers must return this value in the response headers to facilitate debugging."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Migrate server network configuration": {
+            "$ref": "./examples/ServersMigrateNetworkMode.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location",
+          "final-state-schema": "#/definitions/MigrateNetworkStatus"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/migrations": {
       "get": {
         "operationId": "Migrations_ListByTargetServer",
@@ -3721,6 +4235,94 @@
         "x-ms-long-running-operation": true
       }
     },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/startMajorVersionUpgradePrecheck": {
+      "post": {
+        "operationId": "Servers_StartMajorVersionUpgradePrecheck",
+        "tags": [
+          "Servers"
+        ],
+        "description": "Start Major Version Upgrade Prechecks.",
+        "parameters": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "serverName",
+            "in": "path",
+            "description": "The name of the server.",
+            "required": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The content of the action request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StartMajorVersionUpgradePrecheckRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded.",
+            "schema": {
+              "$ref": "#/definitions/StartMajorVersionUpgradePrecheckResponse"
+            },
+            "headers": {
+              "x-ms-request-id": {
+                "type": "string",
+                "description": "A unique ID for the current operation, service generated. All the resource providers must return this value in the response headers to facilitate debugging."
+              }
+            }
+          },
+          "202": {
+            "description": "Resource operation accepted.",
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "format": "uri",
+                "description": "A link to the status monitor"
+              },
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Start a major version upgrade precheck validation for a PostgreSQL flexible server.": {
+            "$ref": "./examples/ServersStartMajorVersionUpgradePrecheck.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location",
+          "final-state-schema": "#/definitions/StartMajorVersionUpgradePrecheckResponse"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/stop": {
       "post": {
         "operationId": "Servers_Stop",
@@ -3979,7 +4581,8 @@
               "CreateIndex",
               "DropIndex",
               "ReIndex",
-              "AnalyzeTable"
+              "AnalyzeTable",
+              "VacuumTable"
             ],
             "x-ms-enum": {
               "name": "RecommendationTypeParameterEnum",
@@ -4004,6 +4607,11 @@
                   "name": "AnalyzeTable",
                   "value": "AnalyzeTable",
                   "description": "Recommendation to analyze a table to update statistics for the query optimizer."
+                },
+                {
+                  "name": "VacuumTable",
+                  "value": "VacuumTable",
+                  "description": "Recommendation to vacuum a table to reclaim storage and optimize performance."
                 }
               ]
             }
@@ -4694,6 +5302,11 @@
         }
       }
     },
+    "Azure.Core.uuid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Universally Unique Identifier"
+    },
     "AzureManagedDiskPerformanceTier": {
       "type": "string",
       "description": "Storage tier of a server.",
@@ -4829,6 +5442,10 @@
             "create"
           ]
         },
+        "immutableBackup": {
+          "$ref": "#/definitions/ImmutableBackup",
+          "description": "Indicates if the server is configured to create immutable backups."
+        },
         "earliestRestoreDate": {
           "type": "string",
           "format": "date-time",
@@ -4906,6 +5523,10 @@
           "$ref": "#/definitions/GeographicallyRedundantBackup",
           "description": "Indicates if the server is configured to create geographically redundant backups.",
           "readOnly": true
+        },
+        "immutableBackup": {
+          "$ref": "#/definitions/ImmutableBackup",
+          "description": "Indicates if the server is configured to create immutable backups."
         },
         "earliestRestoreDate": {
           "type": "string",
@@ -5561,6 +6182,14 @@
           "$ref": "#/definitions/EncryptionKeyStatus",
           "description": "Status of key used by a server configured with data encryption based on customer managed key, to encrypt the geographically redundant storage associated to the server when it is configured to support geographically redundant backups.",
           "readOnly": true
+        },
+        "primaryFederatedIdentityClientId": {
+          "$ref": "#/definitions/Azure.Core.uuid",
+          "description": "Client id of multi-tenant Microsoft Entra application."
+        },
+        "geoBackupFederatedIdentityClientId": {
+          "$ref": "#/definitions/Azure.Core.uuid",
+          "description": "Client id of multi-tenant Microsoft Entra application for when it is configured to support geographically redundant backups."
         }
       }
     },
@@ -5974,6 +6603,30 @@
         ]
       }
     },
+    "FipsMode": {
+      "type": "string",
+      "description": "Indicates if FIPS (Federal Information Processing Standards) mode is enabled on the server.",
+      "enum": [
+        "Enabled",
+        "Disabled"
+      ],
+      "x-ms-enum": {
+        "name": "FipsMode",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Enabled",
+            "value": "Enabled",
+            "description": "FIPS mode is enabled on the server."
+          },
+          {
+            "name": "Disabled",
+            "value": "Disabled",
+            "description": "FIPS mode is disabled on the server."
+          }
+        ]
+      }
+    },
     "FirewallRule": {
       "type": "object",
       "description": "Firewall rule.",
@@ -6269,6 +6922,30 @@
         ]
       }
     },
+    "ImmutableBackup": {
+      "type": "string",
+      "description": "Indicates if the server is configured to create immutable backups.",
+      "enum": [
+        "Enabled",
+        "Disabled"
+      ],
+      "x-ms-enum": {
+        "name": "ImmutableBackup",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Enabled",
+            "value": "Enabled",
+            "description": "Server is configured to create immutable backups."
+          },
+          {
+            "name": "Disabled",
+            "value": "Disabled",
+            "description": "Server is not configured to create immutable backups."
+          }
+        ]
+      }
+    },
     "ImpactRecord": {
       "type": "object",
       "description": "Impact on some metric if this recommended action is applied.",
@@ -6462,6 +7139,234 @@
         "value"
       ]
     },
+    "MaintenanceEventActionResponse": {
+      "type": "object",
+      "description": "Response model for maintenance event reschedule and apply-now actions.",
+      "properties": {
+        "maintenanceEventId": {
+          "type": "string",
+          "description": "The maintenance event name (maintenance ID)."
+        },
+        "serverId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The full Azure resource ID of the server."
+        },
+        "status": {
+          "$ref": "#/definitions/MaintenanceEventStatus",
+          "description": "The status of the maintenance event."
+        },
+        "plannedStartTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The planned start time of the maintenance event (UTC)."
+        },
+        "plannedEndTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The planned end time of the maintenance event (UTC)."
+        },
+        "appliedNow": {
+          "type": "boolean",
+          "description": "A value indicating whether this was an apply-now (immediate) action. True for ApplyNow; false for Reschedule."
+        },
+        "lastUpdatedTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The time this maintenance event record was last updated (UTC)."
+        }
+      }
+    },
+    "MaintenanceEventRescheduleRequest": {
+      "type": "object",
+      "description": "Parameters to reschedule a maintenance event.",
+      "properties": {
+        "postponeToDateTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "New start time in RFC3339 format."
+        }
+      },
+      "required": [
+        "postponeToDateTime"
+      ]
+    },
+    "MaintenanceEventResource": {
+      "type": "object",
+      "description": "Maintenance event resource for a PostgreSQL flexible server.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/MaintenanceEventResourceProperties",
+          "description": "The resource-specific properties for this resource."
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+        }
+      ]
+    },
+    "MaintenanceEventResourceListResult": {
+      "type": "object",
+      "description": "The response of a MaintenanceEventResource list operation.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The MaintenanceEventResource items on this page",
+          "items": {
+            "$ref": "#/definitions/MaintenanceEventResource"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "MaintenanceEventResourceProperties": {
+      "type": "object",
+      "description": "Properties of a maintenance event resource.",
+      "properties": {
+        "maintenanceEventId": {
+          "type": "string",
+          "description": "A service-generated identifier for this maintenance event, assigned by the platform (e.g., 'YL1T-HFG'). The format is not contractual and clients should not attempt to parse or construct this value.",
+          "readOnly": true
+        },
+        "maintenanceType": {
+          "$ref": "#/definitions/MaintenanceType",
+          "description": "The maintenance type (e.g., 'PlannedMaintenance').",
+          "readOnly": true
+        },
+        "description": {
+          "type": "string",
+          "description": "The human-readable description of the maintenance event.",
+          "readOnly": true
+        },
+        "status": {
+          "$ref": "#/definitions/MaintenanceEventStatus",
+          "description": "The customer-facing status of the maintenance event.",
+          "readOnly": true
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The scheduled start time of the maintenance event (UTC).",
+          "readOnly": true
+        },
+        "endTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The scheduled end time of the maintenance event (UTC).",
+          "readOnly": true
+        },
+        "estimatedDowntime": {
+          "type": "string",
+          "description": "The estimated downtime as an ISO 8601 duration string (e.g., 'PT60S' = 60 seconds).",
+          "readOnly": true
+        },
+        "deferrable": {
+          "type": "boolean",
+          "description": "A value indicating whether this maintenance event can be rescheduled by the customer.",
+          "readOnly": true
+        },
+        "deferralDeadline": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The latest date/time this maintenance event can be postponed to (UTC). Present only when deferrable is true.",
+          "readOnly": true
+        },
+        "rescheduledFrom": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The previous scheduled start time before the most recent reschedule (UTC). Null if the event has never been rescheduled.",
+          "readOnly": true
+        },
+        "lastUpdatedTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The time this maintenance event record was last updated (UTC).",
+          "readOnly": true
+        },
+        "originalStartTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The initial scheduled start time before any reschedule (UTC). Equals startTime when the event has never been rescheduled.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "maintenanceType",
+        "status",
+        "startTime",
+        "endTime",
+        "deferrable",
+        "originalStartTime"
+      ]
+    },
+    "MaintenanceEventStatus": {
+      "type": "string",
+      "description": "The status of a maintenance event.",
+      "enum": [
+        "Planned",
+        "InProgress",
+        "Complete",
+        "Rescheduled",
+        "Canceled"
+      ],
+      "x-ms-enum": {
+        "name": "MaintenanceEventStatus",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Planned",
+            "value": "Planned",
+            "description": "The maintenance event is scheduled and has not yet started."
+          },
+          {
+            "name": "InProgress",
+            "value": "InProgress",
+            "description": "The maintenance event is currently in progress."
+          },
+          {
+            "name": "Complete",
+            "value": "Complete",
+            "description": "The maintenance event has completed successfully."
+          },
+          {
+            "name": "Rescheduled",
+            "value": "Rescheduled",
+            "description": "The maintenance event has been rescheduled (postponed) by the customer."
+          },
+          {
+            "name": "Canceled",
+            "value": "Canceled",
+            "description": "The maintenance event was canceled, failed, or timed out."
+          }
+        ]
+      }
+    },
+    "MaintenanceType": {
+      "type": "string",
+      "description": "Type of a maintenance event resource.",
+      "enum": [
+        "PlannedMaintenance"
+      ],
+      "x-ms-enum": {
+        "name": "MaintenanceType",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "PlannedMaintenance",
+            "value": "PlannedMaintenance",
+            "description": "Planned maintenance event."
+          }
+        ]
+      }
+    },
     "MaintenanceWindow": {
       "type": "object",
       "description": "Maintenance window properties of a server.",
@@ -6514,6 +7419,111 @@
           "format": "int32",
           "description": "Day of the week to be used for maintenance window."
         }
+      }
+    },
+    "MajorVersionUpgradePrecheckResource": {
+      "type": "object",
+      "description": "Major version upgrade precheck resource for a PostgreSQL flexible server.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/MajorVersionUpgradePrecheckResourceProperties",
+          "description": "The resource-specific properties for this resource."
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+        }
+      ]
+    },
+    "MajorVersionUpgradePrecheckResourceListResult": {
+      "type": "object",
+      "description": "The response of a MajorVersionUpgradePrecheckResource list operation.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The MajorVersionUpgradePrecheckResource items on this page",
+          "items": {
+            "$ref": "#/definitions/MajorVersionUpgradePrecheckResource"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "MajorVersionUpgradePrecheckResourceProperties": {
+      "type": "object",
+      "description": "Major version upgrade precheck resource with validation results.",
+      "properties": {
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The time when the precheck was created."
+        },
+        "status": {
+          "$ref": "#/definitions/MajorVersionUpgradePrecheckStatus",
+          "description": "The status of the precheck validation."
+        },
+        "precheckResult": {
+          "$ref": "#/definitions/PrecheckResult",
+          "description": "The detailed result of the precheck operation."
+        },
+        "targetVersion": {
+          "type": "string",
+          "description": "The target PostgreSQL major version for the upgrade."
+        },
+        "policyDetails": {
+          "type": "array",
+          "description": "Array of policy validation details.",
+          "items": {
+            "$ref": "#/definitions/PolicyDetail"
+          },
+          "x-ms-identifiers": [
+            "policyName"
+          ]
+        }
+      }
+    },
+    "MajorVersionUpgradePrecheckStatus": {
+      "type": "string",
+      "description": "The status of the major version upgrade precheck.",
+      "enum": [
+        "Validating",
+        "Succeeded",
+        "Failed",
+        "Canceled"
+      ],
+      "x-ms-enum": {
+        "name": "MajorVersionUpgradePrecheckStatus",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Validating",
+            "value": "Validating",
+            "description": "Executing prechecks against the source server"
+          },
+          {
+            "name": "Succeeded",
+            "value": "Succeeded",
+            "description": "Validation succeeded"
+          },
+          {
+            "name": "Failed",
+            "value": "Failed",
+            "description": "Validation failed"
+          },
+          {
+            "name": "Canceled",
+            "value": "Canceled",
+            "description": "Validation canceled"
+          }
+        ]
       }
     },
     "MetricSpecification": {
@@ -6582,6 +7592,29 @@
             "description": "Server does not support Microsoft Entra authentication."
           }
         ]
+      }
+    },
+    "MigrateNetworkStatus": {
+      "type": "object",
+      "description": "Status of a network migration operation.",
+      "properties": {
+        "subscriptionId": {
+          "type": "string",
+          "description": "Identifier of the subscription."
+        },
+        "resourceGroupName": {
+          "type": "string",
+          "description": "Name of the resource group."
+        },
+        "serverName": {
+          "type": "string",
+          "description": "Name of the server."
+        },
+        "state": {
+          "$ref": "#/definitions/NetworkMigrationState",
+          "description": "State of the network migration operation.",
+          "readOnly": true
+        }
       }
     },
     "MigrateRolesAndPermissions": {
@@ -7329,6 +8362,54 @@
         }
       }
     },
+    "NetworkMigrationState": {
+      "type": "string",
+      "description": "State of the network migration operation.",
+      "enum": [
+        "Pending",
+        "InProgress",
+        "Succeeded",
+        "Failed",
+        "CancelInProgress",
+        "Cancelled"
+      ],
+      "x-ms-enum": {
+        "name": "NetworkMigrationState",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Pending",
+            "value": "Pending",
+            "description": "Network migration is pending."
+          },
+          {
+            "name": "InProgress",
+            "value": "InProgress",
+            "description": "Network migration is in progress."
+          },
+          {
+            "name": "Succeeded",
+            "value": "Succeeded",
+            "description": "Network migration succeeded."
+          },
+          {
+            "name": "Failed",
+            "value": "Failed",
+            "description": "Network migration failed."
+          },
+          {
+            "name": "CancelInProgress",
+            "value": "CancelInProgress",
+            "description": "Network migration cancellation is in progress."
+          },
+          {
+            "name": "Cancelled",
+            "value": "Cancelled",
+            "description": "Network migration was cancelled."
+          }
+        ]
+      }
+    },
     "ObjectRecommendation": {
       "type": "object",
       "description": "Object recommendation properties.",
@@ -7703,6 +8784,33 @@
         ]
       }
     },
+    "PolicyDetail": {
+      "type": "object",
+      "description": "Policy validation details.",
+      "properties": {
+        "policyName": {
+          "type": "string",
+          "description": "The name of the policy."
+        },
+        "passed": {
+          "type": "boolean",
+          "description": "Whether the policy validation passed."
+        },
+        "errorCode": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The error code if validation failed."
+        },
+        "errorMessage": {
+          "type": "string",
+          "description": "The error message if validation failed."
+        },
+        "policyDescription": {
+          "type": "string",
+          "description": "Description of what the policy validates."
+        }
+      }
+    },
     "PostgreSqlFlexibleServerHighAvailabilityMode": {
       "type": "string",
       "description": "Mode of high availability supported for this compute.",
@@ -7733,64 +8841,43 @@
         ]
       }
     },
-    "PostgresMajorVersion": {
-      "type": "string",
-      "description": "Major version of PostgreSQL database engine.",
-      "enum": [
-        "18",
-        "17",
-        "16",
-        "15",
-        "14",
-        "13",
-        "12",
-        "11"
-      ],
-      "x-ms-enum": {
-        "name": "PostgresMajorVersion",
-        "modelAsString": true,
-        "values": [
-          {
-            "name": "18",
-            "value": "18",
-            "description": "PostgreSQL 18."
+    "PrecheckErrorInfo": {
+      "type": "object",
+      "description": "Error information from precheck validation.",
+      "properties": {
+        "errorCode": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The error code."
+        },
+        "errorMessage": {
+          "type": "string",
+          "description": "The error message."
+        }
+      }
+    },
+    "PrecheckResult": {
+      "type": "object",
+      "description": "Precheck result details.",
+      "properties": {
+        "action": {
+          "type": "string",
+          "description": "The action performed."
+        },
+        "upgradeSequence": {
+          "$ref": "#/definitions/UpgradeSequence",
+          "description": "The upgrade sequence information."
+        },
+        "errorInfo": {
+          "type": "array",
+          "description": "Array of error information.",
+          "items": {
+            "$ref": "#/definitions/PrecheckErrorInfo"
           },
-          {
-            "name": "17",
-            "value": "17",
-            "description": "PostgreSQL 17."
-          },
-          {
-            "name": "16",
-            "value": "16",
-            "description": "PostgreSQL 16."
-          },
-          {
-            "name": "15",
-            "value": "15",
-            "description": "PostgreSQL 15."
-          },
-          {
-            "name": "14",
-            "value": "14",
-            "description": "PostgreSQL 14."
-          },
-          {
-            "name": "13",
-            "value": "13",
-            "description": "PostgreSQL 13."
-          },
-          {
-            "name": "12",
-            "value": "12",
-            "description": "PostgreSQL 12."
-          },
-          {
-            "name": "11",
-            "value": "11",
-            "description": "PostgreSQL 11."
-          }
-        ]
+          "x-ms-identifiers": [
+            "errorCode"
+          ]
+        }
       }
     },
     "PrincipalType": {
@@ -8002,7 +9089,8 @@
         "CreateIndex",
         "DropIndex",
         "ReIndex",
-        "AnalyzeTable"
+        "AnalyzeTable",
+        "VacuumTable"
       ],
       "x-ms-enum": {
         "name": "RecommendationTypeEnum",
@@ -8027,6 +9115,11 @@
             "name": "AnalyzeTable",
             "value": "AnalyzeTable",
             "description": "Recommendation to analyze a table to update statistics for the query optimizer."
+          },
+          {
+            "name": "VacuumTable",
+            "value": "VacuumTable",
+            "description": "Recommendation to vacuum a table to reclaim storage and optimize performance."
           }
         ]
       }
@@ -8301,7 +9394,7 @@
           "x-ms-secret": true
         },
         "version": {
-          "$ref": "#/definitions/PostgresMajorVersion",
+          "type": "string",
           "description": "Major version of PostgreSQL database engine."
         },
         "minorVersion": {
@@ -8426,6 +9519,31 @@
             "update",
             "create"
           ]
+        },
+        "fipsMode": {
+          "type": "string",
+          "description": "Indicates if FIPS (Federal Information Processing Standards) mode is enabled on the server. If not specified on create, it defaults to Disabled.",
+          "default": "Disabled",
+          "enum": [
+            "Enabled",
+            "Disabled"
+          ],
+          "x-ms-enum": {
+            "name": "FipsMode",
+            "modelAsString": true,
+            "values": [
+              {
+                "name": "Enabled",
+                "value": "Enabled",
+                "description": "FIPS mode is enabled on the server."
+              },
+              {
+                "name": "Disabled",
+                "value": "Disabled",
+                "description": "FIPS mode is disabled on the server."
+              }
+            ]
+          }
         }
       }
     },
@@ -8448,7 +9566,7 @@
           "x-ms-secret": true
         },
         "version": {
-          "$ref": "#/definitions/PostgresMajorVersion",
+          "type": "string",
           "description": "Major version of PostgreSQL database engine."
         },
         "storage": {
@@ -8491,6 +9609,21 @@
             "update"
           ]
         },
+        "sourceServerResourceId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "Identifier of the server to be used as the source of the new server.",
+          "x-ms-mutability": [
+            "update"
+          ],
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.DBforPostgreSQL/flexibleServers"
+              }
+            ]
+          }
+        },
         "replicationRole": {
           "$ref": "#/definitions/ReplicationRole",
           "description": "Role of the server in a replication set."
@@ -8514,6 +9647,10 @@
             "read",
             "update"
           ]
+        },
+        "fipsMode": {
+          "$ref": "#/definitions/FipsMode",
+          "description": "Indicates if FIPS (Federal Information Processing Standards) mode is enabled on the server. If not specified, the current value is preserved."
         }
       }
     },
@@ -9034,6 +10171,38 @@
         ]
       }
     },
+    "StartMajorVersionUpgradePrecheckRequest": {
+      "type": "object",
+      "description": "Request model for starting a major version upgrade precheck.",
+      "properties": {
+        "targetVersion": {
+          "type": "string",
+          "description": "The target major version to upgrade to."
+        }
+      },
+      "required": [
+        "targetVersion"
+      ]
+    },
+    "StartMajorVersionUpgradePrecheckResponse": {
+      "type": "object",
+      "description": "Response model for starting a major version upgrade precheck.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The precheck validation ID."
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The time when the precheck was created."
+        },
+        "status": {
+          "$ref": "#/definitions/MajorVersionUpgradePrecheckStatus",
+          "description": "The status of the precheck validation."
+        }
+      }
+    },
     "Storage": {
       "type": "object",
       "description": "Storage properties of a server.",
@@ -9046,6 +10215,30 @@
         "autoGrow": {
           "$ref": "#/definitions/StorageAutoGrow",
           "description": "Flag to enable or disable the automatic growth of storage size of a server when available space is nearing zero and conditions allow for automatically growing storage size."
+        },
+        "autoGrowMaxThresholdMb": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Maximum allocated storage size to which storage autogrow may grow, in MB. This value is not a disk-utilization trigger threshold and must be at least the effective current or requested storage size. Storage conversion uses 1 GB = 1,024 MB.",
+          "minimum": 1,
+          "maximum": 67108864,
+          "x-ms-mutability": [
+            "read",
+            "update",
+            "create"
+          ]
+        },
+        "autoGrowIncrementPercent": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Storage autogrow increment as a percentage of the current allocated storage size. This value is not an absolute size increment or a utilization threshold.",
+          "minimum": 1,
+          "maximum": 100,
+          "x-ms-mutability": [
+            "read",
+            "update",
+            "create"
+          ]
         },
         "tier": {
           "$ref": "#/definitions/AzureManagedDiskPerformanceTier",
@@ -9362,6 +10555,20 @@
           "type": "string",
           "description": "State of the tuning option.",
           "readOnly": true
+        }
+      }
+    },
+    "UpgradeSequence": {
+      "type": "object",
+      "description": "Upgrade sequence information.",
+      "properties": {
+        "sourceVersion": {
+          "type": "string",
+          "description": "The source PostgreSQL version."
+        },
+        "targetVersion": {
+          "type": "string",
+          "description": "The target PostgreSQL version."
         }
       }
     },
