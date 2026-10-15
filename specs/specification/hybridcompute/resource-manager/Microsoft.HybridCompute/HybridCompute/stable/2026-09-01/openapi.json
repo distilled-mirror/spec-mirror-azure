@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "HybridComputeManagementClient",
-    "version": "2026-07-15",
+    "version": "2026-09-01",
     "description": "Azure Arc API reference for managing connected machines, machine extensions, run commands, gateways, licenses, license profiles, private link scopes, and related HybridCompute resources.",
     "x-typespec-generated": [
       {
@@ -68,6 +68,9 @@
     },
     {
       "name": "MachineRunCommands"
+    },
+    {
+      "name": "VmApplications"
     },
     {
       "name": "gateways"
@@ -1907,6 +1910,427 @@
           "final-state-schema": "#/definitions/SetupExtensionRequest"
         },
         "x-ms-long-running-operation": true
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/applications": {
+      "get": {
+        "operationId": "VmApplications_List",
+        "tags": [
+          "VmApplications"
+        ],
+        "description": "Lists the VM applications installed on a hybrid machine.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "machineName",
+            "in": "path",
+            "description": "The name of the hybrid machine.",
+            "required": true,
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 54,
+            "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$"
+          },
+          {
+            "name": "$top",
+            "in": "query",
+            "description": "The maximum number of results to return.",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 100
+          },
+          {
+            "name": "$skipToken",
+            "in": "query",
+            "description": "The continuation token for the next page of results.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded.",
+            "schema": {
+              "$ref": "#/definitions/VmApplicationsListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List VM applications": {
+            "$ref": "./examples/application/VMApplications_List.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/applications/{applicationName}": {
+      "get": {
+        "operationId": "VmApplications_Get",
+        "tags": [
+          "VmApplications"
+        ],
+        "description": "Gets a VM application.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "machineName",
+            "in": "path",
+            "description": "The name of the hybrid machine.",
+            "required": true,
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 54,
+            "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$"
+          },
+          {
+            "name": "applicationName",
+            "in": "path",
+            "description": "The name of the VM application. When creating the resource, this name must match the application name in the selected gallery reference.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9_.-]{0,78}[A-Za-z0-9_-])?$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/VmApplication"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get a VM application": {
+            "$ref": "./examples/application/VMApplications_Get.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "VmApplications_CreateOrUpdate",
+        "tags": [
+          "VmApplications"
+        ],
+        "description": "Creates or updates a VM application.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "machineName",
+            "in": "path",
+            "description": "The name of the hybrid machine.",
+            "required": true,
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 54,
+            "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$"
+          },
+          {
+            "name": "applicationName",
+            "in": "path",
+            "description": "The name of the VM application. When creating the resource, this name must match the application name in the selected gallery reference.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9_.-]{0,78}[A-Za-z0-9_-])?$"
+          },
+          {
+            "name": "resource",
+            "in": "body",
+            "description": "The VM application resource.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VmApplication"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'VmApplication' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/VmApplication"
+            }
+          },
+          "201": {
+            "description": "Resource 'VmApplication' create operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/VmApplication"
+            },
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "description": "A link to the status monitor"
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Create or update a VM application": {
+            "$ref": "./examples/application/VMApplications_CreateOrUpdate.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "azure-async-operation",
+          "final-state-schema": "#/definitions/VmApplication"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "patch": {
+        "operationId": "VmApplications_Update",
+        "tags": [
+          "VmApplications"
+        ],
+        "description": "Updates a VM application.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "machineName",
+            "in": "path",
+            "description": "The name of the hybrid machine.",
+            "required": true,
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 54,
+            "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$"
+          },
+          {
+            "name": "applicationName",
+            "in": "path",
+            "description": "The name of the VM application. When creating the resource, this name must match the application name in the selected gallery reference.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9_.-]{0,78}[A-Za-z0-9_-])?$"
+          },
+          {
+            "name": "properties",
+            "in": "body",
+            "description": "The VM application update properties.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VmApplicationUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/VmApplication"
+            }
+          },
+          "202": {
+            "description": "Resource update request accepted.",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Update a VM application": {
+            "$ref": "./examples/application/VMApplications_Update.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location",
+          "final-state-schema": "#/definitions/VmApplication"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "delete": {
+        "operationId": "VmApplications_Delete",
+        "tags": [
+          "VmApplications"
+        ],
+        "description": "Deletes a VM application.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "machineName",
+            "in": "path",
+            "description": "The name of the hybrid machine.",
+            "required": true,
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 54,
+            "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$"
+          },
+          {
+            "name": "applicationName",
+            "in": "path",
+            "description": "The name of the VM application. When creating the resource, this name must match the application name in the selected gallery reference.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9_.-]{0,78}[A-Za-z0-9_-])?$"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource deletion accepted.",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Delete a VM application": {
+            "$ref": "./examples/application/VMApplications_Delete.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/applications/{applicationName}/instanceView": {
+      "get": {
+        "operationId": "VmApplications_GetInstanceView",
+        "tags": [
+          "VmApplications"
+        ],
+        "description": "Gets the instance view of a VM application.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "machineName",
+            "in": "path",
+            "description": "The name of the hybrid machine.",
+            "required": true,
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 54,
+            "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$"
+          },
+          {
+            "name": "applicationName",
+            "in": "path",
+            "description": "The name of the VM application. When creating the resource, this name must match the application name in the selected gallery reference.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9_.-]{0,78}[A-Za-z0-9_-])?$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/VmApplication"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Get the instance view of a VM application": {
+            "$ref": "./examples/application/VMApplications_GetInstanceView.json"
+          }
+        }
       }
     },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{name}/assessPatches": {
@@ -5266,7 +5690,8 @@
       "description": "Specifies the identity key store a machine is using.",
       "enum": [
         "TPM",
-        "Default"
+        "Default",
+        "TpmTransition"
       ],
       "x-ms-enum": {
         "name": "IdentityKeyStore",
@@ -5281,6 +5706,11 @@
             "name": "Default",
             "value": "Default",
             "description": "Default"
+          },
+          {
+            "name": "TpmTransition",
+            "value": "TpmTransition",
+            "description": "The machine is transitioning its identity key store to TPM."
           }
         ]
       }
@@ -6994,6 +7424,10 @@
         "tpmEkCertificate": {
           "type": "string",
           "description": "Endorsement Key Certificate of the Trusted Platform Module (TPM) that the client provides to be used during initial resource onboarding."
+        },
+        "clientPublicKey": {
+          "type": "string",
+          "description": "Public Key that the client provides to be used during initial resource onboarding"
         }
       }
     },
@@ -8492,6 +8926,189 @@
           }
         ]
       }
+    },
+    "VmApplication": {
+      "type": "object",
+      "description": "A VM application installed on a hybrid machine.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/VmApplicationProperties",
+          "description": "The VM application properties."
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+        }
+      ]
+    },
+    "VmApplicationInstanceView": {
+      "type": "object",
+      "description": "The instance view of a VM application.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The application name."
+        },
+        "version": {
+          "type": "string",
+          "description": "The application version."
+        },
+        "result": {
+          "type": "string",
+          "description": "The current installation result."
+        },
+        "actionsPerformed": {
+          "type": "array",
+          "description": "The recent actions performed for the application.",
+          "items": {
+            "$ref": "#/definitions/VmApplicationInstanceViewAction"
+          },
+          "x-ms-identifiers": []
+        }
+      }
+    },
+    "VmApplicationInstanceViewAction": {
+      "type": "object",
+      "description": "An action recently performed for a VM application.",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "description": "The operation that was performed."
+        },
+        "result": {
+          "type": "string",
+          "description": "The result of the operation."
+        }
+      }
+    },
+    "VmApplicationProperties": {
+      "type": "object",
+      "description": "The properties of a VM application. Exactly one gallery application reference must be specified when creating or replacing the resource.",
+      "properties": {
+        "order": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The order in which the application is installed."
+        },
+        "packageReferenceId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The resource ID of the gallery application version. The version name can be `latest` or a specific version. This property is mutually exclusive with sharedGalleryApplicationId and communityGalleryApplicationId.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.Compute/galleries/applications/versions"
+              }
+            ]
+          }
+        },
+        "sharedGalleryApplicationId": {
+          "type": "string",
+          "description": "The identifier of a direct shared gallery application version. Use `/sharedGalleries/{sharedGalleryUniqueName}/applications/{applicationName}/versions/{versionName}`, where the version name can be `latest` or a specific version. This property is mutually exclusive with packageReferenceId and communityGalleryApplicationId."
+        },
+        "communityGalleryApplicationId": {
+          "type": "string",
+          "description": "The identifier of a community gallery application version. Use `/communityGalleries/{communityGalleryPublicName}/applications/{applicationName}/versions/{versionName}`, where the version name can be `latest` or a specific version. This property is mutually exclusive with packageReferenceId and sharedGalleryApplicationId."
+        },
+        "configurationReference": {
+          "type": "string",
+          "format": "uri",
+          "description": "The URI of configuration data that replaces the package's default configuration."
+        },
+        "treatFailureAsDeploymentFailure": {
+          "type": "boolean",
+          "description": "Indicates whether an application operation failure causes the deployment to fail."
+        },
+        "provisioningState": {
+          "$ref": "#/definitions/ProvisioningState",
+          "description": "The provisioning state of the VM application.",
+          "readOnly": true
+        },
+        "instanceView": {
+          "$ref": "#/definitions/VmApplicationInstanceView",
+          "description": "The instance view of the VM application.",
+          "readOnly": true
+        }
+      }
+    },
+    "VmApplicationUpdate": {
+      "type": "object",
+      "description": "The update request for a VM application.",
+      "properties": {
+        "tags": {
+          "type": "object",
+          "description": "Resource tags.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "$ref": "#/definitions/VmApplicationUpdateProperties",
+          "description": "The resource-specific properties for this resource."
+        }
+      }
+    },
+    "VmApplicationUpdateProperties": {
+      "type": "object",
+      "description": "The updatable properties of the VmApplication.",
+      "properties": {
+        "order": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The order in which the application is installed."
+        },
+        "packageReferenceId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The resource ID of the gallery application version. The version name can be `latest` or a specific version. This property is mutually exclusive with sharedGalleryApplicationId and communityGalleryApplicationId.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.Compute/galleries/applications/versions"
+              }
+            ]
+          }
+        },
+        "sharedGalleryApplicationId": {
+          "type": "string",
+          "description": "The identifier of a direct shared gallery application version. Use `/sharedGalleries/{sharedGalleryUniqueName}/applications/{applicationName}/versions/{versionName}`, where the version name can be `latest` or a specific version. This property is mutually exclusive with packageReferenceId and communityGalleryApplicationId."
+        },
+        "communityGalleryApplicationId": {
+          "type": "string",
+          "description": "The identifier of a community gallery application version. Use `/communityGalleries/{communityGalleryPublicName}/applications/{applicationName}/versions/{versionName}`, where the version name can be `latest` or a specific version. This property is mutually exclusive with packageReferenceId and sharedGalleryApplicationId."
+        },
+        "configurationReference": {
+          "type": "string",
+          "format": "uri",
+          "description": "The URI of configuration data that replaces the package's default configuration."
+        },
+        "treatFailureAsDeploymentFailure": {
+          "type": "boolean",
+          "description": "Indicates whether an application operation failure causes the deployment to fail."
+        }
+      }
+    },
+    "VmApplicationsListResult": {
+      "type": "object",
+      "description": "A page of VM applications.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The VmApplication items on this page",
+          "items": {
+            "$ref": "#/definitions/VmApplication"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
     },
     "VolumeLicenseDetails": {
       "type": "object",
