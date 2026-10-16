@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Microsoft NetApp",
-    "version": "2026-06-01",
+    "version": "2026-07-01",
     "description": "Microsoft NetApp Files Azure Resource Provider specification",
     "x-typespec-generated": [
       {
@@ -866,6 +866,9 @@
         "x-ms-examples": {
           "Accounts_CreateOrUpdate": {
             "$ref": "./examples/Accounts_CreateOrUpdate.json"
+          },
+          "Accounts_CreateOrUpdateLdapConfig": {
+            "$ref": "./examples/Accounts_CreateOrUpdateLdapConfig.json"
           },
           "Accounts_CreateOrUpdateWithActiveDirectory": {
             "$ref": "./examples/Accounts_CreateOrUpdateAD.json"
@@ -8661,6 +8664,70 @@
         }
       }
     },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/refreshLdapBindPassword": {
+      "post": {
+        "operationId": "NetAppAccounts_RefreshLdapBindPassword",
+        "tags": [
+          "NetAppAccounts"
+        ],
+        "description": "Refresh LDAP Bind DN password by fetching the latest password from Azure Key Vault.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "accountName",
+            "in": "path",
+            "description": "The name of the NetApp account",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource operation accepted.",
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "format": "uri",
+                "description": "A link to the status monitor"
+              },
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "NetAppAccounts_RefreshLdapBindPassword": {
+            "$ref": "./examples/Accounts_RefreshLdapBindPassword.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "azure-async-operation"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/renewCredentials": {
       "post": {
         "operationId": "Accounts_RenewCredentials",
@@ -9503,6 +9570,24 @@
         }
       }
     },
+    "AccountEncryptionPatch": {
+      "type": "object",
+      "description": "Encryption settings for PATCH operations (no default values)",
+      "properties": {
+        "keySource": {
+          "$ref": "#/definitions/KeySource",
+          "description": "The encryption keySource (provider). Possible values (case-insensitive):  Microsoft.NetApp, Microsoft.KeyVault"
+        },
+        "keyVaultProperties": {
+          "$ref": "#/definitions/KeyVaultPropertiesPatch",
+          "description": "Properties provided by KeVault. Applicable if keySource is 'Microsoft.KeyVault'."
+        },
+        "identity": {
+          "$ref": "#/definitions/EncryptionIdentityPatch",
+          "description": "Identity used to authenticate to KeyVault. Applicable if keySource is 'Microsoft.KeyVault'."
+        }
+      }
+    },
     "AccountProperties": {
       "type": "object",
       "description": "NetApp account properties",
@@ -9541,6 +9626,39 @@
           "$ref": "#/definitions/MultiAdStatus",
           "description": "MultiAD Status for the account",
           "readOnly": true
+        },
+        "ldapConfiguration": {
+          "$ref": "#/definitions/LdapConfiguration",
+          "description": "LDAP Configuration for the account."
+        }
+      }
+    },
+    "AccountPropertiesPatch": {
+      "type": "object",
+      "description": "NetApp account patch properties",
+      "properties": {
+        "activeDirectories": {
+          "type": "array",
+          "description": "Active Directories",
+          "items": {
+            "$ref": "#/definitions/ActiveDirectoryPatch"
+          },
+          "x-ms-identifiers": [
+            "activeDirectoryId"
+          ]
+        },
+        "encryption": {
+          "$ref": "#/definitions/AccountEncryptionPatch",
+          "description": "Encryption settings"
+        },
+        "nfsV4IDDomain": {
+          "$ref": "#/definitions/VfsV4IDDomain",
+          "description": "Domain for NFSv4 user ID mapping. This property will be set for all NetApp accounts in the subscription and region and only affect non ldap NFSv4 volumes.",
+          "x-nullable": true
+        },
+        "ldapConfiguration": {
+          "$ref": "#/definitions/LdapConfigurationPatch",
+          "description": "LDAP Configuration for the account."
         }
       }
     },
@@ -9591,6 +9709,119 @@
           "type": "string",
           "description": "The Organizational Unit (OU) within the Windows Active Directory",
           "default": "CN=Computers"
+        },
+        "site": {
+          "type": "string",
+          "description": "The Active Directory site the service will limit Domain Controller discovery to"
+        },
+        "backupOperators": {
+          "type": "array",
+          "description": "Users to be added to the Built-in Backup Operator active directory group. A list of unique usernames without domain specifier",
+          "items": {
+            "$ref": "#/definitions/UserName"
+          }
+        },
+        "administrators": {
+          "type": "array",
+          "description": "Users to be added to the Built-in Administrators active directory group. A list of unique usernames without domain specifier",
+          "items": {
+            "$ref": "#/definitions/UserName"
+          }
+        },
+        "kdcIP": {
+          "type": "string",
+          "description": "kdc server IP address for the active directory machine. This optional parameter is used only while creating kerberos volume.",
+          "pattern": "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+        },
+        "adName": {
+          "type": "string",
+          "description": "Name of the active directory machine. This optional parameter is used only while creating kerberos volume",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "serverRootCACertificate": {
+          "type": "string",
+          "format": "password",
+          "description": "When LDAP over SSL/TLS is enabled, the LDAP client is required to have base64 encoded Active Directory Certificate Service's self-signed root CA certificate, this optional parameter is used only for dual protocol with LDAP user-mapping volumes.",
+          "minLength": 1,
+          "maxLength": 10240,
+          "x-ms-secret": true
+        },
+        "aesEncryption": {
+          "type": "boolean",
+          "description": "If enabled, AES encryption will be enabled for SMB communication."
+        },
+        "ldapSigning": {
+          "type": "boolean",
+          "description": "Specifies whether or not the LDAP traffic needs to be signed."
+        },
+        "securityOperators": {
+          "type": "array",
+          "description": "Domain Users in the Active directory to be given SeSecurityPrivilege privilege (Needed for SMB Continuously available shares for SQL). A list of unique usernames without domain specifier",
+          "items": {
+            "$ref": "#/definitions/UserName"
+          }
+        },
+        "ldapOverTLS": {
+          "type": "boolean",
+          "description": "Specifies whether or not the LDAP traffic needs to be secured via TLS."
+        },
+        "allowLocalNfsUsersWithLdap": {
+          "type": "boolean",
+          "description": "If enabled, NFS client local users can also (in addition to LDAP users) access the NFS volumes."
+        },
+        "encryptDCConnections": {
+          "type": "boolean",
+          "description": "If enabled, Traffic between the SMB server to Domain Controller (DC) will be encrypted."
+        },
+        "ldapSearchScope": {
+          "$ref": "#/definitions/LdapSearchScopeOpt",
+          "description": "LDAP Search scope options"
+        },
+        "preferredServersForLdapClient": {
+          "type": "string",
+          "description": "Comma separated list of IPv4 addresses of preferred servers for LDAP client. At most two comma separated IPv4 addresses can be passed.",
+          "maxLength": 32,
+          "pattern": "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)((, ?)(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))?)?$"
+        }
+      }
+    },
+    "ActiveDirectoryPatch": {
+      "type": "object",
+      "description": "Active Directory settings for PATCH operations (no default values)",
+      "properties": {
+        "activeDirectoryId": {
+          "type": "string",
+          "description": "Id of the Active Directory",
+          "x-nullable": true
+        },
+        "username": {
+          "type": "string",
+          "description": "A domain user account with permission to create machine accounts"
+        },
+        "password": {
+          "type": "string",
+          "format": "password",
+          "description": "Plain text password of Active Directory domain administrator, value is masked in the response",
+          "maxLength": 64,
+          "x-ms-secret": true
+        },
+        "domain": {
+          "type": "string",
+          "description": "Name of the Active Directory domain"
+        },
+        "dns": {
+          "type": "string",
+          "description": "Comma separated list of DNS server IP addresses (IPv4 only) for the Active Directory domain",
+          "pattern": "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)((, ?)(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))*$"
+        },
+        "smbServerName": {
+          "type": "string",
+          "description": "NetBIOS name of the SMB server. This name will be registered as a computer account in the AD and used to mount volumes"
+        },
+        "organizationalUnit": {
+          "type": "string",
+          "description": "The Organizational Unit (OU) within the Windows Active Directory"
         },
         "site": {
           "type": "string",
@@ -10295,6 +10526,94 @@
       "required": [
         "backupVaultId"
       ]
+    },
+    "BindAuthenticationLevel": {
+      "type": "string",
+      "description": "The authentication level to use when binding to the LDAP server.",
+      "enum": [
+        "Anonymous",
+        "Simple"
+      ],
+      "x-ms-enum": {
+        "name": "BindAuthenticationLevel",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Anonymous",
+            "value": "Anonymous",
+            "description": "Anonymous bind i.e. no credentials provided"
+          },
+          {
+            "name": "Simple",
+            "value": "Simple",
+            "description": "Simple bind i.e. plain text credentials provided"
+          }
+        ]
+      }
+    },
+    "BindPasswordAkvConfig": {
+      "type": "object",
+      "description": "The Azure Key Vault configuration where the Bind DN (Distinguished Name) user password is stored.",
+      "properties": {
+        "azureKeyVaultUri": {
+          "type": "string",
+          "format": "uri",
+          "description": "The Azure Key Vault URI where the Bind DN user password is stored."
+        },
+        "secretName": {
+          "type": "string",
+          "description": "The name of the secret in Azure Key Vault that contains the Bind DN user password.",
+          "minLength": 1,
+          "maxLength": 127,
+          "pattern": "^[a-zA-Z0-9-]+$"
+        },
+        "userAssignedIdentity": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The ARM resource identifier of the user assigned identity used to authenticate with key vault.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "azureKeyVaultUri",
+        "secretName"
+      ]
+    },
+    "BindPasswordAkvConfigPatch": {
+      "type": "object",
+      "description": "The Azure Key Vault configuration where the Bind DN (Distinguished Name) user password is stored.",
+      "properties": {
+        "azureKeyVaultUri": {
+          "type": "string",
+          "format": "uri",
+          "description": "The Azure Key Vault URI where the Bind DN user password is stored."
+        },
+        "secretName": {
+          "type": "string",
+          "description": "The name of the secret in Azure Key Vault that contains the Bind DN user password.",
+          "minLength": 1,
+          "maxLength": 127,
+          "pattern": "^[a-zA-Z0-9-]+$"
+        },
+        "userAssignedIdentity": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The ARM resource identifier of the user assigned identity used to authenticate with key vault.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+              }
+            ]
+          }
+        }
+      }
     },
     "BreakFileLocksRequest": {
       "type": "object",
@@ -11405,8 +11724,10 @@
         },
         "passphrase": {
           "type": "string",
+          "format": "password",
           "description": "Passphrase for use with cluster peer command",
-          "example": "SecurePassphrase123"
+          "example": "{passphrase}",
+          "x-ms-secret": true
         }
       }
     },
@@ -11635,6 +11956,20 @@
           "description": "The principal ID (object ID) of the identity used to authenticate with key vault. Read-only.",
           "readOnly": true
         },
+        "userAssignedIdentity": {
+          "type": "string",
+          "description": "The ARM resource identifier of the user assigned identity used to authenticate with key vault. Applicable if identity.type has 'UserAssigned'. It should match key of identity.userAssignedIdentities."
+        },
+        "federatedClientId": {
+          "type": "string",
+          "description": "ClientId of the multi-tenant Entra ID Application. Used to access cross-tenant keyvaults."
+        }
+      }
+    },
+    "EncryptionIdentityPatch": {
+      "type": "object",
+      "description": "Identity used to authenticate with key vault for PATCH operations",
+      "properties": {
         "userAssignedIdentity": {
           "type": "string",
           "description": "The ARM resource identifier of the user assigned identity used to authenticate with key vault. Applicable if identity.type has 'UserAssigned'. It should match key of identity.userAssignedIdentities."
@@ -12103,6 +12438,30 @@
         ]
       }
     },
+    "KeySource": {
+      "type": "string",
+      "description": "The encryption keySource (provider). Possible values (case-insensitive):  Microsoft.NetApp, Microsoft.KeyVault",
+      "enum": [
+        "Microsoft.NetApp",
+        "Microsoft.KeyVault"
+      ],
+      "x-ms-enum": {
+        "name": "KeySource",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Microsoft.NetApp",
+            "value": "Microsoft.NetApp",
+            "description": "Microsoft-managed key encryption"
+          },
+          {
+            "name": "Microsoft.KeyVault",
+            "value": "Microsoft.KeyVault",
+            "description": "Customer-managed key encryption"
+          }
+        ]
+      }
+    },
     "KeyVaultPrivateEndpoint": {
       "type": "object",
       "description": "Pairs of virtual network ID and private endpoint ID. Every virtual network that has volumes encrypted with customer-managed keys needs its own key vault private endpoint.",
@@ -12177,6 +12536,33 @@
         "keyName"
       ]
     },
+    "KeyVaultPropertiesPatch": {
+      "type": "object",
+      "description": "Properties of key vault for PATCH operations (no required properties)",
+      "properties": {
+        "keyVaultUri": {
+          "type": "string",
+          "format": "uri",
+          "description": "The Uri of KeyVault."
+        },
+        "keyName": {
+          "type": "string",
+          "description": "The name of KeyVault key."
+        },
+        "keyVaultResourceId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The resource ID of KeyVault.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.KeyVault/vaults"
+              }
+            ]
+          }
+        }
+      }
+    },
     "KeyVaultStatus": {
       "type": "string",
       "description": "Status of the KeyVault connection.",
@@ -12217,6 +12603,208 @@
             "description": "KeyVault connection Updating"
           }
         ]
+      }
+    },
+    "LdapConfiguration": {
+      "type": "object",
+      "description": "LDAP configuration",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Name of the LDAP configuration domain",
+          "maxLength": 255,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9.-]{0,253}[a-zA-Z0-9]$"
+        },
+        "ldapServers": {
+          "type": "array",
+          "description": "List of LDAP server IP addresses (IPv4 only) for the LDAP domain.",
+          "items": {
+            "$ref": "#/definitions/Azure.Core.ipV4Address"
+          }
+        },
+        "secureLdapType": {
+          "type": "string",
+          "description": "Indicates the secure LDAP mode for encrypting communication between ANF storage and customer LDAP servers.",
+          "default": "None",
+          "enum": [
+            "LdapOverTLS",
+            "None"
+          ],
+          "x-ms-enum": {
+            "name": "SecureLdapType",
+            "modelAsString": true,
+            "values": [
+              {
+                "name": "LdapOverTLS",
+                "value": "LdapOverTLS",
+                "description": "LDAP traffic is encrypted using LDAP over TLS."
+              },
+              {
+                "name": "None",
+                "value": "None",
+                "description": "LDAP traffic is not encrypted."
+              }
+            ]
+          }
+        },
+        "serverCACertificate": {
+          "type": "string",
+          "format": "password",
+          "description": "When LDAP over SSL/TLS is enabled, the LDAP client is required to have base64 encoded ldap servers CA certificate.",
+          "minLength": 1,
+          "maxLength": 10240,
+          "x-ms-secret": true
+        },
+        "certificateCNHost": {
+          "type": "string",
+          "description": "The CN host name used while generating the certificate, LDAP Over TLS requires the CN host name to create DNS host entry.",
+          "maxLength": 255,
+          "x-nullable": true
+        },
+        "dnsServers": {
+          "type": "array",
+          "description": "List of DNS server IPv4 addresses for resolving the CN host certificate. This parameter is used when LDAP over TLS is enabled.",
+          "items": {
+            "$ref": "#/definitions/Azure.Core.ipV4Address"
+          }
+        },
+        "ldapPort": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Port number for LDAP communication. Default is 389 for LDAP.",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "userDN": {
+          "type": "string",
+          "description": "This specifies the user DN (Distinguished Name), which overrides the base DN for user lookups.",
+          "maxLength": 1024
+        },
+        "groupDN": {
+          "type": "string",
+          "description": "This specifies the group DN (Distinguished Name), which overrides the base DN for group lookups.",
+          "maxLength": 1024
+        },
+        "netGroupDN": {
+          "type": "string",
+          "description": "This specifies the netgroup DN (Distinguished Name), which overrides the base DN for netgroup lookups.",
+          "maxLength": 1024
+        },
+        "bindAuthenticationLevel": {
+          "type": "string",
+          "description": "The authentication level to use when binding to the LDAP server, defaults to Anonymous.",
+          "default": "Anonymous",
+          "enum": [
+            "Anonymous",
+            "Simple"
+          ],
+          "x-ms-enum": {
+            "name": "BindAuthenticationLevel",
+            "modelAsString": true,
+            "values": [
+              {
+                "name": "Anonymous",
+                "value": "Anonymous",
+                "description": "Anonymous bind i.e. no credentials provided"
+              },
+              {
+                "name": "Simple",
+                "value": "Simple",
+                "description": "Simple bind i.e. plain text credentials provided"
+              }
+            ]
+          }
+        },
+        "bindDN": {
+          "type": "string",
+          "description": "The distinguished name (DN) to bind as when performing LDAP operations.",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "bindPasswordAkvConfig": {
+          "$ref": "#/definitions/BindPasswordAkvConfig",
+          "description": "The Azure Key Vault configuration where the Bind DN (Distinguished Name) user password is stored."
+        }
+      }
+    },
+    "LdapConfigurationPatch": {
+      "type": "object",
+      "description": "LDAP configuration for PATCH operations (no default values)",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Name of the LDAP configuration domain",
+          "maxLength": 255,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9.-]{0,253}[a-zA-Z0-9]$"
+        },
+        "ldapServers": {
+          "type": "array",
+          "description": "List of LDAP server IP addresses (IPv4 only) for the LDAP domain.",
+          "items": {
+            "$ref": "#/definitions/Azure.Core.ipV4Address"
+          }
+        },
+        "secureLdapType": {
+          "$ref": "#/definitions/SecureLdapType",
+          "description": "Indicates the secure LDAP mode for encrypting communication between ANF storage and customer LDAP servers."
+        },
+        "serverCACertificate": {
+          "type": "string",
+          "format": "password",
+          "description": "When LDAP over SSL/TLS is enabled, the LDAP client is required to have base64 encoded ldap servers CA certificate.",
+          "minLength": 1,
+          "maxLength": 10240,
+          "x-ms-secret": true
+        },
+        "certificateCNHost": {
+          "type": "string",
+          "description": "The CN host name used while generating the certificate, LDAP Over TLS requires the CN host name to create DNS host entry.",
+          "maxLength": 255,
+          "x-nullable": true
+        },
+        "dnsServers": {
+          "type": "array",
+          "description": "List of DNS server IPv4 addresses for resolving the CN host certificate. This parameter is used when LDAP over TLS is enabled.",
+          "items": {
+            "$ref": "#/definitions/Azure.Core.ipV4Address"
+          }
+        },
+        "ldapPort": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Port number for LDAP communication. Default is 389 for LDAP.",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "userDN": {
+          "type": "string",
+          "description": "This specifies the user DN (Distinguished Name), which overrides the base DN for user lookups.",
+          "maxLength": 1024
+        },
+        "groupDN": {
+          "type": "string",
+          "description": "This specifies the group DN (Distinguished Name), which overrides the base DN for group lookups.",
+          "maxLength": 1024
+        },
+        "netGroupDN": {
+          "type": "string",
+          "description": "This specifies the netgroup DN (Distinguished Name), which overrides the base DN for netgroup lookups.",
+          "maxLength": 1024
+        },
+        "bindAuthenticationLevel": {
+          "$ref": "#/definitions/BindAuthenticationLevel",
+          "description": "The authentication level to use when binding to the LDAP server, defaults to Anonymous."
+        },
+        "bindDN": {
+          "type": "string",
+          "description": "The distinguished name (DN) to bind as when performing LDAP operations.",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "bindPasswordAkvConfig": {
+          "$ref": "#/definitions/BindPasswordAkvConfigPatch",
+          "description": "The Azure Key Vault configuration where the Bind DN (Distinguished Name) user password is stored."
+        }
       }
     },
     "LdapSearchScopeOpt": {
@@ -12640,40 +13228,21 @@
       "type": "object",
       "description": "NetApp account patch resource",
       "properties": {
-        "location": {
-          "type": "string",
-          "description": "Resource location"
-        },
-        "id": {
-          "type": "string",
-          "description": "Resource Id",
-          "readOnly": true
-        },
-        "name": {
-          "type": "string",
-          "description": "Resource name",
-          "readOnly": true
-        },
-        "type": {
-          "type": "string",
-          "description": "Resource type",
-          "readOnly": true
+        "identity": {
+          "$ref": "../../../../../../common-types/resource-management/v6/managedidentity.json#/definitions/ManagedServiceIdentity",
+          "description": "The managed service identities assigned to this resource."
         },
         "tags": {
           "type": "object",
-          "description": "Resource tags",
+          "description": "Resource tags.",
           "additionalProperties": {
             "type": "string"
           }
         },
         "properties": {
-          "$ref": "#/definitions/AccountProperties",
+          "$ref": "#/definitions/AccountPropertiesPatch",
           "description": "NetApp Account properties",
           "x-ms-client-flatten": true
-        },
-        "identity": {
-          "$ref": "../../../../../../common-types/resource-management/v6/managedidentity.json#/definitions/ManagedServiceIdentity",
-          "description": "The identity used for the resource."
         }
       }
     },
@@ -12681,19 +13250,35 @@
       "type": "string",
       "description": "Gets the status of the VolumeQuotaRule at the time the operation was called.",
       "enum": [
+        "Succeeded",
+        "Failed",
+        "Canceled",
         "Accepted",
         "Creating",
         "Patching",
         "Updating",
         "Deleting",
-        "Moving",
-        "Failed",
-        "Succeeded"
+        "Moving"
       ],
       "x-ms-enum": {
         "name": "NetAppProvisioningState",
         "modelAsString": true,
         "values": [
+          {
+            "name": "Succeeded",
+            "value": "Succeeded",
+            "description": "Resource has been created."
+          },
+          {
+            "name": "Failed",
+            "value": "Failed",
+            "description": "Resource creation failed."
+          },
+          {
+            "name": "Canceled",
+            "value": "Canceled",
+            "description": "Resource creation was canceled."
+          },
           {
             "name": "Accepted",
             "value": "Accepted",
@@ -12723,16 +13308,6 @@
             "name": "Moving",
             "value": "Moving",
             "description": "Resource is being Moved"
-          },
-          {
-            "name": "Failed",
-            "value": "Failed",
-            "description": "Resource has Failed"
-          },
-          {
-            "name": "Succeeded",
-            "value": "Succeeded",
-            "description": "Resource has Succeeded"
           }
         ]
       },
@@ -13056,7 +13631,9 @@
         },
         "clusterPeeringPassphrase": {
           "type": "string",
-          "description": "The cluster peering passphrase."
+          "format": "password",
+          "description": "The cluster peering passphrase.",
+          "x-ms-secret": true
         },
         "vserverPeeringCommand": {
           "type": "string",
@@ -14249,6 +14826,30 @@
         }
       }
     },
+    "SecureLdapType": {
+      "type": "string",
+      "description": "Indicates the secure LDAP mode for encrypting communication between ANF storage and customer LDAP servers.",
+      "enum": [
+        "LdapOverTLS",
+        "None"
+      ],
+      "x-ms-enum": {
+        "name": "SecureLdapType",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "LdapOverTLS",
+            "value": "LdapOverTLS",
+            "description": "LDAP traffic is encrypted using LDAP over TLS."
+          },
+          {
+            "name": "None",
+            "value": "None",
+            "description": "LDAP traffic is not encrypted."
+          }
+        ]
+      }
+    },
     "ServiceLevel": {
       "type": "string",
       "description": "The service level of the file system",
@@ -14399,11 +15000,11 @@
         },
         "smbAccessBasedEnumeration": {
           "$ref": "#/definitions/SmbAccessBasedEnumeration",
-          "description": "Enables access-based enumeration share property for SMB Shares. Only applicable for SMB/DualProtocol volume"
+          "description": "Enables access-based enumeration share property for SMB Shares. Only applicable for SMB/DualProtocol cache"
         },
         "smbNonBrowsable": {
           "$ref": "#/definitions/SmbNonBrowsable",
-          "description": "Enables non-browsable property for SMB Shares. Only applicable for SMB/DualProtocol volume"
+          "description": "Enables non-browsable property for SMB Shares. Only applicable for SMB/DualProtocol cache"
         }
       }
     },
