@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Microsoft.App SreAgent management service",
-    "version": "2026-01-01",
+    "version": "2026-07-01",
     "description": "Microsoft.App Resource Provider management API.",
     "x-typespec-generated": [
       {
@@ -40,6 +40,9 @@
   },
   "tags": [
     {
+      "name": "Operations"
+    },
+    {
       "name": "Agents"
     },
     {
@@ -50,6 +53,42 @@
     }
   ],
   "paths": {
+    "/providers/Microsoft.App/operations": {
+      "get": {
+        "operationId": "Operations_List",
+        "tags": [
+          "Operations"
+        ],
+        "description": "List the operations for the provider",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/OperationListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "List all operations": {
+            "$ref": "./examples/Operations_List.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
     "/subscriptions/{subscriptionId}/providers/Microsoft.App/agents": {
       "get": {
         "operationId": "Agents_ListBySubscription",
@@ -216,6 +255,12 @@
         "x-ms-examples": {
           "Agents_Get": {
             "$ref": "./examples/Agents_Get.json"
+          },
+          "Agents_Get_FullNetworkConfiguration": {
+            "$ref": "./examples/Agents_Get_FullNetworkConfiguration.json"
+          },
+          "Agents_Get_Vnet": {
+            "$ref": "./examples/Agents_Get_Vnet.json"
           }
         }
       },
@@ -287,6 +332,12 @@
         "x-ms-examples": {
           "Agents_CreateOrUpdate": {
             "$ref": "./examples/Agents_CreateOrUpdate.json"
+          },
+          "Agents_CreateOrUpdate_FullNetworkConfiguration": {
+            "$ref": "./examples/Agents_CreateOrUpdate_FullNetworkConfiguration.json"
+          },
+          "Agents_CreateOrUpdate_Vnet": {
+            "$ref": "./examples/Agents_CreateOrUpdate_Vnet.json"
           }
         },
         "x-ms-long-running-operation-options": {
@@ -359,6 +410,21 @@
         "x-ms-examples": {
           "Agents_Update": {
             "$ref": "./examples/Agents_Update.json"
+          },
+          "Agents_Update_AttachSubnet": {
+            "$ref": "./examples/Agents_Update_AttachSubnet.json"
+          },
+          "Agents_Update_ClearNetworkOverrides": {
+            "$ref": "./examples/Agents_Update_ClearNetworkOverrides.json"
+          },
+          "Agents_Update_DetachSubnet": {
+            "$ref": "./examples/Agents_Update_DetachSubnet.json"
+          },
+          "Agents_Update_NetworkSettings": {
+            "$ref": "./examples/Agents_Update_NetworkSettings.json"
+          },
+          "Agents_Update_ReplaceSubnet": {
+            "$ref": "./examples/Agents_Update_ReplaceSubnet.json"
           }
         },
         "x-ms-long-running-operation-options": {
@@ -689,7 +755,7 @@
         "tags": [
           "AgentsConnectors"
         ],
-        "description": "Get a Data Connector with secrets from an Agent",
+        "description": "Get a Data Connector with secrets from an Agent.",
         "parameters": [
           {
             "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
@@ -721,7 +787,7 @@
           "200": {
             "description": "Azure operation completed successfully.",
             "schema": {
-              "$ref": "#/definitions/AgentConnector"
+              "$ref": "#/definitions/AgentConnectorWithSecrets"
             }
           },
           "default": {
@@ -744,7 +810,7 @@
         "tags": [
           "AgentsConnectors"
         ],
-        "description": "List all Data Connectors with secrets from an Agent",
+        "description": "List all Data Connectors with secrets from an Agent.",
         "parameters": [
           {
             "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
@@ -768,7 +834,7 @@
           "200": {
             "description": "Azure operation completed successfully.",
             "schema": {
-              "$ref": "#/definitions/AgentConnectorCollection"
+              "$ref": "#/definitions/AgentConnectorWithSecretsCollection"
             }
           },
           "default": {
@@ -1048,7 +1114,11 @@
         "dataSource": {
           "type": "string",
           "format": "password",
-          "description": "Data source connection string or endpoint",
+          "description": "Data source connection string or endpoint supplied when creating or updating a connector.",
+          "x-ms-mutability": [
+            "update",
+            "create"
+          ],
           "x-ms-secret": true
         },
         "identity": {
@@ -1076,6 +1146,83 @@
           "description": "The type of the data connector"
         }
       }
+    },
+    "AgentConnectorPropertiesWithSecrets": {
+      "type": "object",
+      "description": "Agent Connector properties returned by secret-listing actions.",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "format": "uri",
+          "description": "Endpoint of the connector"
+        },
+        "identity": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "Identity used to access the data source"
+        },
+        "provisioningState": {
+          "$ref": "#/definitions/ConnectorProvisioningState",
+          "description": "Provisioning state of the connector",
+          "readOnly": true
+        },
+        "deploymentError": {
+          "type": "string",
+          "description": "Deployment error message if provisioning failed",
+          "readOnly": true
+        },
+        "extendedProperties": {
+          "type": "object",
+          "description": "Additional properties for the data connector which can be used to store custom key-value pairs",
+          "additionalProperties": {}
+        },
+        "dataSource": {
+          "type": "string",
+          "format": "password",
+          "description": "Data source connection string or endpoint.",
+          "x-ms-secret": true
+        },
+        "dataConnectorType": {
+          "type": "string",
+          "description": "The type of the data connector."
+        }
+      }
+    },
+    "AgentConnectorWithSecrets": {
+      "type": "object",
+      "description": "Agent Connector returned by secret-listing actions.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/AgentConnectorPropertiesWithSecrets",
+          "description": "The resource-specific properties for this resource."
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+        }
+      ]
+    },
+    "AgentConnectorWithSecretsCollection": {
+      "type": "object",
+      "description": "Collection of Agent Connectors returned by secret-listing actions.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The AgentConnectorWithSecrets items on this page",
+          "items": {
+            "$ref": "#/definitions/AgentConnectorWithSecrets"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of items"
+        }
+      },
+      "required": [
+        "value"
+      ]
     },
     "AgentIdentity": {
       "type": "object",
@@ -1218,6 +1365,14 @@
         "defaultModel": {
           "$ref": "#/definitions/DefaultModel",
           "description": "Default AI model configuration for the agent"
+        },
+        "vnetConfiguration": {
+          "$ref": "#/definitions/VnetConfiguration",
+          "description": "Virtual network configuration to update. Omission or an empty object preserves the subnet; JSON merge-patch null clears it.\nTo detach, clear the subnet and update sandbox egress in the same request so the resulting mode is not AzureVNet.\nThe detach example explicitly selects Limited.\nThe resulting subnet and AzureVNet egress mode must be configured together."
+        },
+        "sandboxConfiguration": {
+          "$ref": "#/definitions/SandboxConfiguration",
+          "description": "Sandbox configuration to update. Omission preserves the stored configuration.\nJSON merge-patch null clears it, and a supplied object merges its members with the stored configuration."
         }
       }
     },
@@ -1259,6 +1414,14 @@
           "description": "The endpoint of the Agent",
           "readOnly": true
         },
+        "outboundIpAddresses": {
+          "type": "array",
+          "description": "Outbound IP addresses reported for the Agent's provisioned networking resources.",
+          "items": {
+            "type": "string"
+          },
+          "readOnly": true
+        },
         "runningState": {
           "type": "string",
           "description": "The running state of the Agent",
@@ -1296,6 +1459,14 @@
         "defaultModel": {
           "$ref": "#/definitions/DefaultModel",
           "description": "Default AI model configuration for the agent"
+        },
+        "vnetConfiguration": {
+          "$ref": "#/definitions/VnetConfiguration",
+          "description": "Desired virtual network configuration. A subnet and AzureVNet egress mode must be configured together.\nUse PATCH for selective updates. Omitting networking settings from PUT can clear them or fail validation."
+        },
+        "sandboxConfiguration": {
+          "$ref": "#/definitions/SandboxConfiguration",
+          "description": "Desired sandbox configuration. PUT represents the complete desired configuration and does not preserve an existing\nvalue when this property is omitted.\nUse PATCH to preserve the stored configuration while updating other properties."
         }
       }
     },
@@ -1353,7 +1524,11 @@
         "connectionString": {
           "type": "string",
           "format": "password",
-          "description": "The connection string for the Application Insights resource",
+          "description": "The connection string supplied when creating or updating the Application Insights configuration.",
+          "x-ms-mutability": [
+            "update",
+            "create"
+          ],
           "x-ms-secret": true
         }
       }
@@ -1370,7 +1545,11 @@
         "dataSource": {
           "type": "string",
           "format": "password",
-          "description": "Data source connection string or endpoint",
+          "description": "Data source connection string or endpoint supplied when creating or updating a connector.",
+          "x-ms-mutability": [
+            "update",
+            "create"
+          ],
           "x-ms-secret": true
         },
         "identity": {
@@ -1471,7 +1650,11 @@
         "connectionKey": {
           "type": "string",
           "format": "password",
-          "description": "The key for the connection",
+          "description": "The key supplied when creating or updating the connection.",
+          "x-ms-mutability": [
+            "update",
+            "create"
+          ],
           "x-ms-secret": true
         },
         "oboUser": {
@@ -1527,6 +1710,191 @@
           ]
         }
       }
+    },
+    "SandboxAllowedHost": {
+      "type": "string",
+      "description": "A DNS hostname or a leading wildcard hostname pattern allowed on the managed network path.",
+      "minLength": 1,
+      "maxLength": 253,
+      "pattern": "^(\\*\\.(?=[^.]+\\.))?[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$"
+    },
+    "SandboxConfiguration": {
+      "type": "object",
+      "description": "Desired configuration for the agent's sandbox.",
+      "properties": {
+        "egress": {
+          "$ref": "#/definitions/SandboxEgressConfiguration",
+          "description": "Sandbox egress configuration. In PATCH, omission preserves egress and JSON merge-patch null clears it.\nClearing egress is invalid while a subnet remains configured."
+        },
+        "packages": {
+          "type": "array",
+          "description": "Packages to preinstall in the sandbox. In PATCH, omission preserves the package list.\nA supplied array replaces the entire list; JSON merge-patch null clears it. An empty array selects no packages.\nEach supplied package must include its name and package manager.",
+          "maxItems": 200,
+          "items": {
+            "$ref": "#/definitions/SandboxPackageSpec"
+          },
+          "x-ms-identifiers": [
+            "name",
+            "packageManager"
+          ]
+        }
+      }
+    },
+    "SandboxEgressConfiguration": {
+      "type": "object",
+      "description": "Desired outbound network configuration for the agent's sandbox.",
+      "properties": {
+        "mode": {
+          "$ref": "#/definitions/SandboxEgressMode",
+          "description": "Sandbox egress mode. AzureVNet requires a subnet, and a configured subnet requires AzureVNet.\nIn PATCH, omission preserves the mode and JSON merge-patch null clears it.\nClearing the mode is invalid while a subnet remains configured.\nNo unconditional default applies."
+        },
+        "allowHttpMcpServerNetworkAccess": {
+          "type": "boolean",
+          "description": "Whether remote HTTP MCP servers can use the managed network path.\nIn PATCH, omission preserves the setting and JSON merge-patch null clears it."
+        },
+        "allowedHosts": {
+          "type": "array",
+          "description": "Additional hostnames allowed on the managed network path.\nEntries are DNS hostnames or leading wildcard patterns such as '*.example.com'; a bare '*' is invalid.\nEach entry has at most 253 characters and each DNS label at most 63 characters.\nWildcard patterns must contain at least two labels after '*.'.\nIn PATCH, omission preserves the list, a supplied array replaces it, and JSON merge-patch null clears it.",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/definitions/SandboxAllowedHost"
+          }
+        },
+        "allowedRegistries": {
+          "type": "array",
+          "description": "Package registry identifiers allowed on the managed network path. Values are matched without regard to case.\nKnown values are 'pypi', 'npmjs', 'nuget-org' and 'ubuntu'. The service validates the values.\nIn PATCH, omission preserves the list, a supplied array replaces it, and JSON merge-patch null clears it.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedCodeRepositories": {
+          "type": "array",
+          "description": "Code repository provider identifiers allowed on the managed network path. Values are matched case-sensitively.\nKnown values are 'Github', 'GithubEnterprise', 'AzureDevOps' and 'GitLab'. The service validates the values.\nIn PATCH, omission preserves the list, a supplied array replaces it, and JSON merge-patch null clears it.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "httpProxy": {
+          "$ref": "#/definitions/SandboxHttpProxyConfiguration",
+          "description": "Forward-proxy configuration for sandbox outbound requests.\nUsed only when forward-proxy support is enabled for the Agent and the egress mode is AzureVNet.\nSupplying this configuration does not enable forward-proxy support.\nIn PATCH, omission preserves the configuration, JSON merge-patch null clears it, and a supplied object merges its members.\nThe resulting proxy configuration must include httpsUrl."
+        }
+      }
+    },
+    "SandboxEgressMode": {
+      "type": "string",
+      "description": "Supported modes for outbound network access from the agent's sandbox.",
+      "enum": [
+        "Unrestricted",
+        "Limited",
+        "AzureVNet"
+      ],
+      "x-ms-enum": {
+        "name": "SandboxEgressMode",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Unrestricted",
+            "value": "Unrestricted",
+            "description": "Allows sandbox egress without destination restrictions from this mode."
+          },
+          {
+            "name": "Limited",
+            "value": "Limited",
+            "description": "Restricts sandbox egress to allowed destinations."
+          },
+          {
+            "name": "AzureVNet",
+            "value": "AzureVNet",
+            "description": "Uses the configured virtual network subnet for sandbox egress."
+          }
+        ]
+      }
+    },
+    "SandboxHttpProxyConfiguration": {
+      "type": "object",
+      "description": "Forward-proxy endpoints and additional destinations that bypass the proxy.",
+      "properties": {
+        "httpUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Optional proxy endpoint used for HTTP destinations. When set, it must be the same proxy origin as httpsUrl;\ndifferent HTTP and HTTPS proxies are not supported.\nThe value must be an absolute http:// origin with a host. Credentials, paths other than '/', query strings,\nfragments, and ports 0, 80, and 443 are not supported.\nIn PATCH, omission preserves the endpoint and JSON merge-patch null clears it."
+        },
+        "httpsUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Proxy endpoint used for HTTPS destinations and CONNECT tunneling. Required whenever a proxy configuration is stored.\nThe proxy URL itself must use http:// for CONNECT tunneling and must be an origin with a host.\nCredentials, paths other than '/', query strings, fragments, and ports 0, 80, and 443 are not supported.\nIn PATCH, omission preserves the endpoint."
+        },
+        "noProxy": {
+          "type": "array",
+          "description": "Additional destinations that bypass the forward proxy.\nEntries can be DNS hostnames, leading-dot or '*.' suffix patterns, or exact IPv4 addresses.\nCIDR blocks, IPv6 addresses, ports, empty entries, and a bare '*' are invalid.\nIn PATCH, omission preserves the list, a supplied array replaces it, and JSON merge-patch null clears it.",
+          "items": {
+            "$ref": "#/definitions/SandboxNoProxyEntry"
+          }
+        }
+      }
+    },
+    "SandboxNoProxyEntry": {
+      "type": "string",
+      "description": "A destination that bypasses the forward proxy.\nThe value is an exact IPv4 address, a DNS hostname, or a DNS suffix prefixed with '.' or '*.'.\nThe service validates the format.",
+      "minLength": 1
+    },
+    "SandboxPackageManager": {
+      "type": "string",
+      "description": "Supported package managers for sandbox packages.",
+      "enum": [
+        "pip",
+        "npm",
+        "nuget"
+      ],
+      "x-ms-enum": {
+        "name": "SandboxPackageManager",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Pip",
+            "value": "pip",
+            "description": "Python packages installed with pip."
+          },
+          {
+            "name": "Npm",
+            "value": "npm",
+            "description": "JavaScript packages installed with npm."
+          },
+          {
+            "name": "Nuget",
+            "value": "nuget",
+            "description": ".NET tools installed from NuGet."
+          }
+        ]
+      }
+    },
+    "SandboxPackageSpec": {
+      "type": "object",
+      "description": "A package to preinstall in the sandbox. Package arrays are replaced as a whole.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Package name, optionally including a scope or namespace prefix.",
+          "minLength": 1,
+          "maxLength": 214,
+          "pattern": "^@?[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*)?$"
+        },
+        "version": {
+          "type": "string",
+          "description": "Optional package version or version constraint. Omit it to leave the version unspecified.",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9._+\\-~^<>=,*\\[\\]()]+$"
+        },
+        "packageManager": {
+          "$ref": "#/definitions/SandboxPackageManager",
+          "description": "Package manager used to install the package. Values are case-sensitive."
+        }
+      },
+      "required": [
+        "name",
+        "packageManager"
+      ]
     },
     "SupportedAgentModel": {
       "type": "object",
@@ -1621,6 +1989,24 @@
             "description": "Stable upgrade channel"
           }
         ]
+      }
+    },
+    "VnetConfiguration": {
+      "type": "object",
+      "description": "Desired subnet configuration for the agent's sandbox.",
+      "properties": {
+        "subnetResourceId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "Azure resource ID of the subnet used with AzureVNet egress mode.\nIn PATCH, omission preserves the subnet and JSON merge-patch null clears it.\nSetting or replacing a subnet requires the resulting egress mode to be AzureVNet.\nWhen clearing the subnet, also update sandbox egress in the same PATCH request so the resulting mode is not AzureVNet.\nThe detach example explicitly selects Limited.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.Network/virtualNetworks/subnets"
+              }
+            ]
+          }
+        }
       }
     }
   },

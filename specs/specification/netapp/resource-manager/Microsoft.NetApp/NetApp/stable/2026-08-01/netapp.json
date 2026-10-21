@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Microsoft NetApp",
-    "version": "2026-07-01",
+    "version": "2026-08-01",
     "description": "Microsoft NetApp Files Azure Resource Provider specification",
     "x-typespec-generated": [
       {
@@ -1768,8 +1768,8 @@
           }
         },
         "x-ms-examples": {
-          "Backups_List": {
-            "$ref": "./examples/BackupsUnderBackupVault_List.json"
+          "Backups_ListByVault": {
+            "$ref": "./examples/Backups_ListByVault.json"
           }
         },
         "x-ms-pageable": {
@@ -3239,6 +3239,9 @@
           }
         },
         "x-ms-examples": {
+          "Volumes_ExtralargeVolumeList": {
+            "$ref": "./examples/Volumes_ExtraLargeVolumes_List.json"
+          },
           "Volumes_List": {
             "$ref": "./examples/Volumes_List.json"
           }
@@ -3309,6 +3312,9 @@
           }
         },
         "x-ms-examples": {
+          "Volumes_ExtralargeVolumeGet": {
+            "$ref": "./examples/Volumes_ExtraLargeVolumes_Get.json"
+          },
           "Volumes_Get": {
             "$ref": "./examples/Volumes_Get.json"
           }
@@ -9277,6 +9283,9 @@
           }
         },
         "x-ms-examples": {
+          "VolumeGroups_List_Custom": {
+            "$ref": "./examples/VolumeGroups_List_Custom.json"
+          },
           "VolumeGroups_List_Oracle": {
             "$ref": "./examples/VolumeGroups_List_Oracle.json"
           },
@@ -9340,6 +9349,12 @@
           }
         },
         "x-ms-examples": {
+          "VolumeGroups_Get_Custom": {
+            "$ref": "./examples/VolumeGroups_Get_Custom.json"
+          },
+          "VolumeGroups_Get_Custom_SMB": {
+            "$ref": "./examples/VolumeGroups_Get_Custom_SMB.json"
+          },
           "VolumeGroups_Get_Oracle": {
             "$ref": "./examples/VolumeGroups_Get_Oracle.json"
           },
@@ -9418,6 +9433,12 @@
           }
         },
         "x-ms-examples": {
+          "VolumeGroups_Create_Custom": {
+            "$ref": "./examples/VolumeGroups_Create_Custom.json"
+          },
+          "VolumeGroups_Create_Custom_SMB": {
+            "$ref": "./examples/VolumeGroups_Create_Custom_SMB.json"
+          },
           "VolumeGroups_Create_Oracle": {
             "$ref": "./examples/VolumeGroups_Create_Oracle.json"
           },
