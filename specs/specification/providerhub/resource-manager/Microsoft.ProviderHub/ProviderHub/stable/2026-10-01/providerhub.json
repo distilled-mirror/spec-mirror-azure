@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "ProviderHub",
-    "version": "2025-10-01",
+    "version": "2026-10-01",
     "description": "Provider Hub",
     "x-typespec-generated": [
       {
@@ -80,6 +80,9 @@
     },
     {
       "name": "Manifests"
+    },
+    {
+      "name": "EndpointRegistrations"
     }
   ],
   "paths": {
@@ -2033,6 +2036,1339 @@
         "x-ms-long-running-operation": true
       }
     },
+    "/subscriptions/{subscriptionId}/providers/Microsoft.ProviderHub/providerRegistrations/{providerNamespace}/resourcetypeRegistrations/{resourceType}/endpoints": {
+      "get": {
+        "operationId": "EndpointRegistrations_ListByResourceTypeRegistration",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Lists endpoint registrations for a resource type registration.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistrationArrayResponseWithContinuation"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_ListByResourceTypeRegistration": {
+            "$ref": "./examples/EndpointRegistrations_ListByResourceTypeRegistration.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/providers/Microsoft.ProviderHub/providerRegistrations/{providerNamespace}/resourcetypeRegistrations/{resourceType}/endpoints/{endpointName}": {
+      "get": {
+        "operationId": "EndpointRegistrations_Get",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Gets an endpoint registration.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endpointName",
+            "in": "path",
+            "description": "The endpoint registration name.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_Get": {
+            "$ref": "./examples/EndpointRegistrations_Get.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "EndpointRegistrations_CreateOrUpdate",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Creates or replaces an endpoint registration.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endpointName",
+            "in": "path",
+            "description": "The endpoint registration name.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          },
+          {
+            "name": "properties",
+            "in": "body",
+            "description": "The endpoint registration supplied to the CreateOrUpdate operation.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'EndpointRegistration' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          },
+          "201": {
+            "description": "Resource 'EndpointRegistration' create operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_CreateOrUpdate": {
+            "$ref": "./examples/EndpointRegistrations_CreateOrUpdate.json"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "EndpointRegistrations_Delete",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Deletes an endpoint registration.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endpointName",
+            "in": "path",
+            "description": "The endpoint registration name.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource deleted successfully."
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_Delete": {
+            "$ref": "./examples/EndpointRegistrations_Delete.json"
+          }
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/providers/Microsoft.ProviderHub/providerRegistrations/{providerNamespace}/resourcetypeRegistrations/{resourceType}/resourcetypeRegistrations/{nestedResourceTypeFirst}": {
+      "get": {
+        "operationId": "ResourceTypeRegistrations_GetNestedResourceTypeFirst",
+        "tags": [
+          "ResourceTypeRegistrations"
+        ],
+        "description": "Gets a nested resource type details in the given subscription and provider.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/ResourceTypeRegistration"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "ResourceTypeRegistrations_GetNestedResourceTypeFirst": {
+            "$ref": "./examples/ResourceTypeRegistrations_GetNestedResourceTypeFirst.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "ResourceTypeRegistrations_CreateOrUpdateNestedResourceTypeFirst",
+        "tags": [
+          "ResourceTypeRegistrations"
+        ],
+        "description": "Creates or updates a nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "properties",
+            "in": "body",
+            "description": "The required request body parameters supplied to the resource type registration CreateOrUpdate operation.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ResourceTypeRegistration"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'ResourceTypeRegistration' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/ResourceTypeRegistration"
+            }
+          },
+          "201": {
+            "description": "Resource 'ResourceTypeRegistration' create operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/ResourceTypeRegistration"
+            },
+            "headers": {
+              "Azure-AsyncOperation": {
+                "type": "string",
+                "description": "A link to the status monitor"
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "ResourceTypeRegistrations_CreateOrUpdateNestedResourceTypeFirst": {
+            "$ref": "./examples/ResourceTypeRegistrations_CreateOrUpdateNestedResourceTypeFirst.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "azure-async-operation",
+          "final-state-schema": "#/definitions/ResourceTypeRegistration"
+        },
+        "x-ms-long-running-operation": true
+      },
+      "delete": {
+        "operationId": "ResourceTypeRegistrations_DeleteNestedResourceTypeFirst",
+        "tags": [
+          "ResourceTypeRegistrations"
+        ],
+        "description": "Deletes a nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource deletion accepted.",
+            "headers": {
+              "Location": {
+                "type": "string",
+                "description": "The Location header contains the URL where the status of the long running operation can be checked."
+              },
+              "Retry-After": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+              }
+            }
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "ResourceTypeRegistrations_DeleteNestedResourceTypeFirst": {
+            "$ref": "./examples/ResourceTypeRegistrations_DeleteNestedResourceTypeFirst.json"
+          }
+        },
+        "x-ms-long-running-operation-options": {
+          "final-state-via": "location"
+        },
+        "x-ms-long-running-operation": true
+      }
+    },
+    "/subscriptions/{subscriptionId}/providers/Microsoft.ProviderHub/providerRegistrations/{providerNamespace}/resourcetypeRegistrations/{resourceType}/resourcetypeRegistrations/{nestedResourceTypeFirst}/endpoints": {
+      "get": {
+        "operationId": "EndpointRegistrations_ListByResourceTypeRegistrationNestedResourceTypeFirst",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Lists endpoint registrations for a first-level nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistrationArrayResponseWithContinuation"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_ListByResourceTypeRegistrationNestedResourceTypeFirst": {
+            "$ref": "./examples/EndpointRegistrations_ListByResourceTypeRegistrationNestedResourceTypeFirst.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/providers/Microsoft.ProviderHub/providerRegistrations/{providerNamespace}/resourcetypeRegistrations/{resourceType}/resourcetypeRegistrations/{nestedResourceTypeFirst}/endpoints/{endpointName}": {
+      "get": {
+        "operationId": "EndpointRegistrations_GetNestedResourceTypeFirst",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Gets an endpoint registration for a first-level nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endpointName",
+            "in": "path",
+            "description": "The endpoint registration name.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_GetNestedResourceTypeFirst": {
+            "$ref": "./examples/EndpointRegistrations_GetNestedResourceTypeFirst.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "EndpointRegistrations_CreateOrUpdateNestedResourceTypeFirst",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Creates or replaces an endpoint registration for a first-level nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endpointName",
+            "in": "path",
+            "description": "The endpoint registration name.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          },
+          {
+            "name": "properties",
+            "in": "body",
+            "description": "The endpoint registration supplied to the CreateOrUpdate operation.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'EndpointRegistration' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          },
+          "201": {
+            "description": "Resource 'EndpointRegistration' create operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_CreateOrUpdateNestedResourceTypeFirst": {
+            "$ref": "./examples/EndpointRegistrations_CreateOrUpdateNestedResourceTypeFirst.json"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "EndpointRegistrations_DeleteNestedResourceTypeFirst",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Deletes an endpoint registration for a first-level nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endpointName",
+            "in": "path",
+            "description": "The endpoint registration name.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource deleted successfully."
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_DeleteNestedResourceTypeFirst": {
+            "$ref": "./examples/EndpointRegistrations_DeleteNestedResourceTypeFirst.json"
+          }
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/providers/Microsoft.ProviderHub/providerRegistrations/{providerNamespace}/resourcetypeRegistrations/{resourceType}/resourcetypeRegistrations/{nestedResourceTypeFirst}/resourcetypeRegistrations/{nestedResourceTypeSecond}/endpoints": {
+      "get": {
+        "operationId": "EndpointRegistrations_ListByResourceTypeRegistrationNestedResourceTypeSecond",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Lists endpoint registrations for a second-level nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeSecond",
+            "in": "path",
+            "description": "The second child resource type.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistrationArrayResponseWithContinuation"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_ListByResourceTypeRegistrationNestedResourceTypeSecond": {
+            "$ref": "./examples/EndpointRegistrations_ListByResourceTypeRegistrationNestedResourceTypeSecond.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/providers/Microsoft.ProviderHub/providerRegistrations/{providerNamespace}/resourcetypeRegistrations/{resourceType}/resourcetypeRegistrations/{nestedResourceTypeFirst}/resourcetypeRegistrations/{nestedResourceTypeSecond}/endpoints/{endpointName}": {
+      "get": {
+        "operationId": "EndpointRegistrations_GetNestedResourceTypeSecond",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Gets an endpoint registration for a second-level nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeSecond",
+            "in": "path",
+            "description": "The second child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endpointName",
+            "in": "path",
+            "description": "The endpoint registration name.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_GetNestedResourceTypeSecond": {
+            "$ref": "./examples/EndpointRegistrations_GetNestedResourceTypeSecond.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "EndpointRegistrations_CreateOrUpdateNestedResourceTypeSecond",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Creates or replaces an endpoint registration for a second-level nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeSecond",
+            "in": "path",
+            "description": "The second child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endpointName",
+            "in": "path",
+            "description": "The endpoint registration name.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          },
+          {
+            "name": "properties",
+            "in": "body",
+            "description": "The endpoint registration supplied to the CreateOrUpdate operation.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'EndpointRegistration' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          },
+          "201": {
+            "description": "Resource 'EndpointRegistration' create operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_CreateOrUpdateNestedResourceTypeSecond": {
+            "$ref": "./examples/EndpointRegistrations_CreateOrUpdateNestedResourceTypeSecond.json"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "EndpointRegistrations_DeleteNestedResourceTypeSecond",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Deletes an endpoint registration for a second-level nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeSecond",
+            "in": "path",
+            "description": "The second child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endpointName",
+            "in": "path",
+            "description": "The endpoint registration name.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource deleted successfully."
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_DeleteNestedResourceTypeSecond": {
+            "$ref": "./examples/EndpointRegistrations_DeleteNestedResourceTypeSecond.json"
+          }
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/providers/Microsoft.ProviderHub/providerRegistrations/{providerNamespace}/resourcetypeRegistrations/{resourceType}/resourcetypeRegistrations/{nestedResourceTypeFirst}/resourcetypeRegistrations/{nestedResourceTypeSecond}/resourcetypeRegistrations/{nestedResourceTypeThird}/endpoints": {
+      "get": {
+        "operationId": "EndpointRegistrations_ListByResourceTypeRegistrationNestedResourceTypeThird",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Lists endpoint registrations for a third-level nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeSecond",
+            "in": "path",
+            "description": "The second child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeThird",
+            "in": "path",
+            "description": "The third child resource type.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistrationArrayResponseWithContinuation"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_ListByResourceTypeRegistrationNestedResourceTypeThird": {
+            "$ref": "./examples/EndpointRegistrations_ListByResourceTypeRegistrationNestedResourceTypeThird.json"
+          }
+        },
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/providers/Microsoft.ProviderHub/providerRegistrations/{providerNamespace}/resourcetypeRegistrations/{resourceType}/resourcetypeRegistrations/{nestedResourceTypeFirst}/resourcetypeRegistrations/{nestedResourceTypeSecond}/resourcetypeRegistrations/{nestedResourceTypeThird}/endpoints/{endpointName}": {
+      "get": {
+        "operationId": "EndpointRegistrations_GetNestedResourceTypeThird",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Gets an endpoint registration for a third-level nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeSecond",
+            "in": "path",
+            "description": "The second child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeThird",
+            "in": "path",
+            "description": "The third child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endpointName",
+            "in": "path",
+            "description": "The endpoint registration name.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_GetNestedResourceTypeThird": {
+            "$ref": "./examples/EndpointRegistrations_GetNestedResourceTypeThird.json"
+          }
+        }
+      },
+      "put": {
+        "operationId": "EndpointRegistrations_CreateOrUpdateNestedResourceTypeThird",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Creates or replaces an endpoint registration for a third-level nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeSecond",
+            "in": "path",
+            "description": "The second child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeThird",
+            "in": "path",
+            "description": "The third child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endpointName",
+            "in": "path",
+            "description": "The endpoint registration name.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          },
+          {
+            "name": "properties",
+            "in": "body",
+            "description": "The endpoint registration supplied to the CreateOrUpdate operation.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource 'EndpointRegistration' update operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          },
+          "201": {
+            "description": "Resource 'EndpointRegistration' create operation succeeded",
+            "schema": {
+              "$ref": "#/definitions/EndpointRegistration"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_CreateOrUpdateNestedResourceTypeThird": {
+            "$ref": "./examples/EndpointRegistrations_CreateOrUpdateNestedResourceTypeThird.json"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "EndpointRegistrations_DeleteNestedResourceTypeThird",
+        "tags": [
+          "EndpointRegistrations"
+        ],
+        "description": "Deletes an endpoint registration for a third-level nested resource type.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "name": "providerNamespace",
+            "in": "path",
+            "description": "The name of the resource provider hosted within ProviderHub.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "resourceType",
+            "in": "path",
+            "description": "The resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeFirst",
+            "in": "path",
+            "description": "The first child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeSecond",
+            "in": "path",
+            "description": "The second child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "nestedResourceTypeThird",
+            "in": "path",
+            "description": "The third child resource type.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endpointName",
+            "in": "path",
+            "description": "The endpoint registration name.",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource deleted successfully."
+          },
+          "204": {
+            "description": "Resource does not exist."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "EndpointRegistrations_DeleteNestedResourceTypeThird": {
+            "$ref": "./examples/EndpointRegistrations_DeleteNestedResourceTypeThird.json"
+          }
+        }
+      }
+    },
     "/subscriptions/{subscriptionId}/providers/Microsoft.ProviderHub/providerRegistrations/{providerNamespace}/resourcetypeRegistrations/{resourceType}/resourcetypeRegistrations/{nestedResourceTypeFirst}/resourcetypeRegistrations/{nestedResourceTypeSecond}/resourcetypeRegistrations/{nestedResourceTypeThird}/skus": {
       "get": {
         "operationId": "Skus_ListByResourceTypeRegistrationsNestedResourceTypeThird",
@@ -3561,6 +4897,11 @@
         "appliedCommitId": {
           "type": "string",
           "description": "Commit id of manifest being applied."
+        },
+        "rootProviderNamespace": {
+          "type": "string",
+          "description": "The root resource provider namespace.",
+          "readOnly": true
         }
       }
     },
@@ -3845,6 +5186,22 @@
         "baselineArmManifestLocation": {
           "type": "string",
           "description": "The baseline ARM manifest location supplied to the checkin manifest operation."
+        },
+        "swaggerUri": {
+          "type": "string",
+          "format": "uri",
+          "description": "The URI of the signed-off OpenAPI specification pull request associated with the manifest check-in.",
+          "x-ms-mutability": [
+            "read",
+            "update",
+            "create"
+          ]
+        },
+        "checkinComment": {
+          "type": "string",
+          "description": "The comment associated with the manifest check-in.",
+          "maxLength": 200,
+          "pattern": "^[\\u0020-\\u007E\\u00A0-\\uFFFF]*$"
         }
       },
       "required": [
@@ -4046,6 +5403,10 @@
         "rolloutId": {
           "type": "string",
           "description": "The rollout id."
+        },
+        "rolloutOrchestrationMetadata": {
+          "$ref": "#/definitions/RolloutOrchestrationMetadata",
+          "description": "Orchestration metadata associated with the rollout."
         },
         "manifestCheckinSpecification": {
           "$ref": "#/definitions/ManifestCheckinSpecification",
@@ -4435,6 +5796,151 @@
         "schemaVersion": {
           "type": "string",
           "description": "The schema version."
+        }
+      }
+    },
+    "EndpointRegistration": {
+      "type": "object",
+      "description": "An independently managed endpoint definition for a Resource Type Registration.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/EndpointRegistrationProperties",
+          "description": "The endpoint configuration."
+        },
+        "kind": {
+          "type": "string",
+          "description": "The endpoint kind used to select the routing behavior.",
+          "default": "Managed",
+          "pattern": "^[-\\w\\._,\\(\\\\\\)]+$",
+          "enum": [
+            "Managed",
+            "Direct"
+          ],
+          "x-ms-enum": {
+            "name": "ResourceTypeEndpointKind",
+            "modelAsString": true,
+            "values": [
+              {
+                "name": "Managed",
+                "value": "Managed",
+                "description": "Endpoint served by ProviderHub service"
+              },
+              {
+                "name": "Direct",
+                "value": "Direct",
+                "description": "Endpoint served by the onboarded Resource Provider Service."
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "properties"
+      ],
+      "allOf": [
+        {
+          "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+        }
+      ]
+    },
+    "EndpointRegistrationArrayResponseWithContinuation": {
+      "type": "object",
+      "description": "A page of endpoint registrations.",
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The endpoint registrations in this page.",
+          "items": {
+            "$ref": "#/definitions/EndpointRegistration"
+          }
+        },
+        "nextLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The link to the next page of endpoint registrations.",
+          "readOnly": true
+        }
+      }
+    },
+    "EndpointRegistrationProperties": {
+      "type": "object",
+      "description": "Properties of an independently managed endpoint definition.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether the endpoint is enabled."
+        },
+        "apiVersions": {
+          "type": "array",
+          "description": "The api versions.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "locations": {
+          "type": "array",
+          "description": "The locations.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "requiredFeatures": {
+          "type": "array",
+          "description": "The required features.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "featuresRule": {
+          "$ref": "#/definitions/ResourceTypeEndpointFeaturesRule",
+          "description": "The features rule."
+        },
+        "extensions": {
+          "type": "array",
+          "description": "The extensions.",
+          "items": {
+            "$ref": "#/definitions/ResourceTypeExtension"
+          },
+          "x-ms-identifiers": [
+            "endpointUri"
+          ]
+        },
+        "timeout": {
+          "type": "string",
+          "format": "duration",
+          "description": "The timeout."
+        },
+        "endpointType": {
+          "$ref": "#/definitions/EndpointTypeResourceType",
+          "description": "The endpoint type."
+        },
+        "tokenAuthConfiguration": {
+          "$ref": "#/definitions/TokenAuthConfiguration",
+          "description": "The token auth configuration."
+        },
+        "skuLink": {
+          "type": "string",
+          "description": "The sku link."
+        },
+        "apiVersion": {
+          "type": "string",
+          "description": "Api version."
+        },
+        "zones": {
+          "type": "array",
+          "description": "List of zones.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataBoundary": {
+          "$ref": "#/definitions/DataBoundary",
+          "description": "The data boundary."
+        },
+        "endpointUri": {
+          "type": "string",
+          "format": "uri",
+          "description": "The URI of the endpoint."
         }
       }
     },
@@ -5031,6 +6537,30 @@
         ]
       }
     },
+    "IsolationType": {
+      "type": "string",
+      "description": "The isolation type.",
+      "enum": [
+        "Private",
+        "Public"
+      ],
+      "x-ms-enum": {
+        "name": "IsolationType",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Private",
+            "value": "Private",
+            "description": "Private isolation type."
+          },
+          {
+            "name": "Public",
+            "value": "Public",
+            "description": "Public isolation type."
+          }
+        ]
+      }
+    },
     "LegacyDisallowedCondition": {
       "type": "object",
       "properties": {
@@ -5104,6 +6634,48 @@
           {
             "name": "DeploymentCleanup",
             "value": "DeploymentCleanup"
+          }
+        ]
+      }
+    },
+    "LifecycleStage": {
+      "type": "string",
+      "description": "The lifecycle stage.",
+      "enum": [
+        "InDevelopment",
+        "PrivatePreview",
+        "PublicPreview",
+        "GA",
+        "Retired"
+      ],
+      "x-ms-enum": {
+        "name": "LifecycleStage",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "InDevelopment",
+            "value": "InDevelopment",
+            "description": "In Development lifecycle stage."
+          },
+          {
+            "name": "PrivatePreview",
+            "value": "PrivatePreview",
+            "description": "Private Preview lifecycle stage."
+          },
+          {
+            "name": "PublicPreview",
+            "value": "PublicPreview",
+            "description": "Public Preview lifecycle stage."
+          },
+          {
+            "name": "GA",
+            "value": "GA",
+            "description": "General Availability lifecycle stage."
+          },
+          {
+            "name": "Retired",
+            "value": "Retired",
+            "description": "Retired lifecycle stage."
           }
         ]
       }
@@ -6271,7 +7843,9 @@
         "PrivateLinkVnetTrafficTag",
         "ResourceGroupLocation",
         "ClientPrincipalNameEncoded",
-        "MSIResourceIdEncoded"
+        "MSIResourceIdEncoded",
+        "UserContext",
+        "AuxiliaryUserContext"
       ],
       "x-ms-enum": {
         "name": "OptInHeaderType",
@@ -6324,6 +7898,16 @@
           {
             "name": "MSIResourceIdEncoded",
             "value": "MSIResourceIdEncoded"
+          },
+          {
+            "name": "UserContext",
+            "value": "UserContext",
+            "description": "Includes user context information from the incoming token."
+          },
+          {
+            "name": "AuxiliaryUserContext",
+            "value": "AuxiliaryUserContext",
+            "description": "Includes user context information from incoming auxiliary tokens."
           }
         ]
       }
@@ -6346,6 +7930,30 @@
           {
             "name": "SystemDataCreatedByLastModifiedBy",
             "value": "SystemDataCreatedByLastModifiedBy"
+          }
+        ]
+      }
+    },
+    "PartnerCategory": {
+      "type": "string",
+      "description": "The partner category.",
+      "enum": [
+        "FirstParty",
+        "ThirdParty"
+      ],
+      "x-ms-enum": {
+        "name": "PartnerCategory",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "FirstParty",
+            "value": "FirstParty",
+            "description": "First party partner category."
+          },
+          {
+            "name": "ThirdParty",
+            "value": "ThirdParty",
+            "description": "Third party partner category."
           }
         ]
       }
@@ -6687,6 +8295,10 @@
         "enablePresetResourceTypes": {
           "type": "boolean",
           "description": "Indicates whether automatic registration for the preset resource types is enabled or disabled."
+        },
+        "lifecycleInfo": {
+          "$ref": "#/definitions/ResourceProviderLifecycleInfo",
+          "description": "The resource provider lifecycle information."
         }
       },
       "allOf": [
@@ -7342,6 +8954,31 @@
         }
       ]
     },
+    "ResourceProviderLifecycleInfo": {
+      "type": "object",
+      "description": "Resource provider lifecycle information.",
+      "properties": {
+        "isolationType": {
+          "$ref": "#/definitions/IsolationType",
+          "description": "The isolation type."
+        },
+        "partnerCategory": {
+          "$ref": "#/definitions/PartnerCategory",
+          "description": "The partner category."
+        },
+        "lifecycleStage": {
+          "$ref": "#/definitions/LifecycleStage",
+          "description": "The lifecycle stage."
+        },
+        "allowedSubscriptions": {
+          "type": "array",
+          "description": "The list of allowed subscriptions for this resource provider.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ResourceProviderManagement": {
       "type": "object",
       "properties": {
@@ -7423,6 +9060,13 @@
         "featureManagementOwners": {
           "type": "array",
           "description": "List of feature management owners.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "featureApprovalClaims": {
+          "type": "array",
+          "description": "List of claims to approve or reject feature registration.",
           "items": {
             "type": "string"
           }
@@ -8405,6 +10049,16 @@
         }
       ]
     },
+    "ResourceTypeLifecycleInfo": {
+      "type": "object",
+      "description": "Resource type lifecycle information.",
+      "properties": {
+        "lifecycleStage": {
+          "$ref": "#/definitions/LifecycleStage",
+          "description": "The lifecycle stage."
+        }
+      }
+    },
     "ResourceTypeManagedResourceGroupConfiguration": {
       "type": "object",
       "description": "The managed resource group configuration for the resource type.",
@@ -8738,6 +10392,10 @@
         "superScaleEnabled": {
           "type": "boolean",
           "description": "Indicates whether super scale is enabled."
+        },
+        "lifecycleInfo": {
+          "$ref": "#/definitions/ResourceTypeLifecycleInfo",
+          "description": "The resource type lifecycle information."
         },
         "resourceConcurrencyControlOptions": {
           "type": "object",
@@ -9318,6 +10976,32 @@
             "value": "LimitedOwner"
           }
         ]
+      }
+    },
+    "RolloutOrchestrationMetadata": {
+      "type": "object",
+      "description": "Orchestration metadata associated with a rollout.",
+      "properties": {
+        "isForManifestBuildout": {
+          "type": "boolean",
+          "description": "Whether the rollout is used for manifest buildout."
+        },
+        "deploymentType": {
+          "type": "string",
+          "description": "The deployment type associated with the rollout."
+        },
+        "trafficRing": {
+          "type": "string",
+          "description": "The traffic ring associated with the rollout."
+        },
+        "serviceGroup": {
+          "type": "string",
+          "description": "The service group associated with the rollout."
+        },
+        "serviceIdentifier": {
+          "type": "string",
+          "description": "The identifier of the service associated with the rollout."
+        }
       }
     },
     "RolloutStatusBase": {
@@ -10131,6 +11815,20 @@
         "swaggerSpecFolderUri": {
           "type": "string",
           "description": "The swagger spec folder uri."
+        },
+        "lifecycleInfo": {
+          "$ref": "#/definitions/SwaggerSpecificationLifecycleInfo",
+          "description": "The swagger specification lifecycle information."
+        }
+      }
+    },
+    "SwaggerSpecificationLifecycleInfo": {
+      "type": "object",
+      "description": "Swagger specification lifecycle information.",
+      "properties": {
+        "lifecycleStage": {
+          "$ref": "#/definitions/LifecycleStage",
+          "description": "The lifecycle stage."
         }
       }
     },
