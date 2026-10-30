@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "SiteRecoveryManagementClient",
-    "version": "2026-07-01",
+    "version": "2026-11-01",
     "description": "Open API for RecoveryServicesSiteRecovery",
     "x-typespec-generated": [
       {
@@ -3442,6 +3442,9 @@
         "x-ms-examples": {
           "Gets the details of a Replication protected item.": {
             "$ref": "./examples/ReplicationProtectedItems_Get.json"
+          },
+          "Gets the details of an A2A confidential VM with CMK disk encryption.": {
+            "$ref": "./examples/ReplicationProtectedItems_Get_A2ACvm.json"
           }
         }
       },
@@ -3523,6 +3526,12 @@
           }
         },
         "x-ms-examples": {
+          "Enables protection for an A2A confidential VM with CMK disk encryption.": {
+            "$ref": "./examples/ReplicationProtectedItems_Create_A2ACvm.json"
+          },
+          "Enables protection for an InMage RCM VM in an extended location.": {
+            "$ref": "./examples/ReplicationProtectedItems_Create_InMageRcmEdgeZone.json"
+          },
           "Enables protection.": {
             "$ref": "./examples/ReplicationProtectedItems_Create.json"
           }
@@ -3611,8 +3620,14 @@
           }
         },
         "x-ms-examples": {
+          "Updates the recovery ip-configs of a dual-stack (IPv4 and IPv6) A2A protected item.": {
+            "$ref": "./examples/ReplicationProtectedItems_Update_A2ADualStack.json"
+          },
           "Updates the replication protected Item settings.": {
             "$ref": "./examples/ReplicationProtectedItems_Update.json"
+          },
+          "Updates the target confidential disk encryption set for an A2A confidential VM.": {
+            "$ref": "./examples/ReplicationProtectedItems_Update_A2ACvm.json"
           }
         },
         "x-ms-long-running-operation-options": {
@@ -3776,7 +3791,7 @@
           }
         },
         "x-ms-examples": {
-          "Add disk(s) for protection.": {
+          "Adds a confidential data disk to an A2A protected confidential VM.": {
             "$ref": "./examples/ReplicationProtectedItems_AddDisks.json"
           }
         },
@@ -10783,6 +10798,9 @@
           }
         },
         "x-ms-examples": {
+          "Updates vault setting with the A2A recovery network configuration auto-sync policy disabled.": {
+            "$ref": "./examples/ReplicationVaultSetting_Create_Disabled.json"
+          },
           "Updates vault setting. A vault setting object is a singleton per vault and it is always present by default.": {
             "$ref": "./examples/ReplicationVaultSetting_Create.json"
           }
@@ -11016,6 +11034,57 @@
         }
       ],
       "x-ms-discriminator-value": "A2A"
+    },
+    "A2AClusterVmManagedDiskInputDetails": {
+      "type": "object",
+      "description": "A2A managed disk input details for cluster switch protection.",
+      "properties": {
+        "diskId": {
+          "type": "string",
+          "description": "The disk Id."
+        },
+        "primaryStagingAzureStorageAccountId": {
+          "type": "string",
+          "description": "The primary staging storage account Arm Id."
+        },
+        "recoveryResourceGroupId": {
+          "type": "string",
+          "description": "The target resource group Arm Id."
+        },
+        "recoveryReplicaDiskAccountType": {
+          "type": "string",
+          "description": "The replica disk type. Its an optional value and will be same as source disk type if not user provided."
+        },
+        "recoveryTargetDiskAccountType": {
+          "type": "string",
+          "description": "The target disk type after failover. Its an optional value and will be same as source disk type if not user provided."
+        },
+        "recoveryDiskEncryptionSetId": {
+          "type": "string",
+          "description": "The recovery disk encryption set Id."
+        },
+        "diskEncryptionInfo": {
+          "$ref": "#/definitions/DiskEncryptionInfo",
+          "description": "The recovery disk encryption information (for one / single pass flows)."
+        },
+        "recoveryNetworkAccessPolicy": {
+          "$ref": "#/definitions/DiskNetworkAccessPolicy",
+          "description": "The network access policy for the recovery managed disk."
+        },
+        "recoveryDiskAccessId": {
+          "type": "string",
+          "description": "The recovery disk access Arm Id."
+        },
+        "recoveryPublicNetworkAccess": {
+          "$ref": "#/definitions/DiskPublicNetworkAccess",
+          "description": "The public network access setting for the recovery managed disk."
+        }
+      },
+      "required": [
+        "diskId",
+        "primaryStagingAzureStorageAccountId",
+        "recoveryResourceGroupId"
+      ]
     },
     "A2AContainerCreationInput": {
       "type": "object",
@@ -11395,6 +11464,18 @@
         "autoProtectionOfDataDisk": {
           "$ref": "#/definitions/AutoProtectionOfDataDisk",
           "description": "A value indicating whether the auto protection is enabled."
+        },
+        "recoveryConfidentialDataDiskEncryptionIdentity": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The Azure resource ID of the confidential data disk encryption user-assigned identity. Applicable to CMK confidential VM data disks.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+              }
+            ]
+          }
         }
       },
       "required": [
@@ -11694,7 +11775,7 @@
           "type": "array",
           "description": "The list of vm managed disk details.",
           "items": {
-            "$ref": "#/definitions/A2AVmManagedDiskInputDetails"
+            "$ref": "#/definitions/A2AClusterVmManagedDiskInputDetails"
           }
         },
         "recoveryResourceGroupId": {
@@ -11869,6 +11950,11 @@
         "recoveryPublicNetworkAccess": {
           "$ref": "#/definitions/DiskPublicNetworkAccess",
           "description": "The public network access setting for the recovery managed disk."
+        },
+        "confidentialDiskEncryptionInfo": {
+          "$ref": "#/definitions/ConfidentialDiskEncryptionInfo",
+          "description": "The confidential disk encryption info for the managed disk. Applicable to CMK confidential VMs.",
+          "readOnly": true
         }
       }
     },
@@ -12368,6 +12454,18 @@
           "type": "integer",
           "format": "int32",
           "description": "the platform fault domain."
+        },
+        "recoveryConfidentialDataDiskEncryptionIdentity": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The Azure resource ID of the confidential data disk encryption user-assigned identity. Applicable to CMK confidential VM data disks.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+              }
+            ]
+          }
         }
       },
       "allOf": [
@@ -12879,6 +12977,18 @@
         "diskEncryptionInfo": {
           "$ref": "#/definitions/DiskEncryptionInfo",
           "description": "The recovery disk encryption information."
+        },
+        "recoveryConfidentialDataDiskEncryptionIdentity": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The Azure resource ID of the confidential data disk encryption user-assigned identity. Applicable to CMK confidential VM data disks.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+              }
+            ]
+          }
         }
       },
       "allOf": [
@@ -13039,6 +13149,18 @@
           "type": "integer",
           "format": "int32",
           "description": "The platform fault domain."
+        },
+        "recoveryConfidentialDataDiskEncryptionIdentity": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The Azure resource ID of the confidential data disk encryption user-assigned identity. Applicable to CMK confidential VM data disks.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+              }
+            ]
+          }
         }
       },
       "allOf": [
@@ -13114,6 +13236,10 @@
         "recoveryPublicNetworkAccess": {
           "$ref": "#/definitions/DiskPublicNetworkAccess",
           "description": "The public network access setting for the recovery managed disk."
+        },
+        "confidentialDiskEncryptionInfo": {
+          "$ref": "#/definitions/ConfidentialDiskEncryptionInfo",
+          "description": "The confidential disk encryption info for the managed disk. Applicable to CMK confidential VMs."
         }
       },
       "required": [
@@ -13149,6 +13275,10 @@
         "tfoDiskName": {
           "type": "string",
           "description": "The target disk name for test failover operation."
+        },
+        "confidentialDiskEncryptionInfo": {
+          "$ref": "#/definitions/UpdateConfidentialDiskEncryptionInfo",
+          "description": "The confidential disk encryption info to update for the managed disk. Only the recovery target confidential disk encryption set can be changed through this update operation. Applicable to A2A CMK confidential VMs."
         }
       }
     },
@@ -14534,6 +14664,36 @@
         }
       }
     },
+    "ConfidentialDiskEncryptionInfo": {
+      "type": "object",
+      "description": "Confidential disk encryption info for an A2A CMK confidential VM managed disk. Specifies the confidential disk encryption set ID for the replica disk used during replication and the confidential disk encryption set ID for the target disk used after failover.",
+      "properties": {
+        "recoveryReplicaConfidentialDiskEncryptionSetId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The Azure resource ID of the confidential disk encryption set used for the replica disk. Applicable to CMK confidential VMs.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.Compute/diskEncryptionSets"
+              }
+            ]
+          }
+        },
+        "recoveryTargetConfidentialDiskEncryptionSetId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The Azure resource ID of the confidential disk encryption set used for the target disk after failover. Applicable to CMK confidential VMs.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.Compute/diskEncryptionSets"
+              }
+            ]
+          }
+        }
+      }
+    },
     "ConfigurationSettings": {
       "type": "object",
       "description": "Replication provider specific settings.",
@@ -15721,7 +15881,7 @@
           "description": "BlobUri of the exported jobs."
         },
         "sasToken": {
-          "type": "string",
+          "$ref": "#/definitions/SecretString",
           "description": "The sas token to access blob."
         }
       },
@@ -16496,11 +16656,11 @@
       "description": "ApplyRecoveryPoint input specific to HyperVReplicaAzure provider.",
       "properties": {
         "primaryKekCertificatePfx": {
-          "type": "string",
+          "$ref": "#/definitions/SecretString",
           "description": "The primary kek certificate pfx."
         },
         "secondaryKekCertificatePfx": {
-          "type": "string",
+          "$ref": "#/definitions/SecretString",
           "description": "The secondary kek certificate pfx."
         }
       },
@@ -16810,11 +16970,11 @@
       "description": "HyperVReplicaAzure specific planned failover input.",
       "properties": {
         "primaryKekCertificatePfx": {
-          "type": "string",
+          "$ref": "#/definitions/SecretString",
           "description": "Primary kek certificate pfx."
         },
         "secondaryKekCertificatePfx": {
-          "type": "string",
+          "$ref": "#/definitions/SecretString",
           "description": "Secondary kek certificate pfx."
         },
         "recoveryPointId": {
@@ -17178,11 +17338,11 @@
       "description": "HvrA provider specific input for test failover.",
       "properties": {
         "primaryKekCertificatePfx": {
-          "type": "string",
+          "$ref": "#/definitions/SecretString",
           "description": "Primary kek certificate pfx."
         },
         "secondaryKekCertificatePfx": {
-          "type": "string",
+          "$ref": "#/definitions/SecretString",
           "description": "Secondary kek certificate pfx."
         },
         "recoveryPointId": {
@@ -17206,11 +17366,11 @@
       "description": "HvrA provider specific input for unplanned failover.",
       "properties": {
         "primaryKekCertificatePfx": {
-          "type": "string",
+          "$ref": "#/definitions/SecretString",
           "description": "Primary kek certificate pfx."
         },
         "secondaryKekCertificatePfx": {
-          "type": "string",
+          "$ref": "#/definitions/SecretString",
           "description": "Secondary kek certificate pfx."
         },
         "recoveryPointId": {
@@ -17842,6 +18002,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "ipVersion": {
+          "$ref": "#/definitions/IPVersion",
+          "description": "The IP version (IPv4 / IPv6) of the ip-config, as reported by the service. Read-only - it reflects the discovered NIC configuration and cannot be set by the caller. Orthogonal to the allocation type (static / dynamic). Omitted when IPv6 support is not enabled.",
+          "readOnly": true
         }
       }
     },
@@ -17887,6 +18052,30 @@
             "type": "string"
           }
         }
+      }
+    },
+    "IPVersion": {
+      "type": "string",
+      "description": "The IP version (address family) of an ip-config.",
+      "enum": [
+        "IPv4",
+        "IPv6"
+      ],
+      "x-ms-enum": {
+        "name": "IPVersion",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "IPv4",
+            "value": "IPv4",
+            "description": "The ip-config carries an IPv4 address."
+          },
+          {
+            "name": "IPv6",
+            "value": "IPv6",
+            "description": "The ip-config carries an IPv6 address."
+          }
+        ]
       }
     },
     "IdentityProviderDetails": {
@@ -19897,6 +20086,10 @@
         "targetCapacityReservationGroupId": {
           "type": "string",
           "description": "The target capacity reservation group ARM Id."
+        },
+        "targetExtendedLocation": {
+          "$ref": "#/definitions/ExtendedLocation",
+          "description": "The target extended location."
         }
       },
       "required": [
@@ -21329,6 +21522,10 @@
         "targetAvailabilityZone": {
           "type": "string",
           "description": "The target availability zone."
+        },
+        "targetExtendedLocation": {
+          "$ref": "#/definitions/ExtendedLocation",
+          "description": "The target extended location."
         },
         "targetProximityPlacementGroupId": {
           "type": "string",
@@ -25025,6 +25222,30 @@
         "resourceType"
       ]
     },
+    "RecoveryNetworkConfigAutoSyncPolicy": {
+      "type": "string",
+      "description": "The vault level policy controlling whether the A2A recovery network configuration is automatically kept in sync with the source virtual machine.",
+      "enum": [
+        "Disabled",
+        "Enabled"
+      ],
+      "x-ms-enum": {
+        "name": "RecoveryNetworkConfigAutoSyncPolicy",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Disabled",
+            "value": "Disabled",
+            "description": "Automatic synchronization of the recovery network configuration is turned off. Recovery NIC settings are changed only through an explicit update operation."
+          },
+          {
+            "name": "Enabled",
+            "value": "Enabled",
+            "description": "Automatic synchronization of the recovery network configuration is turned on. Recovery NIC settings are refreshed from the source virtual machine as its network configuration changes."
+          }
+        ]
+      }
+    },
     "RecoveryPlan": {
       "type": "object",
       "description": "Recovery plan details.",
@@ -25364,11 +25585,11 @@
       "description": "Recovery plan HVR Azure failover input.",
       "properties": {
         "primaryKekCertificatePfx": {
-          "type": "string",
+          "$ref": "#/definitions/SecretString",
           "description": "The primary KEK certificate PFX."
         },
         "secondaryKekCertificatePfx": {
-          "type": "string",
+          "$ref": "#/definitions/SecretString",
           "description": "The secondary KEK certificate PFX."
         },
         "recoveryPointType": {
@@ -27465,6 +27686,12 @@
       ],
       "x-ms-discriminator-value": "ScriptActionTaskDetails"
     },
+    "SecretString": {
+      "type": "string",
+      "format": "password",
+      "description": "A string value that contains secret material.",
+      "x-ms-secret": true
+    },
     "SecurityConfiguration": {
       "type": "string",
       "description": "Security configuration state.",
@@ -28541,6 +28768,24 @@
       "required": [
         "instanceType"
       ]
+    },
+    "UpdateConfidentialDiskEncryptionInfo": {
+      "type": "object",
+      "description": "Confidential disk encryption info used while updating replication of a CMK confidential VM managed disk.",
+      "properties": {
+        "recoveryTargetConfidentialDiskEncryptionSetId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "The Azure resource ID of the confidential disk encryption set used for the target disk after failover. Applicable to CMK confidential VMs.",
+          "x-ms-arm-id-details": {
+            "allowedResources": [
+              {
+                "type": "Microsoft.Compute/diskEncryptionSets"
+              }
+            ]
+          }
+        }
+      }
     },
     "UpdateDiskInput": {
       "type": "object",
@@ -30629,6 +30874,10 @@
         "vmwareToAzureProviderType": {
           "type": "string",
           "description": "VMware to Azure provider type."
+        },
+        "recoveryNetworkConfigAutoSync": {
+          "$ref": "#/definitions/RecoveryNetworkConfigAutoSyncPolicy",
+          "description": "The vault level policy controlling whether the A2A recovery network configuration is automatically kept in sync with the source virtual machine. If the property is omitted from the request body, the policy is set to `Disabled`."
         }
       }
     },
@@ -30643,6 +30892,10 @@
         "vmwareToAzureProviderType": {
           "type": "string",
           "description": "VMware to Azure provider type."
+        },
+        "recoveryNetworkConfigAutoSync": {
+          "$ref": "#/definitions/RecoveryNetworkConfigAutoSyncPolicy",
+          "description": "The vault level policy controlling whether the A2A recovery network configuration is automatically kept in sync with the source virtual machine."
         }
       }
     },

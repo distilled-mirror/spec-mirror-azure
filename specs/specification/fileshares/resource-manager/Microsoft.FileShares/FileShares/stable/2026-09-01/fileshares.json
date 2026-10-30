@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Microsoft.FileShares",
-    "version": "2026-06-01",
+    "version": "2026-09-01",
     "description": "Azure File Shares Resource Provider API.",
     "x-typespec-generated": [
       {
@@ -207,6 +207,15 @@
           },
           {
             "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/LocationParameter"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The request body",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/FileShareLimitsRequest"
+            }
           }
         ],
         "responses": {
@@ -963,6 +972,56 @@
         "x-ms-long-running-operation": true
       }
     },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.FileShares/fileShares/{resourceName}/getRedundancyConversionStatus": {
+      "post": {
+        "operationId": "FileShares_GetRedundancyConversionStatus",
+        "tags": [
+          "FileShares"
+        ],
+        "description": "Gets the status and details of the current or most recent redundancy conversion for the file share.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "resourceName",
+            "in": "path",
+            "description": "The resource name of the file share, as seen by the administrator through Azure Resource Manager.",
+            "required": true,
+            "type": "string",
+            "pattern": "^([a-z]|[0-9])([a-z]|[0-9]|(-(?!-))){1,61}([a-z]|[0-9])$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Azure operation completed successfully.",
+            "schema": {
+              "$ref": "#/definitions/RedundancyConversionStatusResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "FileShares_GetRedundancyConversionStatus_MaximumSet": {
+            "$ref": "./examples/FileShares_GetRedundancyConversionStatus_MaximumSet_Gen.json"
+          },
+          "FileShares_GetRedundancyConversionStatus_MinimumSet": {
+            "$ref": "./examples/FileShares_GetRedundancyConversionStatus_MinimumSet_Gen.json"
+          }
+        }
+      }
+    },
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.FileShares/fileShares/{resourceName}/privateEndpointConnections": {
       "get": {
         "operationId": "PrivateEndpointConnections_ListByFileShare",
@@ -1318,9 +1377,158 @@
           }
         }
       }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.FileShares/fileShares/{resourceName}/startRedundancyConversion": {
+      "post": {
+        "operationId": "FileShares_StartRedundancyConversion",
+        "tags": [
+          "FileShares"
+        ],
+        "description": "Starts a redundancy conversion for the file share.",
+        "parameters": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+          },
+          {
+            "name": "resourceName",
+            "in": "path",
+            "description": "The resource name of the file share, as seen by the administrator through Azure Resource Manager.",
+            "required": true,
+            "type": "string",
+            "pattern": "^([a-z]|[0-9])([a-z]|[0-9]|(-(?!-))){1,61}([a-z]|[0-9])$"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The content of the action request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StartRedundancyConversionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Action completed successfully."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "FileShares_StartRedundancyConversion_MaximumSet": {
+            "$ref": "./examples/FileShares_StartRedundancyConversion_MaximumSet_Gen.json"
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "Azure.Core.uuid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Universally Unique Identifier"
+    },
+    "Azure.ResourceManager.CommonTypes.CustomerManagedKeyEncryption": {
+      "type": "object",
+      "description": "Customer-managed key encryption properties for the resource.",
+      "properties": {
+        "keyEncryptionKeyIdentity": {
+          "$ref": "#/definitions/Azure.ResourceManager.CommonTypes.KeyEncryptionKeyIdentity",
+          "description": "All identity configuration for Customer-managed key settings defining which identity should be used to auth to Key Vault."
+        },
+        "keyEncryptionKeyUrl": {
+          "type": "string",
+          "description": "key encryption key Url, versioned or non-versioned. Ex: https://contosovault.vault.azure.net/keys/contosokek/562a4bb76b524a1493a6afe8e536ee78 or https://contosovault.vault.azure.net/keys/contosokek."
+        }
+      }
+    },
+    "Azure.ResourceManager.CommonTypes.InfrastructureEncryption": {
+      "type": "string",
+      "description": "(Optional) Discouraged to include in resource definition. Only needed where it is possible to disable platform (AKA infrastructure) encryption. Azure SQL TDE is an example of this. Values are enabled and disabled.",
+      "enum": [
+        "enabled",
+        "disabled"
+      ],
+      "x-ms-enum": {
+        "name": "InfrastructureEncryption",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Enabled",
+            "value": "enabled",
+            "description": "Encryption is enabled"
+          },
+          {
+            "name": "Disabled",
+            "value": "disabled",
+            "description": "Encryption is disabled"
+          }
+        ]
+      }
+    },
+    "Azure.ResourceManager.CommonTypes.KeyEncryptionKeyIdentity": {
+      "type": "object",
+      "description": "All identity configuration for Customer-managed key settings defining which identity should be used to auth to Key Vault.",
+      "properties": {
+        "identityType": {
+          "$ref": "#/definitions/Azure.ResourceManager.CommonTypes.KeyEncryptionKeyIdentityType",
+          "description": "The type of identity to use. Values can be systemAssignedIdentity, userAssignedIdentity, or delegatedResourceIdentity."
+        },
+        "userAssignedIdentityResourceId": {
+          "type": "string",
+          "format": "arm-id",
+          "description": "User assigned identity to use for accessing key encryption key Url. Ex: /subscriptions/fa5fc227-a624-475e-b696-cdd604c735bc/resourceGroups/<resource group>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/myId. Mutually exclusive with identityType systemAssignedIdentity."
+        },
+        "federatedClientId": {
+          "$ref": "#/definitions/Azure.Core.uuid",
+          "description": "application client identity to use for accessing key encryption key Url in a different tenant. Ex: f83c6b1b-4d34-47e4-bb34-9d83df58b540"
+        },
+        "delegatedIdentityClientId": {
+          "$ref": "#/definitions/Azure.Core.uuid",
+          "description": "delegated identity to use for accessing key encryption key Url. Ex: /subscriptions/fa5fc227-a624-475e-b696-cdd604c735bc/resourceGroups/<resource group>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/myId. Mutually exclusive with identityType systemAssignedIdentity and userAssignedIdentity - internal use only."
+        }
+      }
+    },
+    "Azure.ResourceManager.CommonTypes.KeyEncryptionKeyIdentityType": {
+      "type": "string",
+      "description": "The type of identity to use.",
+      "enum": [
+        "systemAssignedIdentity",
+        "userAssignedIdentity",
+        "delegatedResourceIdentity"
+      ],
+      "x-ms-enum": {
+        "name": "KeyEncryptionKeyIdentityType",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "SystemAssignedIdentity",
+            "value": "systemAssignedIdentity",
+            "description": "System assigned identity"
+          },
+          {
+            "name": "UserAssignedIdentity",
+            "value": "userAssignedIdentity",
+            "description": "User assigned identity"
+          },
+          {
+            "name": "DelegatedResourceIdentity",
+            "value": "delegatedResourceIdentity",
+            "description": "Delegated identity"
+          }
+        ]
+      }
+    },
     "EncryptionInTransitRequired": {
       "type": "string",
       "description": "State of NFS encryption in transit.",
@@ -1352,6 +1560,10 @@
         "properties": {
           "$ref": "#/definitions/FileShareProperties",
           "description": "The resource-specific properties for this resource."
+        },
+        "identity": {
+          "$ref": "../../../../../../common-types/resource-management/v6/managedidentity.json#/definitions/ManagedServiceIdentity",
+          "description": "The managed service identities assigned to this resource."
         }
       },
       "allOf": [
@@ -1359,6 +1571,36 @@
           "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
         }
       ]
+    },
+    "FileShareEncryption": {
+      "type": "object",
+      "description": "Encryption settings for the file share. Composes the standard common encryption type with read-only customer-managed key rotation status owned by the file share resource provider. Automatic key rotation follows the Azure Storage account model and is derived from the key URL shape: an unversioned customerManagedKeyEncryption.keyEncryptionKeyUrl opts into automatic rotation to the latest key version, while a versioned URL pins a specific version.",
+      "properties": {
+        "infrastructureEncryption": {
+          "$ref": "#/definitions/Azure.ResourceManager.CommonTypes.InfrastructureEncryption",
+          "description": "Values are enabled and disabled."
+        },
+        "customerManagedKeyEncryption": {
+          "$ref": "#/definitions/Azure.ResourceManager.CommonTypes.CustomerManagedKeyEncryption",
+          "description": "All Customer-managed key encryption properties for the resource."
+        },
+        "currentKeyEncryptionKeyUrl": {
+          "type": "string",
+          "description": "The versioned key encryption key URL currently applied to the file share by the service. When an unversioned keyEncryptionKeyUrl is supplied, this reflects the resolved latest key version currently in use.",
+          "readOnly": true
+        },
+        "lastKeyRotationTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The UTC timestamp when the service last successfully rotated the active customer-managed key version.",
+          "readOnly": true
+        },
+        "autoKeyRotationError": {
+          "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorDetail",
+          "description": "The last customer-actionable error encountered while automatically rotating to the latest key version.",
+          "readOnly": true
+        }
+      }
     },
     "FileShareLimits": {
       "type": "object",
@@ -1446,6 +1688,19 @@
         "provisioningConstants"
       ]
     },
+    "FileShareLimitsRequest": {
+      "type": "object",
+      "description": "Request structure for the file share limits API.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/FileShareOfferInput",
+          "description": "Properties used to select the file share offer."
+        }
+      },
+      "required": [
+        "properties"
+      ]
+    },
     "FileShareLimitsResponse": {
       "type": "object",
       "description": "Response structure for file share limits API.",
@@ -1479,6 +1734,24 @@
       "required": [
         "value"
       ]
+    },
+    "FileShareOfferInput": {
+      "type": "object",
+      "description": "File share offer dimensions.",
+      "properties": {
+        "protocol": {
+          "$ref": "#/definitions/Protocol",
+          "description": "The file sharing protocol. Defaults to NFS."
+        },
+        "mediaTier": {
+          "$ref": "#/definitions/MediaTier",
+          "description": "The storage media tier. Defaults to SSD."
+        },
+        "scaleMode": {
+          "$ref": "#/definitions/ScaleMode",
+          "description": "The scale mode. Defaults to Compatibility."
+        }
+      }
     },
     "FileSharePatchProperties": {
       "type": "object",
@@ -1528,6 +1801,13 @@
           "x-ms-mutability": [
             "update"
           ]
+        },
+        "encryption": {
+          "$ref": "#/definitions/FileShareEncryption",
+          "description": "Encryption settings for the file share.",
+          "x-ms-mutability": [
+            "update"
+          ]
         }
       }
     },
@@ -1567,6 +1847,14 @@
         "protocol": {
           "$ref": "#/definitions/Protocol",
           "description": "The file sharing protocol for this file share.",
+          "x-ms-mutability": [
+            "read",
+            "create"
+          ]
+        },
+        "scaleMode": {
+          "$ref": "#/definitions/ScaleMode",
+          "description": "The scale mode selected when the file share is created.",
           "x-ms-mutability": [
             "read",
             "create"
@@ -1673,6 +1961,20 @@
             "$ref": "../../../../../../common-types/resource-management/v6/privatelinks.json#/definitions/PrivateEndpointConnection"
           },
           "readOnly": true
+        },
+        "migrationState": {
+          "$ref": "#/definitions/MigrationState",
+          "description": "The current migration state of the file share.",
+          "readOnly": true
+        },
+        "encryption": {
+          "$ref": "#/definitions/FileShareEncryption",
+          "description": "Encryption settings for the file share.",
+          "x-ms-mutability": [
+            "read",
+            "update",
+            "create"
+          ]
         }
       }
     },
@@ -1728,6 +2030,18 @@
           "type": "integer",
           "format": "int32",
           "description": "The desired provisioned storage size of the share in GiB. Will be use to calculate the values of remaining provisioning parameters."
+        },
+        "protocol": {
+          "$ref": "#/definitions/Protocol",
+          "description": "The file sharing protocol. Defaults to NFS."
+        },
+        "mediaTier": {
+          "$ref": "#/definitions/MediaTier",
+          "description": "The storage media tier. Defaults to SSD."
+        },
+        "scaleMode": {
+          "$ref": "#/definitions/ScaleMode",
+          "description": "The scale mode. Defaults to Compatibility."
         }
       },
       "required": [
@@ -1986,6 +2300,10 @@
       "type": "object",
       "description": "The type used for update operations of the FileShare.",
       "properties": {
+        "identity": {
+          "$ref": "../../../../../../common-types/resource-management/v6/managedidentity.json#/definitions/ManagedServiceIdentity",
+          "description": "The managed service identities assigned to this resource."
+        },
         "tags": {
           "type": "object",
           "description": "Resource tags.",
@@ -2047,6 +2365,13 @@
           "x-ms-mutability": [
             "update"
           ]
+        },
+        "encryption": {
+          "$ref": "#/definitions/FileShareEncryption",
+          "description": "Encryption settings for the file share.",
+          "x-ms-mutability": [
+            "update"
+          ]
         }
       }
     },
@@ -2094,7 +2419,8 @@
       "type": "string",
       "description": "Media Tier enum.",
       "enum": [
-        "SSD"
+        "SSD",
+        "HDD"
       ],
       "x-ms-enum": {
         "name": "MediaTier",
@@ -2104,9 +2430,28 @@
             "name": "SSD",
             "value": "SSD",
             "description": "SSD media tier."
+          },
+          {
+            "name": "HDD",
+            "value": "HDD",
+            "description": "HDD media tier."
           }
         ]
       }
+    },
+    "MigrationState": {
+      "type": "object",
+      "description": "Summary of the current migration state for the file share.",
+      "properties": {
+        "redundancyConversionInProgress": {
+          "type": "boolean",
+          "description": "Indicates whether a redundancy conversion is in progress for the file share.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "redundancyConversionInProgress"
+      ]
     },
     "NfsProtocolProperties": {
       "type": "object",
@@ -2285,6 +2630,109 @@
         ]
       }
     },
+    "RedundancyConversionStatus": {
+      "type": "string",
+      "description": "Status of the redundancy conversion.",
+      "enum": [
+        "SubmittedForConversion",
+        "InProgress",
+        "Complete",
+        "Failed"
+      ],
+      "x-ms-enum": {
+        "name": "RedundancyConversionStatus",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "SubmittedForConversion",
+            "value": "SubmittedForConversion",
+            "description": "The redundancy conversion has been submitted."
+          },
+          {
+            "name": "InProgress",
+            "value": "InProgress",
+            "description": "The redundancy conversion is in progress."
+          },
+          {
+            "name": "Complete",
+            "value": "Complete",
+            "description": "The redundancy conversion has completed."
+          },
+          {
+            "name": "Failed",
+            "value": "Failed",
+            "description": "The redundancy conversion has failed."
+          }
+        ]
+      }
+    },
+    "RedundancyConversionStatusOutput": {
+      "type": "object",
+      "description": "The status and details of the current or most recent redundancy conversion.",
+      "properties": {
+        "targetRedundancy": {
+          "$ref": "#/definitions/Redundancy",
+          "description": "The target redundancy requested for the redundancy conversion.",
+          "readOnly": true
+        },
+        "conversionStatus": {
+          "$ref": "#/definitions/RedundancyConversionStatus",
+          "description": "The current status of the redundancy conversion.",
+          "readOnly": true
+        },
+        "conversionFailedReason": {
+          "type": "string",
+          "description": "The reason the redundancy conversion failed.",
+          "readOnly": true
+        },
+        "conversionFailedDetailedReason": {
+          "type": "string",
+          "description": "Detailed information about why the redundancy conversion failed.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "targetRedundancy",
+        "conversionStatus"
+      ]
+    },
+    "RedundancyConversionStatusResponse": {
+      "type": "object",
+      "description": "Response containing the status and details of the current or most recent redundancy conversion.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/RedundancyConversionStatusOutput",
+          "description": "Properties containing the redundancy conversion status output."
+        }
+      },
+      "required": [
+        "properties"
+      ]
+    },
+    "ScaleMode": {
+      "type": "string",
+      "description": "Scale mode for a file share.",
+      "enum": [
+        "Compatibility",
+        "Scale"
+      ],
+      "x-ms-enum": {
+        "name": "ScaleMode",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Compatibility",
+            "value": "Compatibility",
+            "description": "Compatibility scale mode."
+          },
+          {
+            "name": "Scale",
+            "value": "Scale",
+            "description": "Scale mode."
+          }
+        ]
+      }
+    },
     "ShareRootSquash": {
       "type": "string",
       "description": "Share root squash enum.",
@@ -2314,6 +2762,32 @@
           }
         ]
       }
+    },
+    "StartRedundancyConversionInput": {
+      "type": "object",
+      "description": "Input for starting a redundancy conversion.",
+      "properties": {
+        "targetRedundancy": {
+          "$ref": "#/definitions/Redundancy",
+          "description": "The requested target redundancy for the conversion."
+        }
+      },
+      "required": [
+        "targetRedundancy"
+      ]
+    },
+    "StartRedundancyConversionRequest": {
+      "type": "object",
+      "description": "Parameters for starting a redundancy conversion.",
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/StartRedundancyConversionInput",
+          "description": "Properties containing the redundancy conversion input."
+        }
+      },
+      "required": [
+        "properties"
+      ]
     }
   },
   "parameters": {}
