@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Cosmos DB",
-    "version": "2026-03-15",
+    "version": "2026-07-15",
     "description": "Azure Cosmos DB Throughput Pool REST API",
     "x-typespec-generated": [
       {
@@ -16097,6 +16097,11 @@
         "migrationState": {
           "$ref": "#/definitions/BackupPolicyMigrationState",
           "description": "The object representing the state of the migration between the backup policies."
+        },
+        "backupRetentionLockExpirationTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The UTC timestamp until which changes that reduce backup retention are locked.\nWhile active, this timestamp can only be extended."
         }
       },
       "discriminator": "type",
@@ -18120,6 +18125,10 @@
         "enforceHierarchicalPartitionKeyIdLastLevel": {
           "type": "boolean",
           "description": "Flag to indicate enabling/disabling of hierarchical partition key ID last level enforcement on the account."
+        },
+        "perPartitionAutomaticFailoverEnabled": {
+          "type": "boolean",
+          "description": "Flag to indicate enabling/disabling of per-partition automatic failover on the account, which automatically fails over individual partitions to available regions during a regional outage. Opt-in; defaults to false."
         }
       },
       "required": [
@@ -18376,6 +18385,10 @@
         "enforceHierarchicalPartitionKeyIdLastLevel": {
           "type": "boolean",
           "description": "Flag to indicate enabling/disabling of hierarchical partition key ID last level enforcement on the account."
+        },
+        "perPartitionAutomaticFailoverEnabled": {
+          "type": "boolean",
+          "description": "Flag to indicate enabling/disabling of per-partition automatic failover on the account, which automatically fails over individual partitions to available regions during a regional outage. Opt-in; defaults to false."
         }
       }
     },
@@ -18715,6 +18728,10 @@
         "enforceHierarchicalPartitionKeyIdLastLevel": {
           "type": "boolean",
           "description": "Flag to indicate enabling/disabling of hierarchical partition key ID last level enforcement on the account."
+        },
+        "perPartitionAutomaticFailoverEnabled": {
+          "type": "boolean",
+          "description": "Flag to indicate enabling/disabling of per-partition automatic failover on the account, which automatically fails over individual partitions to available regions during a regional outage. Opt-in; defaults to false."
         }
       }
     },
@@ -24999,6 +25016,30 @@
         }
       }
     },
+    "ThroughputBucketResource": {
+      "type": "object",
+      "description": "Cosmos DB throughput bucket object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Represents the throughput bucket id"
+        },
+        "maxThroughputPercentage": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Represents maximum percentage throughput that can be used by the bucket"
+        },
+        "isDefaultBucket": {
+          "type": "boolean",
+          "description": "Indicates whether this is the default throughput bucket"
+        }
+      },
+      "required": [
+        "id",
+        "maxThroughputPercentage"
+      ]
+    },
     "ThroughputPolicyResource": {
       "type": "object",
       "description": "Cosmos DB resource throughput policy",
@@ -25117,6 +25158,13 @@
           "type": "string",
           "description": "The maximum throughput value or the maximum maxThroughput value (for autoscale) that can be specified",
           "readOnly": true
+        },
+        "throughputBuckets": {
+          "type": "array",
+          "description": "Array of throughput bucket limits to be applied to the Cosmos DB container",
+          "items": {
+            "$ref": "#/definitions/ThroughputBucketResource"
+          }
         }
       }
     },
