@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "MongoClusterManagementClient",
-    "version": "2026-06-01",
+    "version": "2026-09-01",
     "description": "The Microsoft Azure management API provides create, read, update, and delete functionality for Azure DocumentDB resources including clusters and firewall rules.",
     "x-typespec-generated": [
       {
@@ -351,14 +351,14 @@
           "Creates a DocumentDB cluster resource with Customer Managed Key encryption from a point in time restore": {
             "$ref": "./examples/MongoClusters_CreatePITR_CMK.json"
           },
+          "Creates a DocumentDB cluster with default PremiumSSDv2 storage and string-valued tags.": {
+            "$ref": "./examples/MongoClusters_Create.json"
+          },
           "Creates a new DocumentDB cluster resource with Customer Managed Key encryption.": {
             "$ref": "./examples/MongoClusters_Create_CMK.json"
           },
           "Creates a new DocumentDB cluster resource with Premium SSDv2 storage.": {
             "$ref": "./examples/MongoClusters_Create_SSDv2.json"
-          },
-          "Creates a new DocumentDB cluster resource.": {
-            "$ref": "./examples/MongoClusters_Create.json"
           },
           "Creates a replica DocumentDB cluster resource from a source resource.": {
             "$ref": "./examples/MongoClusters_CreateGeoReplica.json"
@@ -451,6 +451,9 @@
           },
           "Updates a DocumentDB cluster resource": {
             "$ref": "./examples/MongoClusters_Update.json"
+          },
+          "Updates string-valued resource tags without changing the existing PremiumSSD storage type.": {
+            "$ref": "./examples/MongoClusters_PatchTags.json"
           },
           "Updates the Premium SSDv2 size on a DocumentDB cluster resource.": {
             "$ref": "./examples/MongoClusters_PatchSSDv2.json"
@@ -1222,6 +1225,9 @@
           }
         },
         "x-ms-examples": {
+          "Promotes a replica DocumentDB cluster resource to a primary role, waiting for the replica to catch up before promoting.": {
+            "$ref": "./examples/MongoClusters_PlannedPromoteReplica.json"
+          },
           "Promotes a replica DocumentDB cluster resource to a primary role.": {
             "$ref": "./examples/MongoClusters_ForcePromoteReplica.json"
           }
@@ -2501,7 +2507,8 @@
       "type": "string",
       "description": "The option to apply to a promote operation.",
       "enum": [
-        "Forced"
+        "Forced",
+        "Planned"
       ],
       "x-ms-enum": {
         "name": "PromoteOption",
@@ -2511,6 +2518,11 @@
             "name": "Forced",
             "value": "Forced",
             "description": "Promote option forces the promotion without waiting for the replica to be caught up to the primary. This can result in data-loss so should only be used during disaster recovery scenarios."
+          },
+          {
+            "name": "Planned",
+            "value": "Planned",
+            "description": "Promote option waits for the replica to be caught up to the primary before promoting, guaranteeing no data loss during the promotion."
           }
         ]
       }
@@ -2762,7 +2774,7 @@
         },
         "type": {
           "$ref": "#/definitions/StorageType",
-          "description": "The type of storage to provision the cluster servers with."
+          "description": "The type of storage to provision the cluster servers with. Defaults to 'PremiumSSDv2' when omitted during cluster creation. Omitting this property during an update leaves the storage type unchanged."
         }
       }
     },
